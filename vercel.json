@@ -17,3 +17,8 @@
     }
   ]
 }
+{
+  "source": "/",
+  "has": [{ "type": "host", "value": "www.jejmo.com" }],
+  "destination": "/home.html"
+}
