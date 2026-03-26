@@ -19,9 +19,23 @@
         body { font-family: 'Outfit', sans-serif; background-color: #060a11; color: white; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
         
-        /* New Logo Styles */
-        .logo-main { max-height: 100px; width: auto; margin: 0 auto; display: block; filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.4)); }
-        .logo-header { max-height: 45px; width: auto; display: block; }
+        /* --- PREMIUM LOGO STYLING --- */
+        .logo-container { position: relative; display: flex; justify-content: center; align-items: center; }
+        .logo-glow { 
+            position: absolute; width: 130px; height: 130px; 
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%); 
+            filter: blur(20px); z-index: 0; 
+        }
+        .logo-main { 
+            height: 110px; width: 110px; object-fit: cover; border-radius: 50%; 
+            border: 2px solid rgba(255, 255, 255, 0.15); 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); z-index: 1; position: relative; 
+        }
+        .logo-header { 
+            height: 48px; width: 48px; object-fit: cover; border-radius: 50%; 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+        }
+        /* ---------------------------- */
 
         #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: 0.6s; }
         .input-box { width: 100%; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px 24px; border: 1px solid rgba(255,255,255,0.1); outline: none; color: white; font-weight: 600; }
@@ -39,7 +53,11 @@
 
     <div id="onboarding-screen">
         <div class="mb-10 text-center flex flex-col items-center">
-            <img src="logo.jpg" alt="Jejmo Logo" class="logo-main mb-6">
+            <div class="logo-container mb-6">
+                <div class="logo-glow"></div>
+                <img src="logo.jpg" alt="Jejmo Logo" class="logo-main">
+            </div>
+            <h2 class="text-4xl font-black italic tracking-tighter uppercase text-white mb-2">JEJMO</h2>
             <p class="text-slate-400 font-bold tracking-tight text-center">Premium delivery <br>to your doorstep.</p>
         </div>
         <div id="setup-fields" class="space-y-3 mb-8 hidden">
@@ -156,7 +174,10 @@
     </div>
 
     <div id="success-msg">
-        <img src="logo.jpg" alt="Jejmo Logo" class="logo-main mb-8">
+        <div class="logo-container mb-8">
+            <div class="logo-glow"></div>
+            <img src="logo.jpg" alt="Jejmo Logo" class="logo-main">
+        </div>
         <h2 class="text-4xl font-black italic tracking-tighter mb-2">MISSION SUCCESS</h2>
         <p id="success-email-text" class="text-slate-400 font-bold mb-10 px-6">Receipt sent to your email.</p>
         <button onclick="location.reload()" class="bg-white text-black font-black px-12 py-5 rounded-full uppercase tracking-widest">Continue Shopping</button>
