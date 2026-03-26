@@ -18,6 +18,11 @@
     <style>
         body { font-family: 'Outfit', sans-serif; background-color: #060a11; color: white; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+        
+        /* New Logo Styles */
+        .logo-main { max-height: 100px; width: auto; margin: 0 auto; display: block; filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.4)); }
+        .logo-header { max-height: 45px; width: auto; display: block; }
+
         #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: 0.6s; }
         .input-box { width: 100%; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px 24px; border: 1px solid rgba(255,255,255,0.1); outline: none; color: white; font-weight: 600; }
         .active-item { border-color: #3b82f6 !important; background: rgba(59, 130, 246, 0.2) !important; transform: scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
@@ -28,16 +33,14 @@
         .connector-line { position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.05); }
 
         #success-msg { position: fixed; inset: 0; background: #060a11; z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-        .logo-main { max-height: 120px; width: auto; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.2)); }
-        .logo-header { max-height: 50px; width: auto; }
     </style>
 </head>
 <body class="pb-24">
 
     <div id="onboarding-screen">
-        <div class="mb-10 text-center">
-            <img src="jejmo logo.jpg" alt="Jejmo Logo" class="logo-main mb-6">
-            <p class="text-slate-400 font-bold tracking-tight">Premium delivery <br>to your doorstep.</p>
+        <div class="mb-10 text-center flex flex-col items-center">
+            <img src="logo.jpg" alt="Jejmo Logo" class="logo-main mb-6">
+            <p class="text-slate-400 font-bold tracking-tight text-center">Premium delivery <br>to your doorstep.</p>
         </div>
         <div id="setup-fields" class="space-y-3 mb-8 hidden">
             <input id="userName" type="text" placeholder="Full Name" class="input-box">
@@ -49,7 +52,7 @@
     </div>
 
     <header class="flex flex-col items-center pt-8 pb-6 border-b border-white/5 mb-8">
-        <img src="jejmo logo.jpg" alt="Jejmo Logo" class="logo-header mb-4">
+        <img src="logo.jpg" alt="Jejmo Logo" class="logo-header mb-4">
         <div class="flex items-center gap-2 glass px-4 py-1.5 rounded-full">
             <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
             <p id="header-addr" class="text-[9px] font-black text-slate-400 uppercase tracking-widest"></p>
@@ -129,7 +132,7 @@
 
     <div id="order-tracking-overlay">
         <div class="flex justify-between items-start mb-2">
-            <img src="jejmo logo.jpg" alt="Jejmo Logo" class="logo-header">
+            <img src="logo.jpg" alt="Jejmo Logo" class="logo-header">
             <a href="tel:+38600000000" class="glass w-12 h-12 rounded-2xl flex items-center justify-center text-blue-500 border-blue-500/20 active:bg-blue-500 active:text-white transition-all">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
             </a>
@@ -153,9 +156,7 @@
     </div>
 
     <div id="success-msg">
-        <div class="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mb-8 shadow-2xl shadow-blue-500/50">
-            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
-        </div>
+        <img src="logo.jpg" alt="Jejmo Logo" class="logo-main mb-8">
         <h2 class="text-4xl font-black italic tracking-tighter mb-2">MISSION SUCCESS</h2>
         <p id="success-email-text" class="text-slate-400 font-bold mb-10 px-6">Receipt sent to your email.</p>
         <button onclick="location.reload()" class="bg-white text-black font-black px-12 py-5 rounded-full uppercase tracking-widest">Continue Shopping</button>
