@@ -18,12 +18,12 @@
     {
       "source": "/",
       "has": [{ "type": "host", "value": "www.jejmo.com" }],
-      "destination": "/home.html"
+      "destination": "/index.html"
     },
     {
       "source": "/",
       "has": [{ "type": "host", "value": "jejmo.com" }],
-      "destination": "/home.html"
+      "destination": "/index.html"
     }
   ]
 }
