@@ -1,19 +1,22 @@
 {
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/:path*",
+      "source": "/",
       "has": [{ "type": "host", "value": "driver.jejmo.com" }],
-      "destination": "/driver_app.html"
+      "destination": "/driver_app.html",
+      "permanent": false
     },
     {
-      "source": "/:path*",
+      "source": "/",
       "has": [{ "type": "host", "value": "kitchen.jejmo.com" }],
-      "destination": "/kitchen_app.html"
+      "destination": "/kitchen_app.html",
+      "permanent": false
     },
     {
-      "source": "/:path*",
+      "source": "/",
       "has": [{ "type": "host", "value": "manager.jejmo.com" }],
-      "destination": "/manager_app.html"
+      "destination": "/manager_app.html",
+      "permanent": false
     }
   ]
 }
