@@ -1,16 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/index.html",
-      "has": [{ "type": "host", "value": "driver.jejmo.com" }],
-      "destination": "/driver_app.html"
-    },
-    {
-      "source": "/index.html",
-      "has": [{ "type": "host", "value": "kitchen.jejmo.com" }],
-      "destination": "/kitchen_app.html"
-    },
-    {
       "source": "/",
       "has": [{ "type": "host", "value": "driver.jejmo.com" }],
       "destination": "/driver_app.html"
@@ -24,6 +14,16 @@
       "source": "/",
       "has": [{ "type": "host", "value": "manager.jejmo.com" }],
       "destination": "/manager_app.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.jejmo.com" }],
+      "destination": "/home.html"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "jejmo.com" }],
+      "destination": "/home.html"
     }
   ]
 }
