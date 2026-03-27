@@ -11,32 +11,21 @@
     <style>
         :root { --accent: #a855f7; --bg: #060a11; }
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Outfit', sans-serif; background: var(--bg); color: white; -webkit-tap-highlight-color: transparent; }
-        
-        .logo-glow { 
-            position: absolute; width: 150px; height: 150px; 
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%); 
-            filter: blur(25px); z-index: 0; 
-        }
+        .logo-glow { position: absolute; width: 150px; height: 150px; background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(25px); z-index: 0; }
         .logo-main { height: 120px; width: 120px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.1); z-index: 1; position: relative; }
         .logo-sidebar { height: 60px; width: 60px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.1); }
-
         .bottom-sheet { position: fixed; bottom: 30px; left: 12px; right: 12px; z-index: 100; transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1); padding-bottom: env(safe-area-inset-bottom); }
         .sheet-minimized { transform: translateY(calc(100% - 160px)); }
         .sheet-expanded { transform: translateY(0); }
         .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 32px; }
-        
         #history-sidebar, #chat-overlay, #stats-overlay { position: fixed; top: 0; right: 0; width: 100%; height: 100%; background: #060a11; z-index: 2000; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 70px 25px; display: flex; flex-direction: column; }
         .sidebar-active, .chat-active, .stats-active { transform: translateX(0) !important; }
-        
         .status-online { background: #10b981; box-shadow: 0 0 15px #10b981; }
         .status-offline { background: #ef4444; box-shadow: 0 0 15px #ef4444; }
-        
         .tab-btn { padding: 10px 18px; border-radius: 14px; font-weight: 700; font-size: 13px; color: #64748b; border: 1px solid transparent; }
         .tab-btn.active { background: rgba(168, 85, 247, 0.1); color: var(--accent); border-color: rgba(168, 85, 247, 0.3); }
-        
         .radar-ring { border: 2px solid rgba(168, 85, 247, 0.2); border-radius: 50%; position: absolute; animation: radar 3s infinite ease-out; pointer-events: none; }
         @keyframes radar { from { width: 50px; height: 50px; opacity: 1; } to { width: 180px; height: 180px; opacity: 0; } }
-        
         .msg-driver { align-self: flex-end; background: var(--accent); padding: 12px 18px; border-radius: 20px 20px 4px 20px; font-size: 14px; max-width: 80%; margin-bottom: 10px; color: white; }
         .msg-admin { align-self: flex-start; background: rgba(255,255,255,0.1); padding: 12px 18px; border-radius: 20px 20px 20px 4px; font-size: 14px; max-width: 80%; margin-bottom: 10px; }
         .cash-alert { background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 20px; padding: 15px; margin-bottom: 20px; }
@@ -156,7 +145,6 @@
     </div>
 
     <script>
-        // UPDATED CONFIG FOR JEJMO-MARIBOR
         const firebaseConfig = { 
             apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", 
             authDomain: "jejmo-maribor.firebaseapp.com", 
@@ -251,6 +239,7 @@
                 db.ref('orders/' + currentOrder.id).update({ status: "Delivering", claimedBy: driverId });
                 window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(currentOrder.address)}`);
             } else {
+                // This triggers the email receipt to the customer
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
             }
         }
