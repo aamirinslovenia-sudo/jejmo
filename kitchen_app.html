@@ -48,7 +48,17 @@
     </div>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", authDomain: "we-kleo.firebaseapp.com", databaseURL: "https://we-kleo-default-rtdb.europe-west1.firebasedatabase.app", projectId: "we-kleo", storageBucket: "we-kleo.firebasestorage.app", messagingSenderId: "87105321281", appId: "1:87105321281:web:ec83e4472e5756182749c0" };
+        // UPDATED CONFIG FOR JEJMO-MARIBOR
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", 
+            authDomain: "jejmo-maribor.firebaseapp.com", 
+            databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", 
+            projectId: "jejmo-maribor", 
+            storageBucket: "jejmo-maribor.firebasestorage.app", 
+            messagingSenderId: "87105321281", 
+            appId: "1:87105321281:web:ec83e4472e5756182749c0" 
+        };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         let audioCtx = null; let alarmInterval = null;
@@ -68,12 +78,10 @@
             snap.forEach((child) => {
                 const o = child.val(); o.id = child.key;
                 
-                // Track driver activity based on current mission status
                 if(o.claimedBy) {
                     drivers[o.claimedBy] = (o.status === "Delivering") ? "Busy" : "Waiting";
                 }
                 
-                // Only New or Preparing orders stay in the active Grid
                 if (o.status === "New" || o.status === "Preparing") { 
                     activeOrders.push(o); 
                 } else { 
