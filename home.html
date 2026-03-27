@@ -24,7 +24,8 @@
         .tracking-dot.active { background: #3b82f6; box-shadow: 0 0 20px #3b82f6; }
         .connector-line { position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.05); }
         #success-msg { position: fixed; inset: 0; background: #060a11; z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-        .cart-item-chip { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #60a5fa; margin-right: 5px; margin-bottom: 5px; display: inline-block; }
+        .cart-item-chip { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #60a5fa; margin-right: 5px; margin-bottom: 5px; display: inline-block; transition: all 0.2s; }
+        .cart-item-chip:active { transform: scale(0.9); background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
     </style>
 </head>
 <body class="pb-24">
@@ -111,7 +112,7 @@
         </div>
 
         <div id="cart-summary" class="px-2 hidden">
-             <p class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Selected Items</p>
+             <p class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Selected Items (Tap to remove)</p>
              <div id="cart-items-container" class="flex flex-wrap"></div>
         </div>
 
@@ -202,9 +203,7 @@
             }
         }
 
-        // NEW: Add to Cart Logic
         function addToCart(name, price, id, restaurant) {
-            // Restriction: Only one restaurant per mission
             if (selectedRestaurant && selectedRestaurant !== restaurant) {
                 if(confirm("Ordering from " + restaurant + " will clear your items from " + selectedRestaurant + ". Continue?")) {
                     cart = [];
@@ -220,7 +219,7 @@
             if (existingItem) {
                 existingItem.quantity += 1;
             } else {
-                cart.push({ name: name, price: price, quantity: 1 });
+                cart.push({ name: name, price: price, quantity: 1, elementId: id });
             }
 
             document.getElementById(id).classList.add('active-item');
@@ -230,18 +229,33 @@
         function updateCartUI() {
             let total = 0;
             const container = document.getElementById('cart-items-container');
+            const summaryDiv = document.getElementById('cart-summary');
             container.innerHTML = "";
             
-            if(cart.length > 0) {
-                document.getElementById('cart-summary').classList.remove('hidden');
-                document.getElementById('orderBtn').innerText = "Initiate Mission";
+            if(cart.length === 0) {
+                summaryDiv.classList.add('hidden');
+                document.getElementById('orderBtn').innerText = "Select Items";
+                document.getElementById('priceDisplay').innerText = "€0.00";
+                selectedRestaurant = "";
+                return;
             }
 
-            cart.forEach(item => {
+            summaryDiv.classList.remove('hidden');
+            document.getElementById('orderBtn').innerText = "Initiate Mission";
+
+            cart.forEach((item, index) => {
                 total += (item.price * item.quantity);
                 const chip = document.createElement('span');
-                chip.className = "cart-item-chip";
-                chip.innerText = `${item.quantity}x ${item.name}`;
+                chip.className = "cart-item-chip cursor-pointer";
+                chip.innerHTML = `${item.quantity}x ${item.name} <span class="ml-1 opacity-40 text-[8px]">✕</span>`;
+                
+                // CLICK TO REMOVE LOGIC
+                chip.onclick = () => {
+                    document.getElementById(item.elementId).classList.remove('active-item');
+                    cart.splice(index, 1);
+                    updateCartUI();
+                };
+                
                 container.appendChild(chip);
             });
 
@@ -268,8 +282,6 @@
                     const count = snapshot.val();
                     const displayId = count.toString().padStart(3, '0');
                     const orderId = db.ref('orders').push().key;
-
-                    // Combine items for the ticket string
                     const itemsString = cart.map(i => `${i.quantity}x ${i.name}`).join(", ");
 
                     db.ref('orders/' + orderId).set({
@@ -279,8 +291,8 @@
                         email: localStorage.getItem('kleo_email'),
                         address: localStorage.getItem('kleo_address'),
                         phone: localStorage.getItem('kleo_phone'),
-                        item: itemsString, // This shows "3x Pizza, 1x Drink" in Kitchen app
-                        cartData: cart, // Full data for detailed analysis
+                        item: itemsString,
+                        cartData: cart,
                         restaurant: selectedRestaurant,
                         totalPrice: document.getElementById('priceDisplay').innerText,
                         paymentType: selectedPayment,
@@ -304,7 +316,6 @@
                 const text3 = document.getElementById('text-delivery');
 
                 dot1.classList.add('active');
-                
                 if (["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) {
                     dot2.classList.add('active'); 
                     text2.classList.replace('text-slate-500', 'text-blue-500');
