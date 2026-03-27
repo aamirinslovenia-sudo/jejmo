@@ -223,12 +223,13 @@
             snap.forEach(c => {
                 const o = c.val(); o.id = c.key;
                 
-                // 1. My Current Active Mission
+                // 1. My Current Active Mission (Already accepted)
                 if (o.status === "On Way" && o.claimedBy === driverId) {
                     activeTask = o;
                 }
                 
-                // 2. New Available Orders (Only show if 'Ready' from kitchen)
+                // 2. New Available Orders (STRICT: ONLY show if status is "Ready")
+                // This prevents "New" or "Preparing" orders from showing in Driver App
                 if (o.status === "Ready" && !o.claimedBy) {
                     availableOrder = o;
                 }
@@ -299,6 +300,7 @@
             // If claiming a new order from Kitchen
             if (currentOrder.status === "Ready") {
                 db.ref('orders/' + currentOrder.id).update({ status: "On Way", claimedBy: driverId });
+                // Note: Opening maps works best with a direct intent or simple URL
                 window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentOrder.address)}`);
             } else {
                 // MISSION COMPLETE
