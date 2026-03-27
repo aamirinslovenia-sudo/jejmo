@@ -159,7 +159,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const fs = firebase.firestore(); // Initialize Firestore for Email Extension
+        const fs = firebase.firestore(); 
 
         let driverId = localStorage.getItem('jejmo_driver_id');
         if (!driverId) { driverId = "DRV-" + Math.floor(1000 + Math.random() * 9000); localStorage.setItem('jejmo_driver_id', driverId); }
@@ -222,10 +222,23 @@
             let activeTask = null; let availableOrder = null; allCompletedOrders = [];
             snap.forEach(c => {
                 const o = c.val(); o.id = c.key;
-                if (o.status === "On Way" && o.claimedBy === driverId) activeTask = o;
-                if (o.status === "New" && !o.claimedBy) availableOrder = o;
-                if (o.status === "Completed") allCompletedOrders.push(o);
+                
+                // 1. My Current Active Mission
+                if (o.status === "On Way" && o.claimedBy === driverId) {
+                    activeTask = o;
+                }
+                
+                // 2. New Available Orders (Only show if 'Ready' from kitchen)
+                if (o.status === "Ready" && !o.claimedBy) {
+                    availableOrder = o;
+                }
+                
+                // 3. Log History
+                if (o.status === "Completed") {
+                    allCompletedOrders.push(o);
+                }
             });
+
             if (activeTask) {
                 currentOrder = activeTask; renderUI(activeTask, "End Mission");
                 clearInterval(alertInterval); alertInterval = null;
@@ -282,13 +295,14 @@
 
         function processOrder() { 
             if (!currentOrder) return; 
-            if (currentOrder.status === "New") {
+            
+            // If claiming a new order from Kitchen
+            if (currentOrder.status === "Ready") {
                 db.ref('orders/' + currentOrder.id).update({ status: "On Way", claimedBy: driverId });
-                window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(currentOrder.address)}`);
+                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentOrder.address)}`);
             } else {
-                // MISSION COMPLETE - UPDATE DATABASE
+                // MISSION COMPLETE
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()}).then(() => {
-                    // TRIGGER OFFICIAL RECEIPT VIA EMAIL EXTENSION
                     if (currentOrder.email) {
                         fs.collection('mail').add({
                             to: currentOrder.email,
