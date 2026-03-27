@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JEJMO | COMMAND CENTER v2.6</title>
+    <title>JEJMO | HQ COMMAND v2.7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -18,8 +18,12 @@
         .btn-danger:hover { background: #ef4444; color: white; }
         .msg-bubble { max-width: 85%; padding: 12px; border-radius: 18px; font-size: 13px; line-height: 1.4; margin-bottom: 8px; }
         
-        /* Branding Elements */
-        .logo-hq { height: 50px; width: 50px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); }
+        /* Premium Branding */
+        .logo-hq { 
+            height: 70px; width: 70px; object-fit: cover; border-radius: 50%; 
+            border: 2px solid rgba(255,255,255,0.1); 
+            filter: drop-shadow(0 0 15px rgba(168,85,247,0.3));
+        }
 
         .driver-tab { 
             padding: 12px 20px; 
@@ -55,9 +59,8 @@
 <body class="p-8 flex gap-8">
 
     <div class="w-1/4 flex flex-col gap-6">
-        <div class="flex items-center gap-4">
+        <div class="flex items-center justify-center p-2 mb-2">
             <img src="logo.jpg" alt="Logo" class="logo-hq">
-            <h1 class="text-3xl font-black italic tracking-tighter uppercase">JEJMO <span class="text-purple-500">HQ</span></h1>
         </div>
         
         <div class="glass stat-card">
@@ -69,12 +72,12 @@
         <div class="glass rounded-[32px] p-6 flex-1 flex flex-col">
             <h3 class="text-xs font-black uppercase text-purple-500 mb-6 tracking-widest">Live Couriers</h3>
             <div id="driver-list" class="space-y-4 overflow-y-auto scroll-hide"></div>
-            <button onclick="resetDay()" class="mt-auto w-full py-4 btn-danger rounded-2xl font-black uppercase text-[10px] tracking-widest">System Reset</button>
+            <button onclick="resetDay()" class="mt-auto w-full py-4 btn-danger rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all">HQ SYSTEM RESET</button>
         </div>
     </div>
 
     <div class="flex-1 glass rounded-[32px] p-8 flex flex-col">
-        <h3 class="text-xl font-black italic uppercase mb-8 tracking-tight">Mission Control Center</h3>
+        <h3 class="text-xl font-black italic uppercase mb-8 tracking-tight">Real-Time Mission Control</h3>
         <div class="overflow-y-auto scroll-hide flex-1">
             <table class="w-full text-left">
                 <thead>
@@ -84,7 +87,7 @@
                         <th class="pb-4">Client</th>
                         <th class="pb-4">Courier</th>
                         <th class="pb-4">Total</th>
-                        <th class="pb-4">Action</th>
+                        <th class="pb-4">Archive</th>
                     </tr>
                 </thead>
                 <tbody id="master-order-list"></tbody>
@@ -93,16 +96,16 @@
     </div>
 
     <div class="w-1/4 glass rounded-[32px] p-6 flex flex-col">
-        <h3 class="text-xs font-black uppercase text-purple-500 mb-4 tracking-widest">Dispatcher Chat</h3>
+        <h3 class="text-xs font-black uppercase text-purple-500 mb-4 tracking-widest">Dispatcher Hub</h3>
         <div id="driver-selector" class="flex gap-2 overflow-x-auto pb-4 mb-4 border-b border-white/10 scroll-hide"></div>
         <div id="chat-box" class="flex-1 overflow-y-auto scroll-hide mb-4 space-y-2 flex flex-col">
             <div class="text-center text-[10px] text-slate-600 uppercase mt-40">Awaiting Connection</div>
         </div>
         <div class="flex gap-2 bg-white/5 p-2 rounded-2xl border border-white/10">
-            <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendAdminMsg()" class="flex-1 bg-transparent p-2 text-sm outline-none" placeholder="Enter message...">
+            <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendAdminMsg()" class="flex-1 bg-transparent p-2 text-sm outline-none text-white" placeholder="Enter reply...">
             <button onclick="sendAdminMsg()" class="bg-purple-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold">➤</button>
         </div>
-        <button onclick="endSelectedChat()" class="mt-2 text-[8px] text-red-500/50 uppercase font-bold tracking-widest hover:text-red-500 transition">Close Mission Support</button>
+        <button onclick="endSelectedChat()" class="mt-2 text-[8px] text-red-500/50 uppercase font-bold tracking-widest hover:text-red-500 transition active:scale-95">Resolve & Wipe Ticket</button>
     </div>
 
     <script>
@@ -135,7 +138,7 @@
                         <td class="py-4 text-xs text-slate-400">${o.customer}</td>
                         <td class="py-4 text-xs font-mono text-purple-400">${o.claimedBy || 'PENDING'}</td>
                         <td class="py-4 font-black text-white">${o.totalPrice}</td>
-                        <td class="py-4"><button onclick="deleteOrder('${child.key}')" class="opacity-20 hover:opacity-100 transition">✕</button></td>
+                        <td class="py-4"><button onclick="deleteOrder('${child.key}')" class="opacity-20 hover:opacity-100 transition active:scale-75">✕</button></td>
                     </tr>`;
             });
 
@@ -144,7 +147,7 @@
             
             driverDiv.innerHTML = Object.keys(drivers).map(dId => `
                 <div class="flex justify-between items-center p-3 glass rounded-xl border-l-2 border-purple-500">
-                    <div><p class="text-[9px] font-black text-purple-400 font-mono">${dId}</p><p class="text-[10px] font-bold">Shift Active</p></div>
+                    <div><p class="text-[9px] font-black text-purple-400 font-mono">${dId}</p><p class="text-[10px] font-bold">Courier Active</p></div>
                     <div class="text-right"><p class="text-lg font-black text-white">${drivers[dId]}</p></div>
                 </div>`).join('');
         });
