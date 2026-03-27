@@ -213,19 +213,32 @@
             if (!selectedItemName) { alert("Select a dish first!"); return; }
             if (!selectedPayment) { alert("Please select Cash or Card!"); return; }
             
-            const orderId = db.ref('orders').push().key;
-            db.ref('orders/' + orderId).set({
-                customer: localStorage.getItem('kleo_name'),
-                email: localStorage.getItem('kleo_email'),
-                address: localStorage.getItem('kleo_address'),
-                phone: localStorage.getItem('kleo_phone'),
-                item: selectedItemName,
-                restaurant: selectedRestaurant,
-                totalPrice: document.getElementById('priceDisplay').innerText,
-                paymentType: selectedPayment,
-                timestamp: Date.now(),
-                status: 'New'
-            }).then(() => { startTracking(orderId); });
+            db.ref('orderCounter').transaction((currentValue) => {
+                if (currentValue === null || currentValue >= 999) return 1;
+                return currentValue + 1;
+            }, (error, committed, snapshot) => {
+                if (committed) {
+                    const count = snapshot.val();
+                    const displayId = count.toString().padStart(3, '0');
+                    const orderId = db.ref('orders').push().key;
+
+                    db.ref('orders/' + orderId).set({
+                        shortId: displayId,
+                        customer: localStorage.getItem('kleo_name'),
+                        email: localStorage.getItem('kleo_email'),
+                        address: localStorage.getItem('kleo_address'),
+                        phone: localStorage.getItem('kleo_phone'),
+                        item: selectedItemName,
+                        restaurant: selectedRestaurant,
+                        totalPrice: document.getElementById('priceDisplay').innerText,
+                        paymentType: selectedPayment,
+                        timestamp: Date.now(),
+                        status: 'New'
+                    }).then(() => { 
+                        startTracking(orderId); 
+                    });
+                }
+            });
         }
 
         function startTracking(orderId) {
@@ -251,23 +264,20 @@
 
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
-                    
-                    // BRANDED RECEIPT WITH GITHUB LOGO
                     const logoUrl = "https://github.com/aamirinslovenia-sudo/jejmo/blob/main/logo.jpg?raw=true";
 
                     fs.collection('mail').add({
                         to: o.email,
                         from: 'info@jejmo.com',
                         message: {
-                            subject: `Receipt for Order #${orderId.substring(0,5)} - JEJMO`,
+                            subject: `JEJMO Receipt - Order #${o.shortId} ✨`,
                             html: `
                                 <div style="font-family: 'Helvetica', Arial, sans-serif; background-color: #f4f4f4; padding: 40px 0;">
                                     <div style="max-width: 500px; margin: auto; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #eee;">
-                                        
                                         <div style="background: #060a11; padding: 40px; text-align: center;">
                                             <img src="${logoUrl}" alt="JEJMO" style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid #a855f7; object-fit: cover;">
                                             <h1 style="color: white; margin-top: 20px; font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 0;">Order Delivered!</h1>
-                                            <p style="color: #a855f7; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; letter-spacing: 2px;">Maribor Delivery</p>
+                                            <p style="color: #a855f7; font-size: 14px; font-weight: bold; margin-top: 5px;">ORDER #${o.shortId}</p>
                                         </div>
 
                                         <div style="padding: 35px; color: #1a1a1a;">
