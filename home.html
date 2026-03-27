@@ -327,22 +327,32 @@
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     
-                    // FIXED PREMIUM EMAIL TEMPLATE WITH HOSTED LOGO
+                    // FIXED PREMIUM EMAIL TEMPLATE MATCHING SCREENSHOT
                     const receiptHtml = `
-                        <div style="background-color: #060a11; color: white; padding: 40px; font-family: 'Outfit', sans-serif; text-align: center; border-radius: 20px;">
-                            <img src="https://i.ibb.co/3ykS5sN/logo.jpg" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); margin-bottom: 20px;">
-                            <h2 style="font-style: italic; font-weight: 900; letter-spacing: -1px; font-size: 28px; margin-bottom: 5px;">MISSION SUCCESS</h2>
-                            <p style="color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Order #${o.orderNumber}</p>
-                            <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0;">
-                            <div style="text-align: left; padding: 0 20px;">
-                                <p style="color: #60a5fa; font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px;">Items Delivered:</p>
-                                <p style="font-size: 16px; font-weight: 600;">${o.item}</p>
-                                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; margin-top: 20px;">
-                                    <p style="margin: 0; color: #64748b; font-size: 10px; text-transform: uppercase;">Total Paid via ${o.paymentType}</p>
-                                    <p style="margin: 5px 0 0 0; font-size: 32px; font-weight: 900; color: white;">${o.totalPrice}</p>
+                        <div style="font-family: 'Outfit', sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #eeeeee;">
+                            <div style="background-color: #060a11; padding: 40px 20px; text-align: center;">
+                                <img src="https://i.ibb.co/3ykS5sN/logo.jpg" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #a855f7; margin-bottom: 20px;">
+                                <h1 style="color: #ffffff; font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -0.5px;">Order Delivered!</h1>
+                                <p style="color: #a855f7; font-size: 14px; font-weight: 700; text-transform: uppercase; margin-top: 10px; letter-spacing: 1px;">ORDER #${o.orderNumber}</p>
+                            </div>
+
+                            <div style="padding: 40px 30px; color: #060a11;">
+                                <p style="font-size: 18px; margin-bottom: 20px;">Hi <strong>${o.customer}</strong>,</p>
+                                <p style="font-size: 16px; color: #64748b; line-height: 1.6;">
+                                    Your order from <strong>${o.restaurant}</strong> has been successfully delivered. 
+                                    We hope you enjoy your meal!
+                                </p>
+                                
+                                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
+                                    <p style="font-size: 12px; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Order Details</p>
+                                    <p style="font-size: 14px; font-weight: 600; color: #060a11;">${o.item}</p>
+                                    <p style="font-size: 16px; font-weight: 900; color: #3b82f6; margin-top: 10px;">Total: ${o.totalPrice}</p>
                                 </div>
                             </div>
-                            <p style="margin-top: 40px; color: #64748b; font-size: 11px;">Thank you for choosing JEJMO Maribor.</p>
+                            
+                            <div style="background-color: #f8fafc; padding: 20px; text-align: center;">
+                                <p style="font-size: 12px; color: #94a3b8; margin: 0;">© 2026 JEJMO Maribor. Premium Delivery.</p>
+                            </div>
                         </div>
                     `;
 
@@ -354,7 +364,6 @@
                             html: receiptHtml
                         }
                     }).then(() => {
-                        // UPDATE: Display the user's email on the success screen
                         const userEmail = localStorage.getItem('kleo_email');
                         document.getElementById('success-email-text').innerText = `Receipt sent to ${userEmail}`;
                         document.getElementById('success-msg').style.display = 'flex';
