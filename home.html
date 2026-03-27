@@ -4,48 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>JEJMO</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
-
     <style>
         body { font-family: 'Outfit', sans-serif; background-color: #060a11; color: white; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
-        
         .logo-container { position: relative; display: flex; justify-content: center; align-items: center; }
-        .logo-glow { 
-            position: absolute; width: 140px; height: 140px; 
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, rgba(168, 85, 247, 0) 70%); 
-            filter: blur(25px); z-index: 0; 
-        }
-        .logo-main { 
-            height: 120px; width: 120px; object-fit: cover; border-radius: 50%; 
-            border: 2px solid rgba(255, 255, 255, 0.15); 
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); z-index: 1; position: relative; 
-        }
-        .logo-header { 
-            height: 52px; width: 52px; object-fit: cover; border-radius: 50%; 
-            border: 1px solid rgba(255, 255, 255, 0.2); 
-        }
-
+        .logo-glow { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(25px); z-index: 0; }
+        .logo-main { height: 120px; width: 120px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); z-index: 1; position: relative; }
+        .logo-header { height: 52px; width: 52px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); }
         #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: 0.6s; }
         .input-box { width: 100%; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px 24px; border: 1px solid rgba(255,255,255,0.1); outline: none; color: white; font-weight: 600; }
         .active-item { border-color: #3b82f6 !important; background: rgba(59, 130, 246, 0.2) !important; transform: scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-        
         #order-tracking-overlay { position: fixed; inset: 0; background: #060a11; z-index: 2000; display: none; padding: 60px 24px; flex-direction: column; }
         .tracking-dot { width: 14px; height: 14px; border-radius: 50%; background: #1e293b; transition: 0.5s; z-index: 10; }
         .tracking-dot.active { background: #3b82f6; box-shadow: 0 0 20px #3b82f6; }
         .connector-line { position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.05); }
-
         #success-msg { position: fixed; inset: 0; background: #060a11; z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
     </style>
 </head>
 <body class="pb-24">
-
     <div id="onboarding-screen">
         <div class="mb-12 text-center flex flex-col items-center">
             <div class="logo-container mb-8">
@@ -123,12 +104,8 @@
         <div class="px-2">
             <p class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Select Payment Method</p>
             <div class="flex gap-3">
-                <button id="pay-cash" onclick="setPayment('Cash')" class="flex-1 py-4 rounded-2xl border border-white/10 bg-white/5 text-[11px] font-bold uppercase transition-all">
-                    💵 Cash
-                </button>
-                <button id="pay-card" onclick="setPayment('Card')" class="flex-1 py-4 rounded-2xl border border-white/10 bg-white/5 text-[11px] font-bold uppercase transition-all">
-                    💳 Card
-                </button>
+                <button id="pay-cash" onclick="setPayment('Cash')" class="flex-1 py-4 rounded-2xl border border-white/10 bg-white/5 text-[11px] font-bold uppercase transition-all">💵 Cash</button>
+                <button id="pay-card" onclick="setPayment('Card')" class="flex-1 py-4 rounded-2xl border border-white/10 bg-white/5 text-[11px] font-bold uppercase transition-all">💳 Card</button>
             </div>
         </div>
 
@@ -148,21 +125,18 @@
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
             </a>
         </div>
-        
         <div class="space-y-12 relative pb-6 mt-12">
             <div class="connector-line"></div>
             <div class="flex gap-6 items-center z-10"><div id="step-new" class="tracking-dot"></div><div><p class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Stage 1</p><h4 class="font-bold uppercase">Transmitted</h4></div></div>
             <div class="flex gap-6 items-center z-10"><div id="step-kitchen" class="tracking-dot"></div><div><p id="text-kitchen" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Stage 2</p><h4 class="font-bold uppercase">Preparing</h4></div></div>
             <div class="flex gap-6 items-center z-10"><div id="step-delivery" class="tracking-dot"></div><div><p id="text-delivery" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Stage 3</p><h4 class="font-bold uppercase">On the road</h4></div></div>
         </div>
-        
         <div class="flex-grow flex flex-col justify-center">
             <div class="glass p-10 text-center rounded-[40px] border border-white/10">
                 <p class="text-[10px] text-slate-400 uppercase font-black mb-3 tracking-[0.2em]">Estimated Arrival</p>
                 <h3 class="text-5xl font-[900] italic tracking-tighter text-white">~25 MIN</h3>
             </div>
         </div>
-
         <button onclick="location.reload()" class="w-full mb-4 bg-white/5 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500">Back to Store</button>
     </div>
 
@@ -180,7 +154,7 @@
         const firebaseConfig = { apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", authDomain: "we-kleo.firebaseapp.com", databaseURL: "https://we-kleo-default-rtdb.europe-west1.firebasedatabase.app", projectId: "we-kleo", storageBucket: "we-kleo.firebasestorage.app", messagingSenderId: "87105321281", appId: "1:87105321281:web:ec83e4472e5756182749c0" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const fs = firebase.firestore(); // Initialized Firestore for Email Extension
+        const fs = firebase.firestore(); 
         
         let selectedItemName = ""; let basePrice = 0; let selectedRestaurant = ""; let selectedPayment = ""; let emailSent = false;
 
@@ -194,9 +168,8 @@
         function handleGateway() {
             const fields = document.getElementById('setup-fields');
             const btn = document.getElementById('gate-btn');
-            if(fields.classList.contains('hidden')) {
-                fields.classList.remove('hidden'); btn.innerText = "Complete Profile";
-            } else {
+            if(fields.classList.contains('hidden')) { fields.classList.remove('hidden'); btn.innerText = "Complete Profile"; }
+            else {
                 const name = document.getElementById('userName').value;
                 const email = document.getElementById('userEmail').value;
                 const phone = document.getElementById('userPhone').value;
@@ -230,11 +203,10 @@
         function sendOrder() {
             if (!selectedItemName) { alert("Select a dish first!"); return; }
             if (!selectedPayment) { alert("Please select Cash or Card!"); return; }
-            
             const orderId = db.ref('orders').push().key;
             db.ref('orders/' + orderId).set({
                 customer: localStorage.getItem('kleo_name'),
-                email: localStorage.getItem('kleo_email'), // Now saving the email to database
+                email: localStorage.getItem('kleo_email'),
                 address: localStorage.getItem('kleo_address'),
                 phone: localStorage.getItem('kleo_phone'),
                 item: selectedItemName,
@@ -257,44 +229,25 @@
                 const text3 = document.getElementById('text-delivery');
 
                 dot1.classList.add('active');
-                if (["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) {
+                if (["Preparing", "Ready", "On Way", "Completed"].includes(o.status)) {
                     dot2.classList.add('active'); text2.classList.replace('text-slate-500', 'text-blue-500');
                 }
-                if (["Delivering", "Completed"].includes(o.status)) {
+                if (["On Way", "Completed"].includes(o.status)) {
                     dot3.classList.add('active'); text3.classList.replace('text-slate-500', 'text-blue-500');
                 }
 
-                // Official JEJMO Email Trigger
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
-                    
-                    // Sending via your info@jejmo.com Extension
                     fs.collection('mail').add({
                         to: o.email,
                         message: {
                             subject: 'JEJMO | Mission Accomplished! 🍔',
-                            html: `
-                                <div style="font-family: 'Outfit', sans-serif; background: #060a11; color: white; padding: 40px; border-radius: 20px; max-width: 500px; margin: auto; border: 1px solid #1e293b;">
-                                    <h2 style="color: #3b82f6; font-style: italic; font-weight: 900; letter-spacing: -1px;">MISSION SUCCESS</h2>
-                                    <p>Hi ${o.customer}, your meal has been delivered!</p>
-                                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-                                    <p style="font-size: 14px;"><b>Order:</b> ${o.item}</p>
-                                    <p style="font-size: 14px;"><b>Restaurant:</b> ${o.restaurant}</p>
-                                    <p style="font-size: 14px;"><b>Total Paid:</b> ${o.totalPrice}</p>
-                                    <p style="font-size: 14px;"><b>Address:</b> ${o.address}</p>
-                                    <br>
-                                    <p style="font-size: 10px; color: #64748b; text-transform: uppercase;">Thank you for choosing JEJMO Maribor.</p>
-                                </div>
-                            `
+                            html: `<div style="font-family: 'Outfit', sans-serif; background: #060a11; color: white; padding: 40px; border-radius: 20px; max-width: 500px; margin: auto; border: 1px solid #1e293b;"><h2 style="color: #3b82f6; font-style: italic; font-weight: 900; letter-spacing: -1px;">MISSION SUCCESS</h2><p>Hi ${o.customer}, your meal has been delivered!</p><hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;"><p style="font-size: 14px;"><b>Order:</b> ${o.item}</p><p style="font-size: 14px;"><b>Restaurant:</b> ${o.restaurant}</p><p style="font-size: 14px;"><b>Total Paid:</b> ${o.totalPrice}</p><br><p style="font-size: 10px; color: #64748b; text-transform: uppercase;">Thank you for choosing JEJMO Maribor.</p></div>`
                         }
                     }).then(() => {
                         document.getElementById('success-email-text').innerText = "Receipt sent to " + o.email;
                         document.getElementById('success-msg').style.display = 'flex';
-                    }).catch((error) => {
-                        console.error("Email Extension Error: ", error);
-                        // Fallback show success screen anyway
-                        document.getElementById('success-msg').style.display = 'flex';
-                    });
+                    }).catch(() => { document.getElementById('success-msg').style.display = 'flex'; });
                 }
             });
         }
