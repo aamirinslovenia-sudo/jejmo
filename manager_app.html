@@ -17,6 +17,9 @@
         .btn-danger:hover { background: #ef4444; color: white; }
         .msg-bubble { max-width: 85%; padding: 12px; border-radius: 18px; font-size: 13px; line-height: 1.4; margin-bottom: 8px; }
         
+        /* Logo Styling */
+        .logo-manager { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #a855f7; object-fit: cover; }
+
         .driver-tab { 
             padding: 12px 20px; 
             border-radius: 14px; 
@@ -51,7 +54,13 @@
 <body class="p-8 flex gap-8">
 
     <div class="w-1/4 flex flex-col gap-6">
-        <h1 class="text-4xl font-black italic tracking-tighter uppercase"><span class="text-purple-500">HQ</span> COMMAND</h1>
+        <div class="flex items-center gap-4">
+            <img src="logo.jpg" class="logo-manager">
+            <h1 class="text-3xl font-black italic tracking-tighter uppercase leading-none">
+                <span class="text-purple-500">HQ</span> COMMAND
+            </h1>
+        </div>
+
         <div class="glass stat-card">
             <p class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Revenue Today</p>
             <h2 id="total-revenue" class="text-5xl font-black mt-2 text-purple-400">€0.00</h2>
@@ -139,7 +148,6 @@
         function renderUI() {
             const selector = document.getElementById('driver-selector');
             const chatBox = document.getElementById('chat-box');
-            // Updated to match the DRV- prefix used in driver app
             const openIds = Object.keys(cachedTickets).filter(id => id.startsWith('DRV-') && cachedTickets[id].status === "Open");
             
             if (!selectedId && openIds.length > 0) selectedId = openIds[0];
