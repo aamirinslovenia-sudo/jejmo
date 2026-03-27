@@ -354,8 +354,13 @@
                             html: receiptHtml
                         }
                     }).then(() => {
+                        // UPDATE: Display the user's email on the success screen
+                        const userEmail = localStorage.getItem('kleo_email');
+                        document.getElementById('success-email-text').innerText = `Receipt sent to ${userEmail}`;
                         document.getElementById('success-msg').style.display = 'flex';
-                    }).catch(() => { document.getElementById('success-msg').style.display = 'flex'; });
+                    }).catch(() => { 
+                        document.getElementById('success-msg').style.display = 'flex'; 
+                    });
                 }
             });
         }
