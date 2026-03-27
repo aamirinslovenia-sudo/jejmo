@@ -151,7 +151,17 @@
     </div>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", authDomain: "we-kleo.firebaseapp.com", databaseURL: "https://we-kleo-default-rtdb.europe-west1.firebasedatabase.app", projectId: "we-kleo", storageBucket: "we-kleo.firebasestorage.app", messagingSenderId: "87105321281", appId: "1:87105321281:web:ec83e4472e5756182749c0" };
+        // UPDATED CONFIG FOR JEJMO-MARIBOR
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", 
+            authDomain: "jejmo-maribor.firebaseapp.com", 
+            databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", 
+            projectId: "jejmo-maribor", 
+            storageBucket: "jejmo-maribor.firebasestorage.app", 
+            messagingSenderId: "87105321281", 
+            appId: "1:87105321281:web:ec83e4472e5756182749c0" 
+        };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const fs = firebase.firestore(); 
@@ -230,7 +240,6 @@
 
                 dot1.classList.add('active');
                 
-                // FIXED: Updated status logic to match Driver's "Delivering" state
                 if (["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) {
                     dot2.classList.add('active'); 
                     text2.classList.replace('text-slate-500', 'text-blue-500');
@@ -240,7 +249,6 @@
                     text3.classList.replace('text-slate-500', 'text-blue-500');
                 }
 
-                // TRIGGER EMAIL ON COMPLETION
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     fs.collection('mail').add({
