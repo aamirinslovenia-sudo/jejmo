@@ -100,11 +100,14 @@
 
         function renderOrder(id, o) {
             const time = o.timestamp || Date.now();
-            const icon = o.item.toLowerCase().includes('drink') ? '🍹' : '🍽️';
+            const icon = (o.item.toLowerCase().includes('sour') || o.item.toLowerCase().includes('rain') || o.item.toLowerCase().includes('drink')) ? '🍹' : '🍽️';
             const buttonLabel = o.status === "Preparing" ? "Ready for Pickup" : "Start Preparing";
             const nextStatus = o.status === "Preparing" ? "Ready" : "Preparing";
             const displayOrderNum = o.orderNumber ? "#" + o.orderNumber : "#" + id.substring(0,5).toUpperCase();
             
+            // Format the item string to look better in the kitchen (multi-line)
+            const formattedItems = o.item.split(', ').join('<br>');
+
             const html = `
                 <div id="card-${id}" data-time="${time}" class="order-card">
                     <div class="flex justify-between items-start mb-4">
@@ -114,12 +117,13 @@
                     <div class="mb-2">
                         <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">${o.restaurant || 'JEJMO'}</span>
                     </div>
-                    <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-4 leading-none">
-                        <span class="mr-3">${icon}</span> ${o.item}
+                    <h2 class="text-2xl font-black uppercase italic tracking-tighter mb-4 leading-tight flex items-start">
+                        <span class="mr-3 mt-1">${icon}</span> 
+                        <span class="flex-1">${formattedItems}</span>
                     </h2>
                     <div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-4 flex-1">
                         <p class="text-[8px] font-black text-slate-600 uppercase mb-1">Customer Note</p>
-                        <p class="text-sm italic text-slate-300 leading-tight">Standard Priority</p>
+                        <p class="text-sm italic text-slate-300 leading-tight">Paid via ${o.paymentType || 'Cash'}</p>
                     </div>
                     <div class="flex justify-between items-end mb-4">
                         <div>
@@ -157,7 +161,7 @@
             const html = `
                 <div class="bg-white/5 p-6 rounded-3xl border border-white/5 mb-4">
                     <div class="flex justify-between">
-                        <p class="font-black italic uppercase text-white text-lg">${displayOrderNum} • ${o.item}</p>
+                        <p class="font-black italic uppercase text-white text-sm">${displayOrderNum} • ${o.item.substring(0,25)}...</p>
                         <p class="text-purple-400 font-bold">${o.totalPrice}</p>
                     </div>
                     <p class="text-[10px] text-slate-500 font-bold uppercase mt-1">${o.customer} • ${o.status}</p>
