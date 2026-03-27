@@ -48,7 +48,6 @@
     </div>
 
     <script>
-        // UPDATED CONFIG FOR JEJMO-MARIBOR
         const firebaseConfig = { 
             apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", 
             authDomain: "jejmo-maribor.firebaseapp.com", 
@@ -77,11 +76,9 @@
 
             snap.forEach((child) => {
                 const o = child.val(); o.id = child.key;
-                
                 if(o.claimedBy) {
                     drivers[o.claimedBy] = (o.status === "Delivering") ? "Busy" : "Waiting";
                 }
-                
                 if (o.status === "New" || o.status === "Preparing") { 
                     activeOrders.push(o); 
                 } else { 
@@ -92,11 +89,8 @@
 
             activeOrders.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
             activeOrders.forEach(order => renderOrder(order.id, order));
-            
             if(prepTimes.length > 0) document.getElementById('avg-prep').innerText = Math.round(prepTimes.reduce((a,b) => a+b, 0) / prepTimes.length) + "m";
-            
             driverBox.innerHTML = Object.keys(drivers).map(dId => `<div class="driver-status-pill"><span class="dot ${drivers[dId] === "Busy" ? 'dot-red' : 'dot-green'}"></span>${dId}</div>`).join('') || '<span class="text-[9px] text-slate-700 font-black uppercase tracking-widest">No Couriers Active</span>';
-            
             if (activeOrders.some(o => o.status === "New") && !alarmInterval) {
                 alarmInterval = setInterval(playBell, 5000);
             } else if (!activeOrders.some(o => o.status === "New")) {
@@ -109,7 +103,6 @@
             const icon = o.item.toLowerCase().includes('drink') ? '🍹' : '🍽️';
             const buttonLabel = o.status === "Preparing" ? "Ready for Pickup" : "Start Preparing";
             const nextStatus = o.status === "Preparing" ? "Ready" : "Preparing";
-            
             const html = `
                 <div id="card-${id}" data-time="${time}" class="order-card">
                     <div class="flex justify-between items-start mb-4">
