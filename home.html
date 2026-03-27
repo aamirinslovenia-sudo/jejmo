@@ -229,20 +229,25 @@
                 const text3 = document.getElementById('text-delivery');
 
                 dot1.classList.add('active');
-                if (["Preparing", "Ready", "On Way", "Completed"].includes(o.status)) {
-                    dot2.classList.add('active'); text2.classList.replace('text-slate-500', 'text-blue-500');
+                
+                // FIXED: Updated status logic to match Driver's "Delivering" state
+                if (["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) {
+                    dot2.classList.add('active'); 
+                    text2.classList.replace('text-slate-500', 'text-blue-500');
                 }
-                if (["On Way", "Completed"].includes(o.status)) {
-                    dot3.classList.add('active'); text3.classList.replace('text-slate-500', 'text-blue-500');
+                if (["Delivering", "Completed"].includes(o.status)) {
+                    dot3.classList.add('active'); 
+                    text3.classList.replace('text-slate-500', 'text-blue-500');
                 }
 
+                // TRIGGER EMAIL ON COMPLETION
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     fs.collection('mail').add({
                         to: o.email,
                         message: {
                             subject: 'JEJMO | Mission Accomplished! 🍔',
-                            html: `<div style="font-family: 'Outfit', sans-serif; background: #060a11; color: white; padding: 40px; border-radius: 20px; max-width: 500px; margin: auto; border: 1px solid #1e293b;"><h2 style="color: #3b82f6; font-style: italic; font-weight: 900; letter-spacing: -1px;">MISSION SUCCESS</h2><p>Hi ${o.customer}, your meal has been delivered!</p><hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;"><p style="font-size: 14px;"><b>Order:</b> ${o.item}</p><p style="font-size: 14px;"><b>Restaurant:</b> ${o.restaurant}</p><p style="font-size: 14px;"><b>Total Paid:</b> ${o.totalPrice}</p><br><p style="font-size: 10px; color: #64748b; text-transform: uppercase;">Thank you for choosing JEJMO Maribor.</p></div>`
+                            html: `<div style="font-family: sans-serif; background: #060a11; color: white; padding: 40px; border-radius: 20px; max-width: 500px; margin: auto; border: 1px solid #1e293b;"><h2 style="color: #3b82f6; font-style: italic; font-weight: 900; letter-spacing: -1px;">MISSION SUCCESS</h2><p>Hi ${o.customer}, your meal has been delivered!</p><hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;"><p style="font-size: 14px;"><b>Order:</b> ${o.item}</p><p style="font-size: 14px;"><b>Restaurant:</b> ${o.restaurant}</p><p style="font-size: 14px;"><b>Total Paid:</b> ${o.totalPrice}</p><br><p style="font-size: 10px; color: #64748b; text-transform: uppercase;">Thank you for choosing JEJMO Maribor.</p></div>`
                         }
                     }).then(() => {
                         document.getElementById('success-email-text').innerText = "Receipt sent to " + o.email;
