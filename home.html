@@ -213,7 +213,8 @@
             if (!selectedItemName) { alert("Select a dish first!"); return; }
             if (!selectedPayment) { alert("Please select Cash or Card!"); return; }
             
-            db.ref('orderCounter').transaction((currentValue) => {
+            // Use 'globalOrderCounter' for the risk-free database sequence
+            db.ref('globalOrderCounter').transaction((currentValue) => {
                 if (currentValue === null || currentValue >= 999) return 1;
                 return currentValue + 1;
             }, (error, committed, snapshot) => {
@@ -223,7 +224,7 @@
                     const orderId = db.ref('orders').push().key;
 
                     db.ref('orders/' + orderId).set({
-                        orderNumber: displayId, // Added this field so Kitchen/Driver app can see it
+                        orderNumber: displayId,
                         shortId: displayId,
                         customer: localStorage.getItem('kleo_name'),
                         email: localStorage.getItem('kleo_email'),
@@ -238,6 +239,8 @@
                     }).then(() => { 
                         startTracking(orderId); 
                     });
+                } else {
+                    alert("Order sequence failed. Please check your connection.");
                 }
             });
         }
