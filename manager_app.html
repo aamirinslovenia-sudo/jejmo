@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JEJMO | HQ COMMAND v2.7</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -160,7 +162,6 @@
         function renderUI() {
             const selector = document.getElementById('driver-selector');
             const chatBox = document.getElementById('chat-box');
-            // Filter for both "D-" and updated "DRV-" prefixes
             const openIds = Object.keys(cachedTickets).filter(id => (id.startsWith('D-') || id.startsWith('DRV-')) && cachedTickets[id].status === "Open");
             
             if (!selectedId && openIds.length > 0) selectedId = openIds[0];
