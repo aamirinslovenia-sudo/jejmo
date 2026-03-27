@@ -29,7 +29,10 @@
         .msg-admin { align-self: flex-start; background: rgba(255,255,255,0.1); padding: 12px 18px; border-radius: 20px 20px 20px 4px; font-size: 14px; max-width: 80%; margin-bottom: 10px; }
         .cash-alert { background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 20px; padding: 15px; margin-bottom: 20px; }
         input[type="checkbox"] { width: 18px; height: 18px; accent-color: #eab308; }
-        .logo-small { width: 50px; height: 50px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); object-fit: cover; }
+        
+        /* Perfect Logo Styling */
+        .logo-main { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); box-shadow: 0 0 30px rgba(168, 85, 247, 0.4); }
+        .logo-sidebar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(168, 85, 247, 0.3); }
     </style>
 </head>
 <body>
@@ -38,14 +41,14 @@
         <button onclick="toggleSidebar()" class="w-14 h-14 glass-panel flex items-center justify-center text-2xl active:scale-90 transition-all">≡</button>
         <div class="glass-panel px-5 py-3 flex items-center gap-3">
             <span id="conn-dot" class="w-2.5 h-2.5 rounded-full status-online"></span>
-            <span id="conn-text" class="text-[10px] font-black uppercase tracking-widest text-purple-400">Maribor Shift</span>
+            <span id="conn-text" class="text-[10px] font-black uppercase tracking-widest text-purple-400">Live Shift</span>
         </div>
     </div>
 
     <div id="stats-overlay">
         <div class="flex items-center gap-6 mb-10">
             <button onclick="closeStats()" class="text-2xl font-bold">←</button>
-            <h2 class="text-3xl font-black italic tracking-tighter text-white uppercase">JEJMO <span class="text-purple-500">STATS</span></h2>
+            <h2 class="text-3xl font-black italic tracking-tighter text-white uppercase"><span class="text-purple-500">STATS</span></h2>
         </div>
         <div class="flex justify-between glass-panel p-1 mb-10">
             <button onclick="filterStats('today')" id="tab-today" class="tab-btn active flex-1">Today</button>
@@ -59,41 +62,40 @@
         </div>
         <p id="stat-date-label" class="text-xs font-black text-purple-500 uppercase tracking-widest mb-6"></p>
         <div class="space-y-1">
-            <div class="stat-row"><span class="text-slate-400">Missions</span><span id="stat-count" class="font-bold">0</span></div>
-            <div class="stat-row"><span class="text-slate-400">Total Revenue</span><span id="stat-total" class="font-bold text-purple-400">€0.00</span></div>
+            <div class="stat-row"><span class="text-slate-400">Orders</span><span id="stat-count" class="font-bold">0</span></div>
+            <div class="stat-row"><span class="text-slate-400">Income</span><span id="stat-total" class="font-bold text-purple-400">€0.00</span></div>
             <div class="stat-row border-none"><span class="text-slate-400">Earnings</span><span id="stat-base" class="font-bold text-green-500">€0.00</span></div>
         </div>
     </div>
 
     <div id="history-sidebar">
         <div class="flex justify-between items-center mb-12">
-            <img src="logo.jpg" alt="JEJMO" class="logo-small">
+            <img src="logo.jpg" alt="Logo" class="logo-sidebar">
             <button onclick="toggleSidebar()" class="w-12 h-12 glass-panel flex items-center justify-center">✕</button>
         </div>
         <div class="space-y-4">
             <button onclick="openStats()" class="w-full flex items-center gap-5 p-6 glass-panel text-left active:scale-95 transition-all">
-                <span class="text-2xl">📊</span><div><p class="font-bold text-lg text-white">Income Tracker</p><p class="text-[10px] text-slate-500 uppercase">View History</p></div>
+                <span class="text-2xl">📊</span><div><p class="font-bold text-lg text-white">Your Stats</p><p class="text-[10px] text-slate-500 uppercase">Track Income</p></div>
             </button>
             <button onclick="openChat()" class="w-full flex items-center gap-5 p-6 glass-panel text-left active:scale-95 transition-all">
-                <span class="text-2xl">🎧</span><div><p class="font-bold text-lg text-white">Dispatcher</p><p class="text-[10px] text-slate-500 uppercase">Live Support</p></div>
+                <span class="text-2xl">🎧</span><div><p class="font-bold text-lg text-white">Support</p><p class="text-[10px] text-slate-500 uppercase">Live Help</p></div>
             </button>
         </div>
         <div class="mt-auto p-6 border-t border-white/10">
-            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Driver ID</p>
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Courier Identity</p>
             <p id="display-driver-id" class="text-sm font-mono text-purple-400">---</p>
         </div>
     </div>
 
     <div id="chat-overlay">
-        <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-black italic text-purple-500">DISPATCHER</h2><button onclick="closeChat()">✕</button></div>
+        <div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-black italic text-purple-500">SUPPORT</h2><button onclick="closeChat()">✕</button></div>
         <div id="chat-messages" class="flex-1 space-y-4 mb-6 overflow-y-auto flex flex-col scroll-hide"></div>
-        <div class="flex gap-3"><input type="text" id="chat-input" placeholder="Message HQ..." class="flex-1 glass-panel p-5 outline-none text-white"><button onclick="sendMessage()" class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center font-bold">➤</button></div>
+        <div class="flex gap-3"><input type="text" id="chat-input" placeholder="Type..." class="flex-1 glass-panel p-5 outline-none text-white"><button onclick="sendMessage()" class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center font-bold">➤</button></div>
     </div>
 
     <div id="boot-screen" class="fixed inset-0 z-[3000] bg-black flex flex-col items-center justify-center p-12 text-center">
-        <img src="logo.jpg" class="w-32 h-32 rounded-full mb-8 border-2 border-purple-500/20">
-        <div class="text-purple-500 font-black text-7xl tracking-tighter italic mb-10">JEJMO</div>
-        <button onclick="goOnline()" class="bg-purple-600 text-white w-full py-7 rounded-[35px] text-lg font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all">Go Online</button>
+        <img src="logo.jpg" alt="Logo" class="logo-main mb-12">
+        <button onclick="goOnline()" class="bg-purple-600 text-white w-full py-7 rounded-[35px] text-lg font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all">Start Shift</button>
     </div>
 
     <div id="order-sheet" class="bottom-sheet glass-panel sheet-minimized">
@@ -101,8 +103,8 @@
             <div id="waiting-ui" class="text-center py-6 relative flex flex-col items-center justify-center">
                 <div class="radar-ring"></div>
                 <div class="radar-ring" style="animation-delay: 1.5s"></div>
-                <h3 class="text-xl font-black uppercase italic tracking-tighter z-10 text-white">Searching...</h3>
-                <p class="text-slate-500 font-bold text-[10px] uppercase tracking-[0.3em] z-10 mt-1">Maribor Hub Active</p>
+                <h3 class="text-xl font-black uppercase italic tracking-tighter z-10 text-white">Ready for Orders</h3>
+                <p class="text-slate-500 font-bold text-[10px] uppercase tracking-[0.3em] z-10 mt-1">Scanning Maribor</p>
             </div>
             <div id="order-ui" class="hidden">
                 <div class="flex justify-between items-start mb-6">
@@ -115,7 +117,7 @@
                         <label class="flex items-center gap-4 cursor-pointer">
                             <input type="checkbox" id="cash-collected-check" onchange="toggleFinishButton()">
                             <div>
-                                <p class="text-[10px] font-black text-yellow-500 uppercase tracking-widest">Collect Cash Payment</p>
+                                <p class="text-[10px] font-black text-yellow-500 uppercase tracking-widest">Payment: CASH</p>
                                 <p class="text-sm font-bold text-white">Collect <span id="cash-amount" class="text-yellow-500">€0.00</span> from customer</p>
                             </div>
                         </label>
@@ -125,7 +127,7 @@
                 <div class="space-y-6 mb-10">
                     <div class="flex gap-4">
                         <div class="w-10 h-10 glass-panel flex items-center justify-center font-black text-white">A</div>
-                        <div><p class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Pick Up</p><h4 class="text-lg font-bold text-white" id="res-name">JEJMO Kitchen</h4></div>
+                        <div><p id="res-name" class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Kitchen</p><h4 class="text-lg font-bold text-white">Slovenska ulica 15</h4></div>
                     </div>
                     <div class="flex gap-4">
                         <div class="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center font-black text-white">B</div>
@@ -145,19 +147,17 @@
     </div>
 
     <script>
-        // JEJMO MARIBOR CONFIG
-        const firebaseConfig = {
-            apiKey: "AIza...",
-            authDomain: "jejmo-maribor.firebaseapp.com",
-            databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "jejmo-maribor",
-            storageBucket: "jejmo-maribor.appspot.com",
-            messagingSenderId: "...",
-            appId: "..."
+        const firebaseConfig = { 
+            apiKey: "AIza...", // REPLACE WITH YOUR REAL API KEY
+            authDomain: "jejmo-maribor.firebaseapp.com", 
+            databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", 
+            projectId: "jejmo-maribor", 
+            storageBucket: "jejmo-maribor.appspot.com", 
+            messagingSenderId: "...", 
+            appId: "..." 
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-
         let driverId = localStorage.getItem('jejmo_driver_id');
         if (!driverId) { driverId = "DRV-" + Math.floor(1000 + Math.random() * 9000); localStorage.setItem('jejmo_driver_id', driverId); }
         document.getElementById('display-driver-id').innerText = driverId;
@@ -177,12 +177,12 @@
         function openChat() { document.getElementById('chat-overlay').classList.add('chat-active'); toggleSidebar(); }
         function closeChat() { document.getElementById('chat-overlay').classList.remove('chat-active'); }
         function showCustomRange() { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById('tab-custom').classList.add('active'); document.getElementById('custom-picker').classList.remove('hidden'); }
-        function confirmDecline() { if(confirm("Skip mission?")) location.reload(); }
+        function confirmDecline() { if(confirm("Decline mission?")) location.reload(); }
 
         function updateStatDisplay(count, label) {
             document.getElementById('stat-count').innerText = count;
-            document.getElementById('stat-total').innerText = "€" + (count * 15).toFixed(2); // Estimated revenue
-            document.getElementById('stat-base').innerText = "€" + (count * 4).toFixed(2);  // Driver earnings
+            document.getElementById('stat-total').innerText = "€" + (count * 15).toFixed(2);
+            document.getElementById('stat-base').innerText = "€" + (count * 4).toFixed(2);
             document.getElementById('stat-date-label').innerText = label;
         }
 
@@ -192,7 +192,8 @@
             document.getElementById('tab-' + range).classList.add('active');
             const now = new Date(); let count = 0;
             allCompletedOrders.forEach(o => {
-                const oDate = new Date(o.completedAt || o.timestamp);
+                const timeVal = o.completedAt || o.timestamp;
+                const oDate = new Date(timeVal);
                 if (o.claimedBy === driverId) {
                     if(range === 'today' && oDate.toDateString() === now.toDateString()) count++;
                     else if(range === 'week' && (now - oDate) < 7 * 24 * 60 * 60 * 1000) count++;
@@ -247,12 +248,16 @@
             document.getElementById('order-sheet').classList.replace('sheet-minimized', 'sheet-expanded');
 
             const cashUI = document.getElementById('cash-collection-ui');
+            const actionBtn = document.getElementById('action-btn');
+            
             if (o.status === "On Way" && o.paymentType === "Cash") {
                 cashUI.classList.remove('hidden');
                 document.getElementById('cash-amount').innerText = o.totalPrice;
                 toggleFinishButton();
             } else {
                 cashUI.classList.add('hidden');
+                actionBtn.disabled = false;
+                actionBtn.style.opacity = "1";
             }
         }
 
@@ -260,8 +265,15 @@
             const check = document.getElementById('cash-collected-check');
             const btn = document.getElementById('action-btn');
             if (currentOrder && currentOrder.status === "On Way" && currentOrder.paymentType === "Cash") {
-                if (check.checked) { btn.disabled = false; btn.style.opacity = "1"; btn.innerText = "End Mission"; }
-                else { btn.disabled = true; btn.style.opacity = "0.3"; btn.innerText = "Collect Cash First"; }
+                if (check.checked) {
+                    btn.disabled = false;
+                    btn.style.opacity = "1";
+                    btn.innerText = "End Mission";
+                } else {
+                    btn.disabled = true;
+                    btn.style.opacity = "0.3";
+                    btn.innerText = "Collect Cash First";
+                }
             }
         }
 
@@ -269,7 +281,7 @@
             if (!currentOrder) return; 
             if (currentOrder.status === "New") {
                 db.ref('orders/' + currentOrder.id).update({ status: "On Way", claimedBy: driverId });
-                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentOrder.address)}`);
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(currentOrder.address)}`);
             } else {
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
             }
@@ -306,11 +318,14 @@
             [0, 0.15].forEach(delay => {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.type = 'sine'; osc.frequency.setValueAtTime(1200, t + delay);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1200, t + delay);
                 gain.gain.setValueAtTime(0.1, t + delay);
                 gain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.1);
-                osc.start(t + delay); osc.stop(t + delay + 0.1);
+                osc.start(t + delay);
+                osc.stop(t + delay + 0.1);
             });
         }
     </script>
