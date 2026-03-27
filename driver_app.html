@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #a855f7; --bg: #000000; }
@@ -30,7 +32,6 @@
         .cash-alert { background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 20px; padding: 15px; margin-bottom: 20px; }
         input[type="checkbox"] { width: 18px; height: 18px; accent-color: #eab308; }
         
-        /* Perfect Logo Styling */
         .logo-main { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); box-shadow: 0 0 30px rgba(168, 85, 247, 0.4); }
         .logo-sidebar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(168, 85, 247, 0.3); }
     </style>
@@ -148,16 +149,18 @@
 
     <script>
         const firebaseConfig = { 
-            apiKey: "AIza...", // REPLACE WITH YOUR REAL API KEY
-            authDomain: "jejmo-maribor.firebaseapp.com", 
-            databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", 
-            projectId: "jejmo-maribor", 
-            storageBucket: "jejmo-maribor.appspot.com", 
-            messagingSenderId: "...", 
-            appId: "..." 
+            apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", 
+            authDomain: "we-kleo.firebaseapp.com", 
+            databaseURL: "https://we-kleo-default-rtdb.europe-west1.firebasedatabase.app", 
+            projectId: "we-kleo", 
+            storageBucket: "we-kleo.firebasestorage.app", 
+            messagingSenderId: "87105321281", 
+            appId: "1:87105321281:web:ec83e4472e5756182749c0" 
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const fs = firebase.firestore(); // Initialize Firestore for Email Extension
+
         let driverId = localStorage.getItem('jejmo_driver_id');
         if (!driverId) { driverId = "DRV-" + Math.floor(1000 + Math.random() * 9000); localStorage.setItem('jejmo_driver_id', driverId); }
         document.getElementById('display-driver-id').innerText = driverId;
@@ -283,7 +286,31 @@
                 db.ref('orders/' + currentOrder.id).update({ status: "On Way", claimedBy: driverId });
                 window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(currentOrder.address)}`);
             } else {
-                db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
+                // MISSION COMPLETE - UPDATE DATABASE
+                db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()}).then(() => {
+                    // TRIGGER OFFICIAL RECEIPT VIA EMAIL EXTENSION
+                    if (currentOrder.email) {
+                        fs.collection('mail').add({
+                            to: currentOrder.email,
+                            message: {
+                                subject: 'JEJMO | Your Delivery Receipt 🍔',
+                                html: `
+                                    <div style="font-family: 'Outfit', sans-serif; background: #060a11; color: white; padding: 40px; border-radius: 20px; max-width: 500px; margin: auto; border: 1px solid #1e293b;">
+                                        <h2 style="color: #a855f7; font-style: italic; font-weight: 900; letter-spacing: -1px;">JEJMO RECEIPT</h2>
+                                        <p>Hi ${currentOrder.customer}, your order has been delivered!</p>
+                                        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+                                        <p style="font-size: 14px;"><b>Mission ID:</b> ${currentOrder.id}</p>
+                                        <p style="font-size: 14px;"><b>Item:</b> ${currentOrder.item}</p>
+                                        <p style="font-size: 14px;"><b>Paid via:</b> ${currentOrder.paymentType}</p>
+                                        <p style="font-size: 22px; color: #a855f7;"><b>Total: ${currentOrder.totalPrice}</b></p>
+                                        <br>
+                                        <p style="font-size: 10px; color: #64748b; text-transform: uppercase;">Sent by JEJMO Courier ${driverId}</p>
+                                    </div>
+                                `
+                            }
+                        });
+                    }
+                });
             }
         }
 
