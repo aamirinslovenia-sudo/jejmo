@@ -24,6 +24,7 @@
         .tracking-dot.active { background: #3b82f6; box-shadow: 0 0 20px #3b82f6; }
         .connector-line { position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.05); }
         #success-msg { position: fixed; inset: 0; background: #060a11; z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+        .cart-item-chip { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #60a5fa; margin-right: 5px; margin-bottom: 5px; display: inline-block; }
     </style>
 </head>
 <body class="pb-24">
@@ -62,16 +63,16 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
-                <div id="item-LuftBento" onclick="selectItem('Luft Bento Box', 19.90, 'item-LuftBento', 'LUFT')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-LuftBento" onclick="addToCart('Luft Bento Box', 19.90, 'item-LuftBento', 'LUFT')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🍱</span><p class="font-bold text-[11px] uppercase">Bento Box</p><p class="text-blue-400 font-black text-xs">€19.90</p>
                 </div>
-                <div id="item-LuftSteak" onclick="selectItem('Luft Strip Steak', 34.00, 'item-LuftSteak', 'LUFT')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-LuftSteak" onclick="addToCart('Luft Strip Steak', 34.00, 'item-LuftSteak', 'LUFT')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🥩</span><p class="font-bold text-[11px] uppercase">Strip Steak</p><p class="text-blue-400 font-black text-xs">€34.00</p>
                 </div>
-                <div id="item-PurpleRain" onclick="selectItem('Purple Rain Cocktail', 9.90, 'item-PurpleRain', 'LUFT')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-PurpleRain" onclick="addToCart('Purple Rain Cocktail', 9.90, 'item-PurpleRain', 'LUFT')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🍹</span><p class="font-bold text-[11px] uppercase">Purple Rain</p><p class="text-blue-400 font-black text-xs">€9.90</p>
                 </div>
-                <div id="item-WhiskeySour" onclick="selectItem('Whiskey Sour', 9.90, 'item-WhiskeySour', 'LUFT')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-WhiskeySour" onclick="addToCart('Whiskey Sour', 9.90, 'item-WhiskeySour', 'LUFT')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🥃</span><p class="font-bold text-[11px] uppercase">Whiskey Sour</p><p class="text-blue-400 font-black text-xs">€9.90</p>
                 </div>
             </div>
@@ -86,16 +87,16 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
-                <div id="item-AncoraPizza" onclick="selectItem('Pizza Ancora', 11.50, 'item-AncoraPizza', 'Ancora')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-AncoraPizza" onclick="addToCart('Pizza Ancora', 11.50, 'item-AncoraPizza', 'Ancora')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🍕</span><p class="font-bold text-[11px] uppercase">Pizza Ancora</p><p class="text-blue-400 font-black text-xs">€11.50</p>
                 </div>
-                <div id="item-AncoraPasta" onclick="selectItem('Seafood Pasta', 13.90, 'item-AncoraPasta', 'Ancora')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-AncoraPasta" onclick="addToCart('Seafood Pasta', 13.90, 'item-AncoraPasta', 'Ancora')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🍝</span><p class="font-bold text-[11px] uppercase">Seafood Pasta</p><p class="text-blue-400 font-black text-xs">€13.90</p>
                 </div>
-                <div id="item-AncoraSalad" onclick="selectItem('Greek Salad', 9.20, 'item-AncoraSalad', 'Ancora')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-AncoraSalad" onclick="addToCart('Greek Salad', 9.20, 'item-AncoraSalad', 'Ancora')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🥗</span><p class="font-bold text-[11px] uppercase">Greek Salad</p><p class="text-blue-400 font-black text-xs">€9.20</p>
                 </div>
-                <div id="item-AncoraCalamari" onclick="selectItem('Grilled Calamari', 16.50, 'item-AncoraCalamari', 'Ancora')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-AncoraCalamari" onclick="addToCart('Grilled Calamari', 16.50, 'item-AncoraCalamari', 'Ancora')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🦑</span><p class="font-bold text-[11px] uppercase">Grilled Calamari</p><p class="text-blue-400 font-black text-xs">€16.50</p>
                 </div>
             </div>
@@ -109,12 +110,17 @@
             </div>
         </div>
 
+        <div id="cart-summary" class="px-2 hidden">
+             <p class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Selected Items</p>
+             <div id="cart-items-container" class="flex flex-wrap"></div>
+        </div>
+
         <div class="pt-4">
             <div class="flex justify-between items-end mb-8 px-2">
                 <div><p class="text-[10px] font-black uppercase text-slate-500 mb-1">Total Mission Cost</p><h3 id="priceDisplay" class="text-5xl font-[900] italic tracking-tighter text-white">€0.00</h3></div>
                 <button onclick="resetUser()" class="text-[9px] font-bold text-slate-600 uppercase underline tracking-widest">Logout</button>
             </div>
-            <button id="orderBtn" onclick="sendOrder()" class="w-full bg-blue-600 text-white font-[900] py-7 rounded-[32px] text-xl shadow-2xl shadow-blue-900/40 active:scale-95 transition-all uppercase italic tracking-tighter">Initiate Order</button>
+            <button id="orderBtn" onclick="sendOrder()" class="w-full bg-blue-600 text-white font-[900] py-7 rounded-[32px] text-xl shadow-2xl shadow-blue-900/40 active:scale-95 transition-all uppercase italic tracking-tighter">Select Items</button>
         </div>
     </div>
 
@@ -165,7 +171,10 @@
         const db = firebase.database();
         const fs = firebase.firestore(); 
         
-        let selectedItemName = ""; let basePrice = 0; let selectedRestaurant = ""; let selectedPayment = ""; let emailSent = false;
+        let cart = [];
+        let selectedRestaurant = ""; 
+        let selectedPayment = ""; 
+        let emailSent = false;
 
         window.onload = function() {
             if (localStorage.getItem('kleo_name')) {
@@ -193,12 +202,50 @@
             }
         }
 
-        function selectItem(name, price, id, restaurant) {
-            selectedItemName = name; basePrice = price; selectedRestaurant = restaurant;
-            document.querySelectorAll('[id^="item-"]').forEach(el => el.classList.remove('active-item'));
+        // NEW: Add to Cart Logic
+        function addToCart(name, price, id, restaurant) {
+            // Restriction: Only one restaurant per mission
+            if (selectedRestaurant && selectedRestaurant !== restaurant) {
+                if(confirm("Ordering from " + restaurant + " will clear your items from " + selectedRestaurant + ". Continue?")) {
+                    cart = [];
+                    document.querySelectorAll('[id^="item-"]').forEach(el => el.classList.remove('active-item'));
+                } else {
+                    return;
+                }
+            }
+            
+            selectedRestaurant = restaurant;
+            const existingItem = cart.find(i => i.name === name);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name: name, price: price, quantity: 1 });
+            }
+
             document.getElementById(id).classList.add('active-item');
-            document.getElementById('priceDisplay').innerText = "€" + price.toFixed(2);
-            document.getElementById('orderBtn').innerText = "Order from " + restaurant;
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            let total = 0;
+            const container = document.getElementById('cart-items-container');
+            container.innerHTML = "";
+            
+            if(cart.length > 0) {
+                document.getElementById('cart-summary').classList.remove('hidden');
+                document.getElementById('orderBtn').innerText = "Initiate Mission";
+            }
+
+            cart.forEach(item => {
+                total += (item.price * item.quantity);
+                const chip = document.createElement('span');
+                chip.className = "cart-item-chip";
+                chip.innerText = `${item.quantity}x ${item.name}`;
+                container.appendChild(chip);
+            });
+
+            document.getElementById('priceDisplay').innerText = "€" + total.toFixed(2);
         }
 
         function setPayment(method) {
@@ -210,10 +257,9 @@
         }
 
         function sendOrder() {
-            if (!selectedItemName) { alert("Select a dish first!"); return; }
+            if (cart.length === 0) { alert("Add items to your cart first!"); return; }
             if (!selectedPayment) { alert("Please select Cash or Card!"); return; }
             
-            // Use 'globalOrderCounter' for the risk-free database sequence
             db.ref('globalOrderCounter').transaction((currentValue) => {
                 if (currentValue === null || currentValue >= 999) return 1;
                 return currentValue + 1;
@@ -223,6 +269,9 @@
                     const displayId = count.toString().padStart(3, '0');
                     const orderId = db.ref('orders').push().key;
 
+                    // Combine items for the ticket string
+                    const itemsString = cart.map(i => `${i.quantity}x ${i.name}`).join(", ");
+
                     db.ref('orders/' + orderId).set({
                         orderNumber: displayId,
                         shortId: displayId,
@@ -230,7 +279,8 @@
                         email: localStorage.getItem('kleo_email'),
                         address: localStorage.getItem('kleo_address'),
                         phone: localStorage.getItem('kleo_phone'),
-                        item: selectedItemName,
+                        item: itemsString, // This shows "3x Pizza, 1x Drink" in Kitchen app
+                        cartData: cart, // Full data for detailed analysis
                         restaurant: selectedRestaurant,
                         totalPrice: document.getElementById('priceDisplay').innerText,
                         paymentType: selectedPayment,
@@ -239,8 +289,6 @@
                     }).then(() => { 
                         startTracking(orderId); 
                     });
-                } else {
-                    alert("Order sequence failed. Please check your connection.");
                 }
             });
         }
@@ -268,58 +316,14 @@
 
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
-                    const logoUrl = "https://github.com/aamirinslovenia-sudo/jejmo/blob/main/logo.jpg?raw=true";
-
                     fs.collection('mail').add({
                         to: o.email,
                         from: 'info@jejmo.com',
                         message: {
                             subject: `JEJMO Receipt - Order #${o.orderNumber} ✨`,
-                            html: `
-                                <div style="font-family: 'Helvetica', Arial, sans-serif; background-color: #f4f4f4; padding: 40px 0;">
-                                    <div style="max-width: 500px; margin: auto; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #eee;">
-                                        <div style="background: #060a11; padding: 40px; text-align: center;">
-                                            <img src="${logoUrl}" alt="JEJMO" style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid #a855f7; object-fit: cover;">
-                                            <h1 style="color: white; margin-top: 20px; font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 0;">Order Delivered!</h1>
-                                            <p style="color: #a855f7; font-size: 14px; font-weight: bold; margin-top: 5px;">ORDER #${o.orderNumber}</p>
-                                        </div>
-
-                                        <div style="padding: 35px; color: #1a1a1a;">
-                                            <p style="font-size: 16px; margin-bottom: 20px;">Hi <strong>${o.customer}</strong>,</p>
-                                            <p style="color: #555; line-height: 1.6; margin-bottom: 25px;">Your order from <strong>${o.restaurant || 'Master Kitchen'}</strong> has been successfully delivered. We hope you enjoy your meal!</p>
-                                            
-                                            <div style="background: #fdfbff; padding: 25px; border-radius: 16px; border: 1px solid #f0e7ff; margin-bottom: 30px;">
-                                                <table style="width: 100%; border-collapse: collapse;">
-                                                    <tr>
-                                                        <td style="padding: 8px 0; color: #777; font-size: 14px;">Item Ordered:</td>
-                                                        <td style="padding: 8px 0; text-align: right; font-weight: 700; font-size: 14px;">${o.item}</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="padding: 8px 0; color: #777; font-size: 14px;">Amount Paid:</td>
-                                                        <td style="padding: 8px 0; text-align: right; font-weight: 900; font-size: 18px; color: #a855f7;">${o.totalPrice}</td>
-                                                    </tr>
-                                                    <tr style="border-top: 1px solid #f0e7ff;">
-                                                        <td style="padding: 15px 0 0 0; color: #777; font-size: 12px;">Delivered to:</td>
-                                                        <td style="padding: 15px 0 0 0; text-align: right; font-size: 12px; color: #555;">${o.address}</td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-
-                                            <div style="text-align: center;">
-                                                <p style="font-size: 13px; color: #999; margin-bottom: 5px;">Need help with your order?</p>
-                                                <a href="mailto:info@jejmo.com" style="display: inline-block; padding: 10px 20px; background: #f3f4f6; color: #060a11; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 12px;">Contact Support</a>
-                                            </div>
-                                        </div>
-
-                                        <div style="background: #fafafa; padding: 25px; text-align: center; border-top: 1px solid #eee;">
-                                            <p style="font-size: 10px; color: #ccc; text-transform: uppercase; letter-spacing: 3px; margin: 0;">JEJMO MARIBOR • 2026</p>
-                                        </div>
-                                    </div>
-                                    <p style="text-align: center; font-size: 10px; color: #aaa; margin-top: 20px;">This is an automated receipt for your records.</p>
-                                </div>`
+                            html: `<div style="padding:20px;"><h1>Order Delivered!</h1><p>Items: ${o.item}</p><p>Total: ${o.totalPrice}</p></div>`
                         }
                     }).then(() => {
-                        document.getElementById('success-email-text').innerText = "Receipt sent to " + o.email;
                         document.getElementById('success-msg').style.display = 'flex';
                     }).catch(() => { document.getElementById('success-msg').style.display = 'flex'; });
                 }
