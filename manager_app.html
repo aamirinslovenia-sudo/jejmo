@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JEJMO MARIBOR | HQ</title>
+    <title>JEJMO | HQ COMMAND v2.7</title>
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -17,12 +17,11 @@
         .scroll-hide::-webkit-scrollbar { display: none; }
         .logo-hq { height: 70px; width: 70px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); filter: drop-shadow(0 0 15px rgba(168,85,247,0.3)); }
         .driver-tab { padding: 12px 20px; border-radius: 14px; font-size: 11px; font-weight: 900; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #64748b; position: relative; }
-        .tab-active { background: var(--accent) !important; color: white !important; box-shadow: 0 0 15px rgba(168,85,247,0.3); }
-        .msg-bubble { max-width: 85%; padding: 12px; border-radius: 18px; font-size: 13px; margin-bottom: 8px; }
+        .tab-active { background: var(--accent) !important; color: white !important; border-color: var(--accent); box-shadow: 0 0 15px rgba(168,85,247,0.3); }
+        .msg-bubble { max-width: 85%; padding: 12px; border-radius: 18px; font-size: 13px; line-height: 1.4; margin-bottom: 8px; }
     </style>
 </head>
 <body class="p-8 flex gap-8">
-
     <div class="w-1/4 flex flex-col gap-6">
         <div class="flex items-center justify-center p-2 mb-2"><img src="logo.jpg" alt="Logo" class="logo-hq"></div>
         <div class="glass stat-card">
@@ -35,9 +34,8 @@
             <div id="driver-list" class="space-y-4 overflow-y-auto scroll-hide"></div>
         </div>
     </div>
-
     <div class="flex-1 glass rounded-[32px] p-8 flex flex-col">
-        <h3 class="text-xl font-black italic uppercase mb-8 tracking-tight">Maribor Mission Control</h3>
+        <h3 class="text-xl font-black italic uppercase mb-8 tracking-tight">Real-Time Mission Control</h3>
         <div class="overflow-y-auto scroll-hide flex-1">
             <table class="w-full text-left">
                 <thead>
@@ -54,41 +52,35 @@
             </table>
         </div>
     </div>
-
     <div class="w-1/4 glass rounded-[32px] p-6 flex flex-col">
         <h3 class="text-xs font-black uppercase text-purple-500 mb-4 tracking-widest">Dispatcher Hub</h3>
         <div id="driver-selector" class="flex gap-2 overflow-x-auto pb-4 mb-4 border-b border-white/10 scroll-hide"></div>
         <div id="chat-box" class="flex-1 overflow-y-auto scroll-hide mb-4 space-y-2 flex flex-col"></div>
         <div class="flex gap-2 bg-white/5 p-2 rounded-2xl border border-white/10">
-            <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendAdminMsg()" class="flex-1 bg-transparent p-2 text-sm outline-none text-white" placeholder="Reply...">
+            <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendAdminMsg()" class="flex-1 bg-transparent p-2 text-sm outline-none text-white" placeholder="Enter reply...">
             <button onclick="sendAdminMsg()" class="bg-purple-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold">➤</button>
         </div>
     </div>
 
     <script>
-        // PASTE YOUR NEW CONFIG HERE
         const firebaseConfig = {
-            apiKey: "AIza...", // Use your real key here
+            apiKey: "AIza...",
             authDomain: "jejmo-maribor.firebaseapp.com",
             databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "jejmo-maribor",
             storageBucket: "jejmo-maribor.appspot.com",
-            messagingSenderId: "...", 
+            messagingSenderId: "...",
             appId: "..."
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        
         let selectedId = null; let cachedTickets = {}; let lastSeenCount = {};
 
-        // DATABASE LISTENERS
         db.ref('orders').on('value', snap => {
             const list = document.getElementById('master-order-list');
             const driverDiv = document.getElementById('driver-list');
             list.innerHTML = "";
             let revenue = 0; let orders = 0; let drivers = {};
-            
             snap.forEach(child => {
                 const o = child.val();
                 if(o.status === "Completed") revenue += parseFloat(o.totalPrice.replace('€','')) || 0;
@@ -99,7 +91,7 @@
             });
             document.getElementById('total-revenue').innerText = "€" + revenue.toFixed(2);
             document.getElementById('order-count').innerText = orders + " Total Orders";
-            driverDiv.innerHTML = Object.keys(drivers).map(dId => `<div class="flex justify-between items-center p-3 glass rounded-xl border-l-2 border-purple-500"><div><p class="text-[9px] font-black text-purple-400 font-mono">${dId}</p><p class="text-[10px] font-bold">Active</p></div><div class="text-right"><p class="text-lg font-black text-white">${drivers[dId]}</p></div></div>`).join('');
+            driverDiv.innerHTML = Object.keys(drivers).map(dId => `<div class="flex justify-between items-center p-3 glass rounded-xl border-l-2 border-purple-500"><div><p class="text-[9px] font-black text-purple-400 font-mono">${dId}</p><p class="text-[10px] font-bold">Courier Active</p></div><div class="text-right"><p class="text-lg font-black text-white">${drivers[dId]}</p></div></div>`).join('');
         });
 
         db.ref('support_tickets').on('value', snap => { cachedTickets = snap.val() || {}; renderUI(); });
@@ -109,17 +101,13 @@
             const chatBox = document.getElementById('chat-box');
             const openIds = Object.keys(cachedTickets).filter(id => (id.startsWith('DRV-')) && cachedTickets[id].status === "Open");
             if (!selectedId && openIds.length > 0) selectedId = openIds[0];
-            selector.innerHTML = openIds.map(id => {
-                const isUnread = (id !== selectedId) && (Object.keys(cachedTickets[id].chat || {}).length > (lastSeenCount[id] || 0));
-                return `<button onclick="selectDriver('${id}')" class="driver-tab ${selectedId === id ? 'tab-active' : ''}">${id}</button>`;
-            }).join('');
+            selector.innerHTML = openIds.map(id => `<button onclick="selectDriver('${id}')" class="driver-tab ${selectedId === id ? 'tab-active' : ''}">${id}</button>`).join('');
             if(selectedId && cachedTickets[selectedId]) {
                 const t = cachedTickets[selectedId];
                 chatBox.innerHTML = Object.values(t.chat || {}).map(m => `<div class="flex ${m.sender === 'Admin' ? 'justify-end' : 'justify-start'}"><div class="msg-bubble ${m.sender === 'Admin' ? 'bg-purple-600' : 'bg-white/10'}"><p class="text-[8px] uppercase opacity-50">${m.sender}</p>${m.text}</div></div>`).join('');
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
         }
-
         function selectDriver(id) { selectedId = id; renderUI(); }
         function sendAdminMsg() {
             const input = document.getElementById('chat-input');
