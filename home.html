@@ -151,7 +151,7 @@
     </div>
 
     <script>
-        // UPDATED CONFIG FOR JEJMO-MARIBOR
+        // CONFIG FOR JEJMO-MARIBOR
         const firebaseConfig = { 
             apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", 
             authDomain: "jejmo-maribor.firebaseapp.com", 
@@ -213,19 +213,43 @@
         function sendOrder() {
             if (!selectedItemName) { alert("Select a dish first!"); return; }
             if (!selectedPayment) { alert("Please select Cash or Card!"); return; }
+            
+            const name = localStorage.getItem('kleo_name');
+            const email = localStorage.getItem('kleo_email');
+            const addr = localStorage.getItem('kleo_address');
+            const phone = localStorage.getItem('kleo_phone');
+            const price = document.getElementById('priceDisplay').innerText;
             const orderId = db.ref('orders').push().key;
+
+            // 1. SAVE ORDER DATA
             db.ref('orders/' + orderId).set({
-                customer: localStorage.getItem('kleo_name'),
-                email: localStorage.getItem('kleo_email'),
-                address: localStorage.getItem('kleo_address'),
-                phone: localStorage.getItem('kleo_phone'),
+                customer: name,
+                email: email,
+                address: addr,
+                phone: phone,
                 item: selectedItemName,
                 restaurant: selectedRestaurant,
-                totalPrice: document.getElementById('priceDisplay').innerText,
+                totalPrice: price,
                 paymentType: selectedPayment,
                 timestamp: Date.now(),
                 status: 'New'
-            }).then(() => { startTracking(orderId); });
+            }).then(() => {
+                // 2. TRIGGER KITCHEN ALERT EMAIL (Firestore Trigger)
+                fs.collection('mail').add({
+                    to: 'YOUR_PRIVATE_EMAIL_HERE', // Change this to your private email!
+                    message: {
+                        subject: '🚨 NEW ORDER: ' + selectedRestaurant,
+                        html: `<h2>New Order Alert!</h2>
+                               <p><b>Customer:</b> ${name}</p>
+                               <p><b>Item:</b> ${selectedItemName}</p>
+                               <p><b>Total:</b> ${price}</p>
+                               <p><b>Payment:</b> ${selectedPayment}</p>
+                               <p><b>Address:</b> ${addr}</p>`
+                    }
+                });
+
+                startTracking(orderId); 
+            });
         }
 
         function startTracking(orderId) {
