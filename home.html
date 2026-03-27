@@ -151,7 +151,6 @@
     </div>
 
     <script>
-        // CONFIG FOR JEJMO-MARIBOR
         const firebaseConfig = { 
             apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", 
             authDomain: "jejmo-maribor.firebaseapp.com", 
@@ -214,42 +213,19 @@
             if (!selectedItemName) { alert("Select a dish first!"); return; }
             if (!selectedPayment) { alert("Please select Cash or Card!"); return; }
             
-            const name = localStorage.getItem('kleo_name');
-            const email = localStorage.getItem('kleo_email');
-            const addr = localStorage.getItem('kleo_address');
-            const phone = localStorage.getItem('kleo_phone');
-            const price = document.getElementById('priceDisplay').innerText;
             const orderId = db.ref('orders').push().key;
-
-            // 1. SAVE ORDER DATA
             db.ref('orders/' + orderId).set({
-                customer: name,
-                email: email,
-                address: addr,
-                phone: phone,
+                customer: localStorage.getItem('kleo_name'),
+                email: localStorage.getItem('kleo_email'),
+                address: localStorage.getItem('kleo_address'),
+                phone: localStorage.getItem('kleo_phone'),
                 item: selectedItemName,
                 restaurant: selectedRestaurant,
-                totalPrice: price,
+                totalPrice: document.getElementById('priceDisplay').innerText,
                 paymentType: selectedPayment,
                 timestamp: Date.now(),
                 status: 'New'
-            }).then(() => {
-                // 2. TRIGGER KITCHEN ALERT EMAIL (Firestore Trigger)
-                fs.collection('mail').add({
-                    to: 'YOUR_PRIVATE_EMAIL_HERE', // Change this to your private email!
-                    message: {
-                        subject: '🚨 NEW ORDER: ' + selectedRestaurant,
-                        html: `<h2>New Order Alert!</h2>
-                               <p><b>Customer:</b> ${name}</p>
-                               <p><b>Item:</b> ${selectedItemName}</p>
-                               <p><b>Total:</b> ${price}</p>
-                               <p><b>Payment:</b> ${selectedPayment}</p>
-                               <p><b>Address:</b> ${addr}</p>`
-                    }
-                });
-
-                startTracking(orderId); 
-            });
+            }).then(() => { startTracking(orderId); });
         }
 
         function startTracking(orderId) {
@@ -273,13 +249,28 @@
                     text3.classList.replace('text-slate-500', 'text-blue-500');
                 }
 
+                // --- RECEIPT TRIGGER ON COMPLETION ---
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     fs.collection('mail').add({
                         to: o.email,
+                        from: 'info@jejmo.com', // Official Email
                         message: {
                             subject: 'JEJMO | Mission Accomplished! 🍔',
-                            html: `<div style="font-family: sans-serif; background: #060a11; color: white; padding: 40px; border-radius: 20px; max-width: 500px; margin: auto; border: 1px solid #1e293b;"><h2 style="color: #3b82f6; font-style: italic; font-weight: 900; letter-spacing: -1px;">MISSION SUCCESS</h2><p>Hi ${o.customer}, your meal has been delivered!</p><hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;"><p style="font-size: 14px;"><b>Order:</b> ${o.item}</p><p style="font-size: 14px;"><b>Restaurant:</b> ${o.restaurant}</p><p style="font-size: 14px;"><b>Total Paid:</b> ${o.totalPrice}</p><br><p style="font-size: 10px; color: #64748b; text-transform: uppercase;">Thank you for choosing JEJMO Maribor.</p></div>`
+                            html: `
+                                <div style="font-family: 'Outfit', sans-serif; background: #060a11; color: white; padding: 40px; border-radius: 20px; max-width: 500px; margin: auto; border: 1px solid #1e293b; text-align: center;">
+                                    <h2 style="color: #3b82f6; font-style: italic; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px;">MISSION SUCCESS</h2>
+                                    <p style="color: #94a3b8; font-weight: bold;">Hi ${o.customer}, your meal has been delivered!</p>
+                                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 25px 0;">
+                                    <div style="text-align: left; padding: 0 10px;">
+                                        <p style="font-size: 14px; margin: 5px 0;"><b>Order:</b> <span style="color: #3b82f6;">${o.item}</span></p>
+                                        <p style="font-size: 14px; margin: 5px 0;"><b>Restaurant:</b> ${o.restaurant}</p>
+                                        <p style="font-size: 14px; margin: 5px 0;"><b>Total Paid:</b> ${o.totalPrice}</p>
+                                        <p style="font-size: 14px; margin: 5px 0;"><b>Delivery Address:</b> ${o.address}</p>
+                                    </div>
+                                    <br>
+                                    <p style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 2px;">Thank you for choosing JEJMO Maribor.</p>
+                                </div>`
                         }
                     }).then(() => {
                         document.getElementById('success-email-text').innerText = "Receipt sent to " + o.email;
