@@ -12,7 +12,6 @@
         :root { --accent: #a855f7; --bg: #060a11; }
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Outfit', sans-serif; background: var(--bg); color: white; -webkit-tap-highlight-color: transparent; }
         
-        /* Branding Elements */
         .logo-glow { 
             position: absolute; width: 150px; height: 150px; 
             background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%); 
@@ -108,7 +107,7 @@
 
             <div id="order-ui" class="hidden">
                 <div class="flex justify-between items-start mb-6">
-                    <div><p class="text-purple-500 font-black text-[10px] uppercase tracking-widest mb-1">Earning</p><div id="display-price" class="text-6xl font-black tracking-tighter text-white">€4.00</div></div>
+                    <div><p class="text-purple-500 font-black text-[10px] uppercase tracking-widest mb-1">Earning</p><div id="display-price" class="text-6xl font-black tracking-tighter text-white">€0.00</div></div>
                     <button onclick="confirmDecline()" class="bg-red-500/20 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase">Skip</button>
                 </div>
 
@@ -125,7 +124,7 @@
                 <div class="space-y-6 mb-10">
                     <div class="flex gap-4">
                         <div class="w-10 h-10 glass-panel flex items-center justify-center font-black text-purple-500">A</div>
-                        <div><p id="res-name" class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Pickup</p><h4 class="text-lg font-bold text-white">Master Kitchen</h4></div>
+                        <div><p id="res-name" class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Pickup</p><h4 id="display-res-name" class="text-lg font-bold text-white">---</h4></div>
                     </div>
                     <div class="flex gap-4">
                         <div class="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center font-black text-white">B</div>
@@ -182,15 +181,13 @@
             let activeTask = null; let availableOrder = null; allCompletedOrders = [];
             snap.forEach(c => {
                 const o = c.val(); o.id = c.key;
-                // DRIVER LOGIC: Stay on 'Delivering' if it's already yours
                 if (o.status === "Delivering" && o.claimedBy === driverId) activeTask = o;
-                // STRICT UPDATE: Only show available orders IF kitchen set them to 'Ready'
                 if (o.status === "Ready" && !o.claimedBy) availableOrder = o;
                 if (o.status === "Completed") allCompletedOrders.push(o);
             });
 
             if (activeTask) {
-                currentOrder = activeTask; renderUI(activeTask, "Complete Mission");
+                currentOrder = activeTask; renderUI(activeTask, "End Mission");
                 clearInterval(alertInterval); alertInterval = null;
             } else if (availableOrder) {
                 currentOrder = availableOrder; renderUI(availableOrder, "Accept Mission");
@@ -207,7 +204,8 @@
             document.getElementById('c-name').innerText = o.customer;
             document.getElementById('c-addr').innerText = o.address;
             document.getElementById('c-phone').href = "tel:" + o.phone;
-            document.getElementById('display-price').innerText = o.totalPrice; // Added back price display from your HTML
+            document.getElementById('display-price').innerText = o.totalPrice;
+            document.getElementById('display-res-name').innerText = o.restaurant || "Master Kitchen";
             document.getElementById('action-btn').innerText = btnText;
             document.getElementById('order-ui').classList.remove('hidden');
             document.getElementById('waiting-ui').classList.add('hidden');
@@ -240,9 +238,8 @@
         function processOrder() { 
             if (!currentOrder) return; 
             if (currentOrder.status === "Ready") {
-                // Handshake: Kitchen says 'Ready' -> Driver says 'Delivering'
                 db.ref('orders/' + currentOrder.id).update({ status: "Delivering", claimedBy: driverId });
-                window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(currentOrder.address)}`);
+                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentOrder.address)}`);
             } else {
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
             }
