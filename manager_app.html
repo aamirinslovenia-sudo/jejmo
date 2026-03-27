@@ -18,7 +18,7 @@
         .msg-bubble { max-width: 85%; padding: 12px; border-radius: 18px; font-size: 13px; line-height: 1.4; margin-bottom: 8px; }
         
         /* Logo Styling */
-        .logo-manager { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #a855f7; object-fit: cover; }
+        .logo-manager { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #a855f7; object-fit: cover; }
 
         .driver-tab { 
             padding: 12px 20px; 
@@ -54,11 +54,8 @@
 <body class="p-8 flex gap-8">
 
     <div class="w-1/4 flex flex-col gap-6">
-        <div class="flex items-center gap-4">
+        <div class="flex items-center">
             <img src="logo.jpg" class="logo-manager">
-            <h1 class="text-3xl font-black italic tracking-tighter uppercase leading-none">
-                <span class="text-purple-500">HQ</span> COMMAND
-            </h1>
         </div>
 
         <div class="glass stat-card">
@@ -107,13 +104,13 @@
 
     <script>
         const firebaseConfig = { 
-            apiKey: "AIza...", 
+            apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", 
             authDomain: "jejmo-maribor.firebaseapp.com", 
             databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", 
             projectId: "jejmo-maribor", 
             storageBucket: "jejmo-maribor.appspot.com", 
-            messagingSenderId: "...", 
-            appId: "..." 
+            messagingSenderId: "87105321281", 
+            appId: "1:87105321281:web:ec83e4472e5756182749c0" 
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
