@@ -249,7 +249,6 @@
                 chip.className = "cart-item-chip cursor-pointer";
                 chip.innerHTML = `${item.quantity}x ${item.name} <span class="ml-1 opacity-40 text-[8px]">✕</span>`;
                 
-                // CLICK TO REMOVE LOGIC
                 chip.onclick = () => {
                     document.getElementById(item.elementId).classList.remove('active-item');
                     cart.splice(index, 1);
@@ -327,12 +326,32 @@
 
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
+                    
+                    // RESTORED PREMIUM EMAIL TEMPLATE
+                    const receiptHtml = `
+                        <div style="background-color: #060a11; color: white; padding: 40px; font-family: 'Outfit', sans-serif; text-align: center; border-radius: 20px;">
+                            <img src="https://i.ibb.co/3ykS5sN/logo.jpg" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); margin-bottom: 20px;">
+                            <h2 style="font-style: italic; font-weight: 900; letter-spacing: -1px; font-size: 28px; margin-bottom: 5px;">MISSION SUCCESS</h2>
+                            <p style="color: #64748b; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Order #${o.orderNumber}</p>
+                            <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0;">
+                            <div style="text-align: left; padding: 0 20px;">
+                                <p style="color: #60a5fa; font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px;">Items Delivered:</p>
+                                <p style="font-size: 16px; font-weight: 600;">${o.item}</p>
+                                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; margin-top: 20px;">
+                                    <p style="margin: 0; color: #64748b; font-size: 10px; text-transform: uppercase;">Total Paid via ${o.paymentType}</p>
+                                    <p style="margin: 5px 0 0 0; font-size: 32px; font-weight: 900; color: white;">${o.totalPrice}</p>
+                                </div>
+                            </div>
+                            <p style="margin-top: 40px; color: #64748b; font-size: 11px;">Thank you for choosing JEJMO Maribor.</p>
+                        </div>
+                    `;
+
                     fs.collection('mail').add({
                         to: o.email,
                         from: 'info@jejmo.com',
                         message: {
                             subject: `JEJMO Receipt - Order #${o.orderNumber} ✨`,
-                            html: `<div style="padding:20px;"><h1>Order Delivered!</h1><p>Items: ${o.item}</p><p>Total: ${o.totalPrice}</p></div>`
+                            html: receiptHtml
                         }
                     }).then(() => {
                         document.getElementById('success-msg').style.display = 'flex';
