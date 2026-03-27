@@ -207,7 +207,7 @@
             document.getElementById('c-phone').href = "tel:" + o.phone;
             document.getElementById('display-price').innerText = o.totalPrice;
             document.getElementById('display-res-name').innerText = o.restaurant || "Master Kitchen";
-            document.getElementById('display-order-number').innerText = o.orderNumber ? "#" + o.orderNumber : "#" + o.id.substring(0,6);
+            document.getElementById('display-order-number').innerText = o.orderNumber ? "#" + o.orderNumber : "#" + o.id.substring(0,5).toUpperCase();
             document.getElementById('action-btn').innerText = btnText;
             document.getElementById('order-ui').classList.remove('hidden');
             document.getElementById('waiting-ui').classList.add('hidden');
@@ -241,7 +241,7 @@
             if (!currentOrder) return; 
             if (currentOrder.status === "Ready") {
                 db.ref('orders/' + currentOrder.id).update({ status: "Delivering", claimedBy: driverId });
-                window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(currentOrder.address)}`);
+                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentOrder.address)}`);
             } else {
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
             }
