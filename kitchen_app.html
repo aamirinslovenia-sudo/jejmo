@@ -67,19 +67,33 @@
 
             snap.forEach((child) => {
                 const o = child.val(); o.id = child.key;
-                if(o.claimedBy) drivers[o.claimedBy] = (o.status === "On Way") ? "Busy" : "Waiting";
                 
-                // Only New or Preparing stays in Kitchen View
-                if (o.status === "New" || o.status === "Preparing") { activeOrders.push(o); } 
-                else { renderHistory(o.id, o); if(o.completedAt && o.timestamp) prepTimes.push((o.completedAt - o.timestamp) / 60000); }
+                // Track driver activity based on current mission status
+                if(o.claimedBy) {
+                    drivers[o.claimedBy] = (o.status === "Delivering") ? "Busy" : "Waiting";
+                }
+                
+                // Only New or Preparing orders stay in the active Grid
+                if (o.status === "New" || o.status === "Preparing") { 
+                    activeOrders.push(o); 
+                } else { 
+                    renderHistory(o.id, o); 
+                    if(o.kitchenFinishedAt && o.timestamp) prepTimes.push((o.kitchenFinishedAt - o.timestamp) / 60000); 
+                }
             });
 
             activeOrders.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
             activeOrders.forEach(order => renderOrder(order.id, order));
-            if(prepTimes.length > 0) document.getElementById('avg-prep').innerText = (prepTimes.reduce((a,b) => a+b, 0) / prepTimes.length).toFixed(1) + "m";
-            driverBox.innerHTML = Object.keys(drivers).map(dId => `<div class="driver-status-pill"><span class="dot ${drivers[dId] === "Busy" ? 'dot-red' : 'dot-green'}"></span>${dId}</div>`).join('') || '<span class="text-[9px] text-slate-700 font-black uppercase tracking-widest">No Couriers</span>';
-            if (activeOrders.length > 0 && !alarmInterval) alarmInterval = setInterval(playBell, 5000);
-            if (activeOrders.length === 0) { clearInterval(alarmInterval); alarmInterval = null; }
+            
+            if(prepTimes.length > 0) document.getElementById('avg-prep').innerText = Math.round(prepTimes.reduce((a,b) => a+b, 0) / prepTimes.length) + "m";
+            
+            driverBox.innerHTML = Object.keys(drivers).map(dId => `<div class="driver-status-pill"><span class="dot ${drivers[dId] === "Busy" ? 'dot-red' : 'dot-green'}"></span>${dId}</div>`).join('') || '<span class="text-[9px] text-slate-700 font-black uppercase tracking-widest">No Couriers Active</span>';
+            
+            if (activeOrders.some(o => o.status === "New") && !alarmInterval) {
+                alarmInterval = setInterval(playBell, 5000);
+            } else if (!activeOrders.some(o => o.status === "New")) {
+                clearInterval(alarmInterval); alarmInterval = null;
+            }
         });
 
         function renderOrder(id, o) {
@@ -87,7 +101,31 @@
             const icon = o.item.toLowerCase().includes('drink') ? '🍹' : '🍽️';
             const buttonLabel = o.status === "Preparing" ? "Ready for Pickup" : "Start Preparing";
             const nextStatus = o.status === "Preparing" ? "Ready" : "Preparing";
-            const html = `<div id="card-${id}" data-time="${time}" class="order-card"><div class="flex justify-between items-start mb-4"><span class="text-[10px] font-black text-purple-500 uppercase tracking-widest">${o.restaurant}</span><span class="text-xl font-black italic">${o.totalPrice}</span></div><h2 class="text-3xl font-black uppercase italic tracking-tighter mb-4 leading-none"> <span class="mr-3">${icon}</span> ${o.item}</h2><div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-4 flex-1"><p class="text-[8px] font-black text-slate-600 uppercase mb-1">Customer Note</p><p class="text-sm italic text-slate-300 leading-tight">Standard Delivery</p></div><div class="flex justify-between items-end mb-4"><div><p class="text-[8px] font-black text-slate-600 uppercase mb-1">Prep Clock</p><p id="timer-${id}" class="text-3xl font-black tabular-nums">00:00</p></div><div class="text-right"><p class="text-xs font-bold uppercase text-purple-400 mb-1 leading-none">${o.customer}</p></div></div><button onclick="setStatus('${id}', '${nextStatus}')" class="btn-dispatch">${buttonLabel}</button></div>`;
+            
+            const html = `
+                <div id="card-${id}" data-time="${time}" class="order-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[10px] font-black text-purple-500 uppercase tracking-widest">${o.restaurant || 'KLEO'}</span>
+                        <span class="text-xl font-black italic">${o.totalPrice}</span>
+                    </div>
+                    <h2 class="text-3xl font-black uppercase italic tracking-tighter mb-4 leading-none">
+                        <span class="mr-3">${icon}</span> ${o.item}
+                    </h2>
+                    <div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-4 flex-1">
+                        <p class="text-[8px] font-black text-slate-600 uppercase mb-1">Customer Note</p>
+                        <p class="text-sm italic text-slate-300 leading-tight">Standard Priority</p>
+                    </div>
+                    <div class="flex justify-between items-end mb-4">
+                        <div>
+                            <p class="text-[8px] font-black text-slate-600 uppercase mb-1">Kitchen Timer</p>
+                            <p id="timer-${id}" class="text-3xl font-black tabular-nums">00:00</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs font-bold uppercase text-purple-400 mb-1 leading-none">${o.customer}</p>
+                        </div>
+                    </div>
+                    <button onclick="setStatus('${id}', '${nextStatus}')" class="btn-dispatch">${buttonLabel}</button>
+                </div>`;
             document.getElementById('orderList').insertAdjacentHTML('beforeend', html);
         }
 
@@ -97,8 +135,28 @@
             db.ref('orders/' + id).update(updates); 
         }
 
-        function updateTimers() { document.querySelectorAll('[id^="card-"]').forEach(card => { const id = card.id.replace('card-', ''); const elapsed = Math.floor((Date.now() - parseInt(card.getAttribute('data-time'))) / 1000); const timerEl = document.getElementById(`timer-${id}`); if(timerEl) timerEl.innerText = `${Math.floor(elapsed / 60).toString().padStart(2, '0')}:${(elapsed % 60).toString().padStart(2, '0')}`; if (elapsed > 1200) card.className = "order-card card-urgent"; else if (elapsed > 600) card.className = "order-card card-warning"; }); }
-        function renderHistory(id, o) { const html = `<div class="bg-white/5 p-6 rounded-3xl border border-white/5 mb-4"><div class="flex justify-between"><p class="font-black italic uppercase text-white text-lg">${o.item}</p><p class="text-purple-400 font-bold">${o.totalPrice}</p></div><p class="text-[10px] text-slate-500 font-bold uppercase mt-1">${o.customer} • ${o.status}</p></div>`; document.getElementById('historyList').insertAdjacentHTML('afterbegin', html); }
+        function updateTimers() { 
+            document.querySelectorAll('[id^="card-"]').forEach(card => { 
+                const id = card.id.replace('card-', ''); 
+                const elapsed = Math.floor((Date.now() - parseInt(card.getAttribute('data-time'))) / 1000); 
+                const timerEl = document.getElementById(`timer-${id}`); 
+                if(timerEl) timerEl.innerText = `${Math.floor(elapsed / 60).toString().padStart(2, '0')}:${(elapsed % 60).toString().padStart(2, '0')}`; 
+                if (elapsed > 1200) card.className = "order-card card-urgent"; 
+                else if (elapsed > 600) card.className = "order-card card-warning"; 
+            }); 
+        }
+
+        function renderHistory(id, o) { 
+            const html = `
+                <div class="bg-white/5 p-6 rounded-3xl border border-white/5 mb-4">
+                    <div class="flex justify-between">
+                        <p class="font-black italic uppercase text-white text-lg">${o.item}</p>
+                        <p class="text-purple-400 font-bold">${o.totalPrice}</p>
+                    </div>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase mt-1">${o.customer} • ${o.status}</p>
+                </div>`; 
+            document.getElementById('historyList').insertAdjacentHTML('afterbegin', html); 
+        }
     </script>
 </body>
 </html>
