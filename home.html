@@ -249,27 +249,59 @@
                     text3.classList.replace('text-slate-500', 'text-blue-500');
                 }
 
-                // --- RECEIPT TRIGGER ON COMPLETION ---
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
+                    
+                    // BRANDED RECEIPT WITH GITHUB LOGO
+                    const logoUrl = "https://github.com/aamirinslovenia-sudo/jejmo/blob/main/logo.jpg?raw=true";
+
                     fs.collection('mail').add({
                         to: o.email,
-                        from: 'info@jejmo.com', // Official Email
+                        from: 'info@jejmo.com',
                         message: {
-                            subject: 'JEJMO | Mission Accomplished! 🍔',
+                            subject: `Receipt for Order #${orderId.substring(0,5)} - JEJMO`,
                             html: `
-                                <div style="font-family: 'Outfit', sans-serif; background: #060a11; color: white; padding: 40px; border-radius: 20px; max-width: 500px; margin: auto; border: 1px solid #1e293b; text-align: center;">
-                                    <h2 style="color: #3b82f6; font-style: italic; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px;">MISSION SUCCESS</h2>
-                                    <p style="color: #94a3b8; font-weight: bold;">Hi ${o.customer}, your meal has been delivered!</p>
-                                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 25px 0;">
-                                    <div style="text-align: left; padding: 0 10px;">
-                                        <p style="font-size: 14px; margin: 5px 0;"><b>Order:</b> <span style="color: #3b82f6;">${o.item}</span></p>
-                                        <p style="font-size: 14px; margin: 5px 0;"><b>Restaurant:</b> ${o.restaurant}</p>
-                                        <p style="font-size: 14px; margin: 5px 0;"><b>Total Paid:</b> ${o.totalPrice}</p>
-                                        <p style="font-size: 14px; margin: 5px 0;"><b>Delivery Address:</b> ${o.address}</p>
+                                <div style="font-family: 'Helvetica', Arial, sans-serif; background-color: #f4f4f4; padding: 40px 0;">
+                                    <div style="max-width: 500px; margin: auto; background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #eee;">
+                                        
+                                        <div style="background: #060a11; padding: 40px; text-align: center;">
+                                            <img src="${logoUrl}" alt="JEJMO" style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid #a855f7; object-fit: cover;">
+                                            <h1 style="color: white; margin-top: 20px; font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 0;">Order Delivered!</h1>
+                                            <p style="color: #a855f7; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; letter-spacing: 2px;">Maribor Delivery</p>
+                                        </div>
+
+                                        <div style="padding: 35px; color: #1a1a1a;">
+                                            <p style="font-size: 16px; margin-bottom: 20px;">Hi <strong>${o.customer}</strong>,</p>
+                                            <p style="color: #555; line-height: 1.6; margin-bottom: 25px;">Your order from <strong>${o.restaurant || 'Master Kitchen'}</strong> has been successfully delivered. We hope you enjoy your meal!</p>
+                                            
+                                            <div style="background: #fdfbff; padding: 25px; border-radius: 16px; border: 1px solid #f0e7ff; margin-bottom: 30px;">
+                                                <table style="width: 100%; border-collapse: collapse;">
+                                                    <tr>
+                                                        <td style="padding: 8px 0; color: #777; font-size: 14px;">Item Ordered:</td>
+                                                        <td style="padding: 8px 0; text-align: right; font-weight: 700; font-size: 14px;">${o.item}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 8px 0; color: #777; font-size: 14px;">Amount Paid:</td>
+                                                        <td style="padding: 8px 0; text-align: right; font-weight: 900; font-size: 18px; color: #a855f7;">${o.totalPrice}</td>
+                                                    </tr>
+                                                    <tr style="border-top: 1px solid #f0e7ff;">
+                                                        <td style="padding: 15px 0 0 0; color: #777; font-size: 12px;">Delivered to:</td>
+                                                        <td style="padding: 15px 0 0 0; text-align: right; font-size: 12px; color: #555;">${o.address}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+
+                                            <div style="text-align: center;">
+                                                <p style="font-size: 13px; color: #999; margin-bottom: 5px;">Need help with your order?</p>
+                                                <a href="mailto:info@jejmo.com" style="display: inline-block; padding: 10px 20px; background: #f3f4f6; color: #060a11; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 12px;">Contact Support</a>
+                                            </div>
+                                        </div>
+
+                                        <div style="background: #fafafa; padding: 25px; text-align: center; border-top: 1px solid #eee;">
+                                            <p style="font-size: 10px; color: #ccc; text-transform: uppercase; letter-spacing: 3px; margin: 0;">JEJMO MARIBOR • 2026</p>
+                                        </div>
                                     </div>
-                                    <br>
-                                    <p style="font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 2px;">Thank you for choosing JEJMO Maribor.</p>
+                                    <p style="text-align: center; font-size: 10px; color: #aaa; margin-top: 20px;">This is an automated receipt for your records.</p>
                                 </div>`
                         }
                     }).then(() => {
