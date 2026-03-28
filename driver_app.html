@@ -209,25 +209,37 @@
         let currentOrder = null; let audioCtx = null; let alertInterval = null;
         let allCompletedOrders = [];
 
-        // 1. AUTH LOGIC
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+        // 1. IMPROVED AUTH LOGIC
+        function initRecaptcha() {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible'
+                });
+            }
+        }
 
-        function sendOTP() {
+        async function sendOTP() {
             const phoneNumber = document.getElementById('phone-input').value.trim();
             if (phoneNumber.length < 9) return alert("Enter a valid Slovenian number");
 
-            auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
-                .then((result) => {
-                    confirmationResult = result;
-                    document.getElementById('phone-step').classList.add('hidden');
-                    document.getElementById('otp-step').classList.remove('hidden');
-                }).catch((error) => { alert(error.message); });
+            initRecaptcha();
+
+            try {
+                const result = await auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier);
+                confirmationResult = result;
+                document.getElementById('phone-step').classList.add('hidden');
+                document.getElementById('otp-step').classList.remove('hidden');
+            } catch (error) {
+                console.error("Auth Error:", error);
+                alert("Error: " + error.message);
+                if (window.grecaptcha) window.grecaptcha.reset();
+            }
         }
 
         function verifyOTP() {
             const code = document.getElementById('otp-input').value;
             confirmationResult.confirm(code).then((result) => {
-                // User logged in - onAuthStateChanged will handle the rest
+                // User logged in
             }).catch(() => { alert("Wrong code!"); });
         }
 
@@ -278,7 +290,6 @@
                 }
             });
 
-            // Chat listener
             db.ref('support_tickets/' + driverId).on('value', (snap) => {
                 const t = snap.val(); const chatBox = document.getElementById('chat-messages');
                 if (t && t.chat) {
