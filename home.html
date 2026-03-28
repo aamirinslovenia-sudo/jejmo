@@ -14,16 +14,10 @@
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
         .logo-container { position: relative; display: flex; justify-content: center; align-items: center; }
         .logo-glow { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(25px); z-index: 0; }
-        
-        /* FIXED RESTAURANT HEADER GLOW */
         .chimney-header-glow { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(20px); z-index: 0; }
-
         .logo-main { height: 120px; width: 120px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); z-index: 1; position: relative; }
         .logo-header { height: 52px; width: 52px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); }
-        
-        /* RESTAURANT LOGO IMAGE FIXED */
         .rest-logo-sq { height: 100px; width: 100px; object-fit: cover; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); z-index: 1; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
-
         #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: 0.6s; }
         .input-box { width: 100%; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px 24px; border: 1px solid rgba(255,255,255,0.1); outline: none; color: white; font-weight: 600; }
         .active-item { border-color: #3b82f6 !important; background: rgba(59, 130, 246, 0.2) !important; transform: scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
@@ -72,16 +66,16 @@
             </div>
             
             <div class="grid grid-cols-2 gap-4">
-                <div id="item-ChimneyDubai" onclick="addToCart('Dubai Chimney', 8.50, 'item-ChimneyDubai', 'Chimney Cake MB')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-ChimneyDubai" onclick="addToCart('Dubai Chimney', 8.50, 'item-ChimneyDubai')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🍫</span><p class="font-bold text-[11px] uppercase">Dubai Special</p><p class="text-blue-400 font-black text-xs">€8.50</p>
                 </div>
-                <div id="item-ChimneyPistachio" onclick="addToCart('Pistachio Dream', 7.90, 'item-ChimneyPistachio', 'Chimney Cake MB')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-ChimneyPistachio" onclick="addToCart('Pistachio Dream', 7.90, 'item-ChimneyPistachio')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">💚</span><p class="font-bold text-[11px] uppercase">Pistachio Dream</p><p class="text-blue-400 font-black text-xs">€7.90</p>
                 </div>
-                <div id="item-ChimneyClassic" onclick="addToCart('Classic Cinnamon', 5.50, 'item-ChimneyClassic', 'Chimney Cake MB')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-ChimneyClassic" onclick="addToCart('Classic Cinnamon', 5.50, 'item-ChimneyClassic')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🥨</span><p class="font-bold text-[11px] uppercase">Classic Sugar</p><p class="text-blue-400 font-black text-xs">€5.50</p>
                 </div>
-                <div id="item-ChimneyBerry" onclick="addToCart('Berry Explosion', 7.50, 'item-ChimneyBerry', 'Chimney Cake MB')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                <div id="item-ChimneyBerry" onclick="addToCart('Berry Explosion', 7.50, 'item-ChimneyBerry')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🍓</span><p class="font-bold text-[11px] uppercase">Berry Mix</p><p class="text-blue-400 font-black text-xs">€7.50</p>
                 </div>
             </div>
@@ -159,9 +153,15 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const fs = firebase.firestore(); 
+
+        // RESTAURANT DATA FOR DRIVER PICKUP
+        const restaurantData = {
+            name: "Chimney Cake MB",
+            address: "Glavni trg 17, 2000 Maribor",
+            phone: "+386 70 123 456"
+        };
         
         let cart = [];
-        let selectedRestaurant = "Chimney Cake MB"; 
         let selectedPayment = ""; 
         let emailSent = false;
 
@@ -191,7 +191,7 @@
             }
         }
 
-        function addToCart(name, price, id, restaurant) {
+        function addToCart(name, price, id) {
             const existingItem = cart.find(i => i.name === name);
             if (existingItem) { existingItem.quantity += 1; } 
             else { cart.push({ name: name, price: price, quantity: 1, elementId: id }); }
@@ -257,7 +257,9 @@
                         phone: localStorage.getItem('kleo_phone'),
                         item: itemsString,
                         cartData: cart,
-                        restaurant: selectedRestaurant,
+                        restaurant: restaurantData.name,
+                        restaurantAddress: restaurantData.address,
+                        restaurantPhone: restaurantData.phone,
                         totalPrice: document.getElementById('priceDisplay').innerText,
                         paymentType: selectedPayment,
                         courierInstruction: courierNote,
@@ -289,43 +291,42 @@
                 
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
-                    
                     fs.collection('mail').add({
                         to: o.email,
                         message: {
                             subject: 'Mission Successful: Order #' + o.orderNumber,
                             html: `
                                 <div style="background-color: #060a11; color: #ffffff; padding: 40px; font-family: 'Outfit', sans-serif, 'Segoe UI', Arial; max-width: 600px; margin: auto; border-radius: 30px; border: 1px solid rgba(255,255,255,0.05);">
-                                    <div style="text-align: center; margin-bottom: 40px; position: relative;">
-                                        <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="JEJMO" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-                                        <h1 style="font-style: italic; font-weight: 900; font-size: 32px; letter-spacing: -1.5px; margin-top: 25px; margin-bottom: 5px; color: #ffffff;">MISSION SUCCESS</h1>
+                                    <div style="text-align: center; margin-bottom: 40px;">
+                                        <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="JEJMO" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); object-fit: cover;">
+                                        <h1 style="font-style: italic; font-weight: 900; font-size: 32px; letter-spacing: -1.5px; margin-top: 25px; color: #ffffff;">MISSION SUCCESS</h1>
                                         <p style="color: #60a5fa; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 3px;">Order Confirmation #${o.orderNumber}</p>
                                     </div>
                                     
-                                    <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 25px;">
-                                        <div style="margin-bottom: 20px;">
-                                            <p style="margin: 0; color: #94a3b8; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Commander</p>
-                                            <h3 style="margin: 4px 0; font-size: 18px; font-weight: 700;">${o.customer}</h3>
+                                    <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+                                        <div style="flex: 1; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08);">
+                                            <p style="margin: 0; color: #94a3b8; font-size: 9px; font-weight: 800; text-transform: uppercase;">Pickup Point</p>
+                                            <h4 style="margin: 5px 0; font-size: 13px;">${o.restaurant}</h4>
+                                            <p style="margin: 0; color: #64748b; font-size: 10px;">${o.restaurantAddress}</p>
                                         </div>
-                                        
-                                        <div>
-                                            <p style="margin: 0; color: #94a3b8; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Drop Zone</p>
-                                            <p style="margin: 4px 0 0 0; color: #cbd5e1; font-size: 14px;">${o.address}</p>
+                                        <div style="flex: 1; background: rgba(59, 130, 246, 0.05); padding: 15px; border-radius: 18px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                                            <p style="margin: 0; color: #60a5fa; font-size: 9px; font-weight: 800; text-transform: uppercase;">Drop Zone</p>
+                                            <h4 style="margin: 5px 0; font-size: 13px;">${o.customer}</h4>
+                                            <p style="margin: 0; color: #94a3b8; font-size: 10px;">${o.address}</p>
                                         </div>
                                     </div>
 
                                     <div style="padding: 0 10px 30px 10px;">
-                                        <h4 style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; text-transform: uppercase; font-size: 11px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; margin-bottom: 15px;">Manifest Summary</h4>
+                                        <h4 style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; text-transform: uppercase; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 15px;">Manifest Summary</h4>
                                         <p style="font-size: 16px; line-height: 1.8; color: #ffffff; font-weight: 600;">${o.item}</p>
                                     </div>
 
-                                    <div style="display: flex; justify-content: space-between; align-items: center; background: #2563eb; padding: 25px; border-radius: 24px; box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2);">
-                                        <span style="color: white; font-weight: 900; font-size: 18px; text-transform: uppercase;">Total Cost</span>
-                                        <span style="color: white; font-weight: 900; font-size: 28px; font-style: italic; letter-spacing: -1px;">${o.totalPrice}</span>
+                                    <div style="background: #2563eb; padding: 25px; border-radius: 24px; text-align: center;">
+                                        <span style="display: block; color: rgba(255,255,255,0.7); font-weight: 800; font-size: 10px; text-transform: uppercase; margin-bottom: 5px;">Total Cost Paid via ${o.paymentType}</span>
+                                        <span style="color: white; font-weight: 900; font-size: 32px; font-style: italic; letter-spacing: -1px;">${o.totalPrice}</span>
                                     </div>
 
-                                    <div style="text-align: center; margin-top: 45px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05);">
-                                        <p style="color: #64748b; font-size: 12px; margin-bottom: 8px; font-weight: 600;">Method: ${o.paymentType}</p>
+                                    <div style="text-align: center; margin-top: 40px;">
                                         <p style="color: #475569; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">&copy; 2026 JEJMO MARIBOR. ALL MISSIONS ACCOMPLISHED.</p>
                                     </div>
                                 </div>
@@ -333,7 +334,7 @@
                         }
                     }).then(() => {
                         document.getElementById('success-msg').style.display = 'flex';
-                    }).catch((err) => {
+                    }).catch(() => {
                         document.getElementById('success-msg').style.display = 'flex';
                     });
                 }
