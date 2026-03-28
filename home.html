@@ -327,11 +327,11 @@
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     
-                    // FIXED PREMIUM EMAIL TEMPLATE MATCHING SCREENSHOT WITH EXTERNAL LOGO
+                    // FIXED PREMIUM EMAIL TEMPLATE - HIGH RES SHARP LOGO
                     const receiptHtml = `
                         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #eeeeee;">
                             <div style="background-color: #060a11; padding: 40px 20px; text-align: center;">
-                                <img src="https://jejmo.com/logo.jpg" style="width: 80px; height: 80px; border-radius: 40px; border: 2px solid #a855f7; margin-bottom: 20px;" alt="Jejmo Logo">
+                                <img src="https://i.postimg.cc/85z1XzX8/logo.jpg" style="width: 80px; height: 80px; border-radius: 40px; border: 2px solid #a855f7; margin-bottom: 20px; image-rendering: -webkit-optimize-contrast;" alt="Jejmo Logo">
                                 <h1 style="color: #ffffff; font-size: 28px; font-weight: 900; margin: 0;">Order Delivered!</h1>
                                 <p style="color: #a855f7; font-size: 14px; font-weight: 700; text-transform: uppercase; margin-top: 10px; letter-spacing: 1px;">ORDER #${o.orderNumber}</p>
                             </div>
