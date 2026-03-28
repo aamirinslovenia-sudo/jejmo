@@ -286,9 +286,35 @@
                     dot3.classList.add('active'); 
                     text3.classList.replace('text-slate-500', 'text-blue-500');
                 }
+                
+                // RESTORED EMAIL TRIGGER LOGIC
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
-                    document.getElementById('success-msg').style.display = 'flex';
+                    
+                    // Trigger Firestore Mail Extension
+                    fs.collection('mail').add({
+                        to: o.email,
+                        message: {
+                            subject: 'Mission Receipt: ' + o.orderNumber,
+                            html: `
+                                <div style="font-family: Arial; padding: 20px; color: #333;">
+                                    <h2>Order #${o.orderNumber}</h2>
+                                    <p>Hi ${o.customer}, your mission is complete!</p>
+                                    <hr>
+                                    <p><strong>Items:</strong> ${o.item}</p>
+                                    <p><strong>Total:</strong> ${o.totalPrice}</p>
+                                    <p><strong>Payment:</strong> ${o.paymentType}</p>
+                                    <hr>
+                                    <p>Thank you for choosing JEJMO.</p>
+                                </div>
+                            `
+                        }
+                    }).then(() => {
+                        document.getElementById('success-msg').style.display = 'flex';
+                    }).catch((err) => {
+                        console.log("Email trigger failed, showing success anyway.");
+                        document.getElementById('success-msg').style.display = 'flex';
+                    });
                 }
             });
         }
