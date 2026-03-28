@@ -30,6 +30,7 @@
         .msg-admin { align-self: flex-start; background: rgba(255,255,255,0.1); padding: 12px 18px; border-radius: 20px 20px 20px 4px; font-size: 14px; max-width: 80%; margin-bottom: 10px; }
         .cash-alert { background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 20px; padding: 15px; margin-bottom: 20px; }
         .instruction-alert { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 20px; padding: 14px; margin-bottom: 20px; }
+        .nav-icon { width: 44px; height: 44px; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
     </style>
 </head>
 <body>
@@ -129,22 +130,23 @@
                 </div>
 
                 <div class="space-y-6 mb-10">
-                    <div class="flex gap-4">
+                    <div class="flex gap-4 items-center">
                         <div class="w-10 h-10 glass-panel flex items-center justify-center font-black text-purple-500">A</div>
-                        <div class="flex-1">
-                            <p class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Pickup</p>
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Pickup (Step 1)</p>
                             <h4 id="display-res-name" class="text-lg font-bold text-white leading-tight">---</h4>
-                            <a id="display-res-addr" href="#" target="_blank" class="text-purple-400 text-sm font-bold underline truncate block">---</a>
+                            <p id="display-res-addr-text" class="text-slate-400 text-xs truncate">---</p>
                         </div>
-                        <a id="res-phone" href="#" class="w-10 h-10 glass-panel flex items-center justify-center text-sm">📞</a>
+                        <a id="res-nav-btn" href="#" target="_blank" class="nav-icon">📍</a>
                     </div>
-                    <div class="flex gap-4">
+                    <div class="flex gap-4 items-center">
                         <div class="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center font-black text-white">B</div>
-                        <div class="flex-1">
-                            <p class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Dropoff</p>
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-[9px] text-slate-500 uppercase font-bold tracking-widest">Dropoff (Step 2)</p>
                             <h4 id="c-name" class="text-lg font-bold truncate text-white leading-tight">---</h4>
-                            <p id="c-addr" class="text-purple-400 text-sm font-bold underline truncate">---</p>
+                            <p id="c-addr-text" class="text-slate-400 text-xs truncate">---</p>
                         </div>
+                        <a id="c-nav-btn" href="#" target="_blank" class="nav-icon">📍</a>
                     </div>
                 </div>
                 <div class="flex gap-4">
@@ -222,28 +224,22 @@
         });
 
         function renderUI(o, btnText) {
-            // Customer Details (Dropoff)
             document.getElementById('c-name').innerText = o.customer;
-            document.getElementById('c-addr').innerText = o.address;
+            document.getElementById('c-addr-text').innerText = o.address;
             document.getElementById('c-phone').href = "tel:" + o.phone;
+            document.getElementById('c-nav-btn').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.address)}`;
             
-            // Order details
             document.getElementById('display-price').innerText = o.totalPrice;
             document.getElementById('display-order-number').innerText = o.orderNumber ? "#" + o.orderNumber : "#" + o.id.substring(0,5).toUpperCase();
             document.getElementById('display-items').innerText = o.item || "Standard Order";
             document.getElementById('display-instruction').innerText = o.courierInstruction || "No special instructions";
 
-            // UPDATED: Pickup Details (Dynamic from Restaurant Side)
             const rName = o.restaurant || "Master Kitchen";
-            const rAddr = o.restaurantAddress || "Add Address in Settings";
-            const rPhone = o.restaurantPhone || "";
-
+            const rAddr = o.restaurantAddress || "No address provided";
             document.getElementById('display-res-name').innerText = rName;
-            document.getElementById('display-res-addr').innerText = rAddr;
-            document.getElementById('display-res-addr').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rAddr)}`;
-            document.getElementById('res-phone').href = "tel:" + rPhone;
+            document.getElementById('display-res-addr-text').innerText = rAddr;
+            document.getElementById('res-nav-btn').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rAddr)}`;
 
-            // UI State
             document.getElementById('action-btn').innerText = btnText;
             document.getElementById('order-ui').classList.remove('hidden');
             document.getElementById('waiting-ui').classList.add('hidden');
@@ -277,8 +273,6 @@
             if (!currentOrder) return; 
             if (currentOrder.status === "Ready") {
                 db.ref('orders/' + currentOrder.id).update({ status: "Delivering", claimedBy: driverId });
-                // Open Customer Dropoff Map
-                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentOrder.address)}`, '_blank');
             } else {
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
             }
