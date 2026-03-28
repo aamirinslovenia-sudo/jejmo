@@ -29,6 +29,9 @@
         .msg-driver { align-self: flex-end; background: var(--accent); padding: 12px 18px; border-radius: 20px 20px 4px 20px; font-size: 14px; max-width: 80%; margin-bottom: 10px; color: white; }
         .msg-admin { align-self: flex-start; background: rgba(255,255,255,0.1); padding: 12px 18px; border-radius: 20px 20px 20px 4px; font-size: 14px; max-width: 80%; margin-bottom: 10px; }
         .cash-alert { background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 20px; padding: 15px; margin-bottom: 20px; }
+        
+        /* New Instruction Styling */
+        .instruction-alert { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 20px; padding: 14px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -103,8 +106,18 @@
                     <button onclick="confirmDecline()" class="bg-red-500/20 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase">Skip</button>
                 </div>
 
-                <div id="display-items" class="bg-white/5 border border-white/5 rounded-2xl p-4 mb-6 text-sm text-slate-300 italic">
+                <div id="display-items" class="bg-white/5 border border-white/5 rounded-2xl p-4 mb-4 text-sm text-slate-300 italic">
                     ---
+                </div>
+
+                <div id="instruction-ui" class="instruction-alert mb-4">
+                    <div class="flex items-start gap-3">
+                        <span class="text-purple-500 text-lg">📝</span>
+                        <div>
+                            <p class="text-[9px] font-black text-purple-400 uppercase tracking-widest">Customer Note</p>
+                            <p id="display-instruction" class="text-sm font-bold text-white leading-tight mt-0.5">---</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="cash-collection-ui" class="hidden cash-alert mb-6">
@@ -213,6 +226,10 @@
             document.getElementById('display-res-name').innerText = o.restaurant || "Master Kitchen";
             document.getElementById('display-order-number').innerText = o.orderNumber ? "#" + o.orderNumber : "#" + o.id.substring(0,5).toUpperCase();
             document.getElementById('display-items').innerText = o.item || "Standard Order";
+            
+            // UPDATED: RENDER COURIER INSTRUCTION
+            document.getElementById('display-instruction').innerText = o.courierInstruction || "No special instructions";
+
             document.getElementById('action-btn').innerText = btnText;
             document.getElementById('order-ui').classList.remove('hidden');
             document.getElementById('waiting-ui').classList.add('hidden');
@@ -246,8 +263,7 @@
             if (!currentOrder) return; 
             if (currentOrder.status === "Ready") {
                 db.ref('orders/' + currentOrder.id).update({ status: "Delivering", claimedBy: driverId });
-                // Fixed encoding for Maps
-                window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentOrder.address)}`, '_blank');
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(currentOrder.address)}`, '_blank');
             } else {
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
             }
