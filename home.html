@@ -6,7 +6,7 @@
     <title>JEJMO | Chimney Cake MB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
     <style>
@@ -45,6 +45,9 @@
             <input id="userPhone" type="tel" placeholder="Phone Number" class="input-box">
             <input id="userAddress" type="text" placeholder="Address in Maribor" class="input-box">
         </div>
+
+        <div id="recaptcha-container" class="flex justify-center mb-4"></div>
+
         <button id="gate-btn" onclick="handleGateway()" class="bg-white text-black font-black py-6 rounded-[30px] text-lg uppercase tracking-widest active:scale-95 transition-all shadow-2xl">Continue</button>
     </div>
 
@@ -153,8 +156,9 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const fs = firebase.firestore(); 
+        const auth = firebase.auth(); // NEW
 
-        // RETAURANTS REGISTRY - ADD YOUR 10 RESTAURANTS HERE
+        // RETAURANTS REGISTRY
         const restaurantsRegistry = {
             "Chimney Cake MB": {
                 address: "Glavni trg 17, 2000 Maribor",
@@ -166,7 +170,6 @@
             }
         };
         
-        // This identifies which restaurant the current app instance belongs to
         const selectedRestaurant = "Chimney Cake MB"; 
         
         let cart = [];
@@ -174,6 +177,11 @@
         let emailSent = false;
 
         window.onload = function() {
+            // NEW: Initialize invisible Recaptcha so domain is validated
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                'size': 'invisible'
+            });
+
             if (localStorage.getItem('kleo_name')) {
                 document.getElementById('onboarding-screen').style.display = 'none';
                 document.getElementById('header-addr').innerText = localStorage.getItem('kleo_address');
@@ -247,7 +255,6 @@
             if (cart.length === 0) { alert("Add items to your cart first!"); return; }
             if (!selectedPayment) { alert("Please select Cash or Card!"); return; }
             
-            // Get data from our registry
             const restaurantInfo = restaurantsRegistry[selectedRestaurant];
             const courierNote = document.getElementById('courier-note').value || "No special instructions";
             
@@ -270,12 +277,9 @@
                         phone: localStorage.getItem('kleo_phone'),
                         item: itemsString,
                         cartData: cart,
-                        
-                        // Dynamic Restaurant Data
                         restaurant: selectedRestaurant,
                         restaurantAddress: restaurantInfo.address,
                         restaurantPhone: restaurantInfo.phone,
-                        
                         totalPrice: document.getElementById('priceDisplay').innerText,
                         paymentType: selectedPayment,
                         courierInstruction: courierNote,
@@ -318,7 +322,6 @@
                                         <h1 style="font-style: italic; font-weight: 900; font-size: 32px; letter-spacing: -1.5px; margin-top: 25px; color: #ffffff;">MISSION SUCCESS</h1>
                                         <p style="color: #60a5fa; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 3px;">Order Confirmation #${o.orderNumber}</p>
                                     </div>
-                                    
                                     <div style="display: flex; gap: 10px; margin-bottom: 25px;">
                                         <div style="flex: 1; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08);">
                                             <p style="margin: 0; color: #94a3b8; font-size: 9px; font-weight: 800; text-transform: uppercase;">Pickup Point</p>
@@ -331,17 +334,14 @@
                                             <p style="margin: 0; color: #94a3b8; font-size: 10px;">${o.address}</p>
                                         </div>
                                     </div>
-
                                     <div style="padding: 0 10px 30px 10px;">
                                         <h4 style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; text-transform: uppercase; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 15px;">Manifest Summary</h4>
                                         <p style="font-size: 16px; line-height: 1.8; color: #ffffff; font-weight: 600;">${o.item}</p>
                                     </div>
-
                                     <div style="background: #2563eb; padding: 25px; border-radius: 24px; text-align: center;">
                                         <span style="display: block; color: rgba(255,255,255,0.7); font-weight: 800; font-size: 10px; text-transform: uppercase; margin-bottom: 5px;">Total Cost Paid via ${o.paymentType}</span>
                                         <span style="color: white; font-weight: 900; font-size: 32px; font-style: italic; letter-spacing: -1px;">${o.totalPrice}</span>
                                     </div>
-
                                     <div style="text-align: center; margin-top: 40px;">
                                         <p style="color: #475569; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">&copy; 2026 JEJMO MARIBOR. ALL MISSIONS ACCOMPLISHED.</p>
                                     </div>
