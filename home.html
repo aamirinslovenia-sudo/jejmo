@@ -14,10 +14,16 @@
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
         .logo-container { position: relative; display: flex; justify-content: center; align-items: center; }
         .logo-glow { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(25px); z-index: 0; }
-        .chimney-header-glow { background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(15px); }
-        .logo-main { height: 120px; width: 120px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); z-index: 1; position: relative; image-rendering: -webkit-optimize-contrast; }
-        .logo-header { height: 52px; width: 52px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); image-rendering: -webkit-optimize-contrast; }
-        .rest-logo-sq { height: 80px; width: 80px; object-fit: cover; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); z-index: 1; position: relative;}
+        
+        /* FIXED RESTAURANT HEADER GLOW */
+        .chimney-header-glow { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(20px); z-index: 0; }
+
+        .logo-main { height: 120px; width: 120px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); z-index: 1; position: relative; }
+        .logo-header { height: 52px; width: 52px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); }
+        
+        /* RESTAURANT LOGO IMAGE FIXED */
+        .rest-logo-sq { height: 100px; width: 100px; object-fit: cover; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); z-index: 1; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+
         #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: 0.6s; }
         .input-box { width: 100%; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px 24px; border: 1px solid rgba(255,255,255,0.1); outline: none; color: white; font-weight: 600; }
         .active-item { border-color: #3b82f6 !important; background: rgba(59, 130, 246, 0.2) !important; transform: scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
@@ -27,11 +33,7 @@
         .connector-line { position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.05); }
         #success-msg { position: fixed; inset: 0; background: #060a11; z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
         .cart-item-chip { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #60a5fa; margin-right: 5px; margin-bottom: 5px; display: inline-block; transition: all 0.2s; }
-        .cart-item-chip:active { transform: scale(0.9); background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
-        
-        /* New Textarea Style */
         .instruction-box { width: 100%; background: rgba(255,255,255,0.03); border-radius: 20px; padding: 16px; border: 1px solid rgba(255,255,255,0.08); outline: none; color: white; font-size: 12px; resize: none; transition: border 0.3s; }
-        .instruction-box:focus { border-color: rgba(59, 130, 246, 0.5); }
     </style>
 </head>
 <body class="pb-24">
@@ -60,14 +62,15 @@
         </div>
     </header>
 
-    <div class="max-w-md mx-auto px-6 space-y-14">
+    <div class="max-w-md mx-auto px-6 space-y-12">
         <section>
-            <div class="flex items-center justify-center gap-4 mb-8">
+            <div class="flex flex-col items-center justify-center mb-10">
                 <div class="relative flex items-center justify-center">
-                    <div class="absolute w-24 h-24 rounded-full chimney-header-glow"></div>
-                    <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/refs/heads/main/chimney.jpg" alt="Chimney Logo" class="rest-logo-sq">
+                    <div class="chimney-header-glow"></div>
+                    <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" alt="Chimney Logo" class="rest-logo-sq">
                 </div>
             </div>
+            
             <div class="grid grid-cols-2 gap-4">
                 <div id="item-ChimneyDubai" onclick="addToCart('Dubai Chimney', 8.50, 'item-ChimneyDubai', 'Chimney Cake MB')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <span class="text-3xl block mb-2">🍫</span><p class="font-bold text-[11px] uppercase">Dubai Special</p><p class="text-blue-400 font-black text-xs">€8.50</p>
@@ -86,7 +89,7 @@
 
         <div class="px-2">
             <p class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Instruction for the Courier</p>
-            <textarea id="courier-note" class="instruction-box" rows="2" placeholder="Ex: Leave at the door, call when outside..."></textarea>
+            <textarea id="courier-note" class="instruction-box" rows="2" placeholder="Leave at the door, call when outside..."></textarea>
         </div>
 
         <div class="px-2">
@@ -98,7 +101,6 @@
         </div>
 
         <div id="cart-summary" class="px-2 hidden">
-             <p class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Selected Items (Tap to remove)</p>
              <div id="cart-items-container" class="flex flex-wrap"></div>
         </div>
 
@@ -159,7 +161,7 @@
         const fs = firebase.firestore(); 
         
         let cart = [];
-        let selectedRestaurant = ""; 
+        let selectedRestaurant = "Chimney Cake MB"; 
         let selectedPayment = ""; 
         let emailSent = false;
 
@@ -190,7 +192,6 @@
         }
 
         function addToCart(name, price, id, restaurant) {
-            selectedRestaurant = restaurant;
             const existingItem = cart.find(i => i.name === name);
             if (existingItem) { existingItem.quantity += 1; } 
             else { cart.push({ name: name, price: price, quantity: 1, elementId: id }); }
@@ -237,9 +238,7 @@
         function sendOrder() {
             if (cart.length === 0) { alert("Add items to your cart first!"); return; }
             if (!selectedPayment) { alert("Please select Cash or Card!"); return; }
-            
-            const courierNote = document.getElementById('courier-note').value || "None";
-
+            const courierNote = document.getElementById('courier-note').value || "No special instructions";
             db.ref('globalOrderCounter').transaction((currentValue) => {
                 if (currentValue === null || currentValue >= 999) return 1;
                 return currentValue + 1;
@@ -249,7 +248,6 @@
                     const displayId = count.toString().padStart(3, '0');
                     const orderId = db.ref('orders').push().key;
                     const itemsString = cart.map(i => `${i.quantity}x ${i.name}`).join(", ");
-                    
                     db.ref('orders/' + orderId).set({
                         orderNumber: displayId,
                         shortId: displayId,
@@ -262,7 +260,7 @@
                         restaurant: selectedRestaurant,
                         totalPrice: document.getElementById('priceDisplay').innerText,
                         paymentType: selectedPayment,
-                        courierInstruction: courierNote, // ADDED TO DATABASE
+                        courierInstruction: courierNote,
                         timestamp: Date.now(),
                         status: 'New'
                     }).then(() => { startTracking(orderId); });
@@ -290,7 +288,6 @@
                 }
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
-                    // Receipt email logic remains same...
                     document.getElementById('success-msg').style.display = 'flex';
                 }
             });
