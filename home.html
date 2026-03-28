@@ -14,9 +14,29 @@
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
         .logo-container { position: relative; display: flex; justify-content: center; align-items: center; }
         .logo-glow { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(25px); z-index: 0; }
-        /* Fix sharpness on high-DPI screens */
-        .logo-main { height: 120px; width: 120px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); z-index: 1; position: relative; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;}
-        .logo-header { height: 52px; width: 52px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); }
+        
+        /* IMPROVED SHARPNESS AND RENDERING */
+        .logo-main { 
+            height: 120px; 
+            width: 120px; 
+            object-fit: cover; 
+            border-radius: 50%; 
+            border: 2px solid rgba(255, 255, 255, 0.15); 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); 
+            z-index: 1; 
+            position: relative;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+        .logo-header { 
+            height: 52px; 
+            width: 52px; 
+            object-fit: cover; 
+            border-radius: 50%; 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            image-rendering: -webkit-optimize-contrast;
+        }
+
         #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: 0.6s; }
         .input-box { width: 100%; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px 24px; border: 1px solid rgba(255,255,255,0.1); outline: none; color: white; font-weight: 600; }
         .active-item { border-color: #3b82f6 !important; background: rgba(59, 130, 246, 0.2) !important; transform: scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
@@ -34,7 +54,7 @@
         <div class="mb-12 text-center flex flex-col items-center">
             <div class="logo-container mb-8">
                 <div class="logo-glow"></div>
-                <img src="https://github.com/aamirinslovenia-sudo/jejmo/blob/main/logo.jpg?raw=true" alt="Jejmo Logo" class="logo-main">
+                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Jejmo Logo" class="logo-main">
             </div>
             <p class="text-slate-400 font-bold tracking-tight text-center leading-relaxed">Premium delivery <br>to your doorstep.</p>
         </div>
@@ -48,7 +68,7 @@
     </div>
 
     <header class="flex flex-col items-center pt-8 pb-6 border-b border-white/5 mb-8">
-        <img src="https://github.com/aamirinslovenia-sudo/jejmo/blob/main/logo.jpg?raw=true" alt="Jejmo Logo" class="logo-header mb-4">
+        <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Jejmo Logo" class="logo-header mb-4">
         <div class="flex items-center gap-2 glass px-4 py-1.5 rounded-full">
             <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
             <p id="header-addr" class="text-[9px] font-black text-slate-400 uppercase tracking-widest"></p>
@@ -128,7 +148,7 @@
 
     <div id="order-tracking-overlay">
         <div class="flex justify-between items-start mb-2">
-            <img src="https://github.com/aamirinslovenia-sudo/jejmo/blob/main/logo.jpg?raw=true" alt="Jejmo Logo" class="logo-header">
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Jejmo Logo" class="logo-header">
             <a href="tel:+38600000000" class="glass w-12 h-12 rounded-2xl flex items-center justify-center text-blue-500 border-blue-500/20 active:bg-blue-500 active:text-white transition-all">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
             </a>
@@ -151,7 +171,7 @@
     <div id="success-msg">
         <div class="logo-container mb-12">
             <div class="logo-glow"></div>
-            <img src="https://github.com/aamirinslovenia-sudo/jejmo/blob/main/logo.jpg?raw=true" alt="Jejmo Logo" class="logo-main">
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Jejmo Logo" class="logo-main">
         </div>
         <h2 class="text-4xl font-black italic tracking-tighter mb-2">MISSION SUCCESS</h2>
         <p id="success-email-text" class="text-slate-400 font-bold mb-10 px-6">Receipt sent to your email.</p>
@@ -328,12 +348,12 @@
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     
-                    // FIXED PREMIUM EMAIL TEMPLATE MATCHING SCREENSHOT
+                    // FIXED EMAIL URL FOR SPEED
                     const receiptHtml = `
-                        <div style="font-family: 'Outfit', sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #eeeeee;">
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #eeeeee;">
                             <div style="background-color: #060a11; padding: 40px 20px; text-align: center;">
-                                <img src="https://github.com/aamirinslovenia-sudo/jejmo/blob/main/logo.jpg?raw=true" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #a855f7; margin-bottom: 20px;" alt="Jejmo Logo">
-                                <h1 style="color: #ffffff; font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -0.5px;">Order Delivered!</h1>
+                                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" style="width: 80px; height: 80px; border-radius: 40px; border: 2px solid #a855f7; margin-bottom: 20px;" alt="Jejmo Logo">
+                                <h1 style="color: #ffffff; font-size: 28px; font-weight: 900; margin: 0;">Order Delivered!</h1>
                                 <p style="color: #a855f7; font-size: 14px; font-weight: 700; text-transform: uppercase; margin-top: 10px; letter-spacing: 1px;">ORDER #${o.orderNumber}</p>
                             </div>
 
