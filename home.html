@@ -287,32 +287,49 @@
                     text3.classList.replace('text-slate-500', 'text-blue-500');
                 }
                 
-                // RESTORED EMAIL TRIGGER LOGIC
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     
-                    // Trigger Firestore Mail Extension
                     fs.collection('mail').add({
                         to: o.email,
                         message: {
-                            subject: 'Mission Receipt: ' + o.orderNumber,
+                            subject: 'Mission Successful: Order #' + o.orderNumber,
                             html: `
-                                <div style="font-family: Arial; padding: 20px; color: #333;">
-                                    <h2>Order #${o.orderNumber}</h2>
-                                    <p>Hi ${o.customer}, your mission is complete!</p>
-                                    <hr>
-                                    <p><strong>Items:</strong> ${o.item}</p>
-                                    <p><strong>Total:</strong> ${o.totalPrice}</p>
-                                    <p><strong>Payment:</strong> ${o.paymentType}</p>
-                                    <hr>
-                                    <p>Thank you for choosing JEJMO.</p>
+                                <div style="background-color: #060a11; color: #ffffff; padding: 40px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border-radius: 20px;">
+                                    <div style="text-align: center; margin-bottom: 30px;">
+                                        <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="JEJMO" style="width: 100px; border-radius: 50%; border: 2px solid #3b82f6;">
+                                        <h1 style="font-style: italic; font-weight: 900; letter-spacing: -1px; margin-top: 20px;">MISSION SUCCESS</h1>
+                                        <p style="color: #94a3b8; text-transform: uppercase; font-size: 12px; letter-spacing: 2px;">Receipt for Order #${o.orderNumber}</p>
+                                    </div>
+                                    
+                                    <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;">
+                                        <p style="margin: 0; color: #60a5fa; font-size: 10px; font-weight: 800; text-transform: uppercase;">Customer Details</p>
+                                        <h3 style="margin: 5px 0 15px 0;">${o.customer}</h3>
+                                        
+                                        <p style="margin: 0; color: #60a5fa; font-size: 10px; font-weight: 800; text-transform: uppercase;">Delivery Address</p>
+                                        <p style="margin: 5px 0 0 0; color: #cbd5e1;">${o.address}</p>
+                                    </div>
+
+                                    <div style="margin-bottom: 30px;">
+                                        <h4 style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; text-transform: uppercase; font-size: 12px;">Order Summary</h4>
+                                        <p style="font-size: 16px; line-height: 1.6;">${o.item}</p>
+                                    </div>
+
+                                    <div style="display: flex; justify-content: space-between; align-items: center; background: #3b82f6; padding: 20px; border-radius: 15px;">
+                                        <div style="color: white; font-weight: 900; font-size: 20px;">TOTAL</div>
+                                        <div style="color: white; font-weight: 900; font-size: 24px; font-style: italic;">${o.totalPrice}</div>
+                                    </div>
+
+                                    <div style="text-align: center; margin-top: 40px; color: #64748b; font-size: 12px;">
+                                        <p>Payment Method: ${o.paymentType}</p>
+                                        <p style="margin-top: 20px;">&copy; 2026 JEJMO Maribor. All missions accomplished.</p>
+                                    </div>
                                 </div>
                             `
                         }
                     }).then(() => {
                         document.getElementById('success-msg').style.display = 'flex';
                     }).catch((err) => {
-                        console.log("Email trigger failed, showing success anyway.");
                         document.getElementById('success-msg').style.display = 'flex';
                     });
                 }
