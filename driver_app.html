@@ -6,6 +6,7 @@
     <title>JEJMO PRO | DRIVER</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
@@ -31,6 +32,9 @@
         .cash-alert { background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 20px; padding: 15px; margin-bottom: 20px; }
         .instruction-alert { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 20px; padding: 14px; margin-bottom: 20px; }
         .nav-icon { width: 44px; height: 44px; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        
+        /* Auth specific styles */
+        .auth-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; width: 100%; color: white; outline: none; text-align: center; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -71,18 +75,36 @@
             <button onclick="openChat()" class="w-full flex items-center gap-5 p-6 glass-panel text-left active:scale-95 transition-all">
                 <span class="text-2xl">🎧</span><div><p class="font-bold text-lg text-white">Dispatcher</p><p class="text-[10px] text-slate-500 uppercase">Live Support</p></div>
             </button>
+            <button onclick="handleLogout()" class="w-full flex items-center gap-5 p-6 glass-panel text-left active:scale-95 transition-all opacity-60">
+                <span class="text-2xl">🚪</span><div><p class="font-bold text-lg text-white">Logout</p><p class="text-[10px] text-slate-500 uppercase">End Shift</p></div>
+            </button>
         </div>
         <div class="mt-auto p-6 border-t border-white/10 text-center">
             <p id="display-driver-id" class="text-xs font-mono text-purple-400">---</p>
         </div>
     </div>
 
-    <div id="boot-screen" class="fixed inset-0 z-[3000] bg-[#060a11] flex flex-col items-center justify-center p-12 text-center">
-        <div class="relative flex items-center justify-center mb-16">
+    <div id="boot-screen" class="fixed inset-0 z-[3000] bg-[#060a11] flex flex-col items-center justify-center p-8 text-center">
+        <div class="relative flex items-center justify-center mb-10">
             <div class="logo-glow"></div>
             <img src="logo.jpg" alt="Logo" class="logo-main">
         </div>
-        <button onclick="goOnline()" class="bg-white text-black w-full py-7 rounded-[35px] text-lg font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all">Go Online</button>
+
+        <div id="phone-step" class="w-full max-w-xs space-y-4">
+            <h1 class="text-2xl font-black italic mb-2">DRIVER <span class="text-purple-500">LOGIN</span></h1>
+            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Slovenian Phone Number</p>
+            <input type="tel" id="phone-input" class="auth-input" value="+386 ">
+            <div id="recaptcha-container" class="flex justify-center my-4"></div>
+            <button onclick="sendOTP()" id="send-btn" class="bg-white text-black w-full py-6 rounded-[25px] text-lg font-black uppercase tracking-widest active:scale-95 transition-all">Send Code</button>
+        </div>
+
+        <div id="otp-step" class="w-full max-w-xs space-y-4 hidden">
+            <h1 class="text-2xl font-black italic mb-2">VERIFY <span class="text-purple-500">CODE</span></h1>
+            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Enter the 6-digit SMS code</p>
+            <input type="number" id="otp-input" class="auth-input" placeholder="000 000">
+            <button onclick="verifyOTP()" id="verify-btn" class="bg-purple-600 text-white w-full py-6 rounded-[25px] text-lg font-black uppercase tracking-widest active:scale-95 transition-all">Verify & Enter</button>
+            <button onclick="location.reload()" class="text-slate-500 text-[10px] font-black uppercase tracking-widest mt-4">Change Phone Number</button>
+        </div>
     </div>
 
     <div id="order-sheet" class="bottom-sheet glass-panel sheet-minimized">
@@ -105,9 +127,7 @@
                     <button onclick="confirmDecline()" class="bg-red-500/20 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase">Skip</button>
                 </div>
 
-                <div id="display-items" class="bg-white/5 border border-white/5 rounded-2xl p-4 mb-4 text-sm text-slate-300 italic">
-                    ---
-                </div>
+                <div id="display-items" class="bg-white/5 border border-white/5 rounded-2xl p-4 mb-4 text-sm text-slate-300 italic">---</div>
 
                 <div id="instruction-ui" class="instruction-alert mb-4">
                     <div class="flex items-start gap-3">
@@ -182,52 +202,97 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const auth = firebase.auth();
         
-        let driverId = localStorage.getItem('jejmo_driver_id');
-        if (!driverId) { driverId = "DRV-" + Math.floor(1000 + Math.random() * 9000); localStorage.setItem('jejmo_driver_id', driverId); }
-        document.getElementById('display-driver-id').innerText = driverId;
-
+        let driverId = null;
+        let confirmationResult = null;
         let currentOrder = null; let audioCtx = null; let alertInterval = null;
         let allCompletedOrders = [];
 
-        db.ref(".info/connected").on("value", (snap) => {
-            const dot = document.getElementById('conn-dot');
-            dot.className = snap.val() === true ? "w-2.5 h-2.5 rounded-full status-online" : "w-2.5 h-2.5 rounded-full status-offline";
-        });
+        // 1. AUTH LOGIC
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
 
-        function goOnline() { 
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
-            document.getElementById('boot-screen').style.display = 'none'; 
+        function sendOTP() {
+            const phoneNumber = document.getElementById('phone-input').value.trim();
+            if (phoneNumber.length < 9) return alert("Enter a valid Slovenian number");
+
+            auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+                .then((result) => {
+                    confirmationResult = result;
+                    document.getElementById('phone-step').classList.add('hidden');
+                    document.getElementById('otp-step').classList.remove('hidden');
+                }).catch((error) => { alert(error.message); });
         }
 
-        db.ref('orders').on('value', (snap) => {
-            let activeTask = null; let availableOrder = null; allCompletedOrders = [];
-            snap.forEach(c => {
-                const o = c.val(); o.id = c.key;
-                if (o.status === "Delivering" && o.claimedBy === driverId) activeTask = o;
-                if (o.status === "Ready" && !o.claimedBy) availableOrder = o;
-                if (o.status === "Completed") allCompletedOrders.push(o);
-            });
+        function verifyOTP() {
+            const code = document.getElementById('otp-input').value;
+            confirmationResult.confirm(code).then((result) => {
+                // User logged in - onAuthStateChanged will handle the rest
+            }).catch(() => { alert("Wrong code!"); });
+        }
 
-            if (activeTask) {
-                currentOrder = activeTask; renderUI(activeTask, "End Mission");
-                clearInterval(alertInterval); alertInterval = null;
-            } else if (availableOrder) {
-                currentOrder = availableOrder; renderUI(availableOrder, "Accept Mission");
-                if (!alertInterval) { playBeep(); alertInterval = setInterval(playBeep, 2500); }
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                driverId = user.uid;
+                document.getElementById('display-driver-id').innerText = driverId;
+                document.getElementById('boot-screen').style.display = 'none';
+                initApp();
             } else {
-                currentOrder = null; clearInterval(alertInterval); alertInterval = null;
-                document.getElementById('order-ui').classList.add('hidden');
-                document.getElementById('waiting-ui').classList.remove('hidden');
-                document.getElementById('order-sheet').classList.replace('sheet-expanded', 'sheet-minimized');
+                document.getElementById('boot-screen').style.display = 'flex';
             }
         });
+
+        function handleLogout() {
+            if(confirm("Sign out of shift?")) auth.signOut().then(() => location.reload());
+        }
+
+        // 2. CORE APP LOGIC
+        function initApp() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            db.ref(".info/connected").on("value", (snap) => {
+                const dot = document.getElementById('conn-dot');
+                dot.className = snap.val() === true ? "w-2.5 h-2.5 rounded-full status-online" : "w-2.5 h-2.5 rounded-full status-offline";
+            });
+
+            db.ref('orders').on('value', (snap) => {
+                let activeTask = null; let availableOrder = null; allCompletedOrders = [];
+                snap.forEach(c => {
+                    const o = c.val(); o.id = c.key;
+                    if (o.status === "Delivering" && o.claimedBy === driverId) activeTask = o;
+                    if (o.status === "Ready" && !o.claimedBy) availableOrder = o;
+                    if (o.status === "Completed") allCompletedOrders.push(o);
+                });
+
+                if (activeTask) {
+                    currentOrder = activeTask; renderUI(activeTask, "End Mission");
+                    clearInterval(alertInterval); alertInterval = null;
+                } else if (availableOrder) {
+                    currentOrder = availableOrder; renderUI(availableOrder, "Accept Mission");
+                    if (!alertInterval) { playBeep(); alertInterval = setInterval(playBeep, 2500); }
+                } else {
+                    currentOrder = null; clearInterval(alertInterval); alertInterval = null;
+                    document.getElementById('order-ui').classList.add('hidden');
+                    document.getElementById('waiting-ui').classList.remove('hidden');
+                    document.getElementById('order-sheet').classList.replace('sheet-expanded', 'sheet-minimized');
+                }
+            });
+
+            // Chat listener
+            db.ref('support_tickets/' + driverId).on('value', (snap) => {
+                const t = snap.val(); const chatBox = document.getElementById('chat-messages');
+                if (t && t.chat) {
+                    chatBox.innerHTML = Object.values(t.chat).map(m => `<div class="${m.sender === 'Driver' ? 'msg-driver' : 'msg-admin'}">${m.text}</div>`).join('');
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            });
+        }
 
         function renderUI(o, btnText) {
             document.getElementById('c-name').innerText = o.customer;
             document.getElementById('c-addr-text').innerText = o.address;
             document.getElementById('c-phone').href = "tel:" + o.phone;
-            document.getElementById('c-nav-btn').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.address)}`;
+            document.getElementById('c-nav-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(o.address)}`;
             
             document.getElementById('display-price').innerText = o.totalPrice;
             document.getElementById('display-order-number').innerText = o.orderNumber ? "#" + o.orderNumber : "#" + o.id.substring(0,5).toUpperCase();
@@ -238,7 +303,7 @@
             const rAddr = o.restaurantAddress || "No address provided";
             document.getElementById('display-res-name').innerText = rName;
             document.getElementById('display-res-addr-text').innerText = rAddr;
-            document.getElementById('res-nav-btn').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rAddr)}`;
+            document.getElementById('res-nav-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(rAddr)}`;
 
             document.getElementById('action-btn').innerText = btnText;
             document.getElementById('order-ui').classList.remove('hidden');
@@ -320,14 +385,6 @@
             db.ref('support_tickets/' + driverId + '/chat').push({ sender: "Driver", text: input.value, timestamp: Date.now() });
             input.value = "";
         }
-
-        db.ref('support_tickets/' + driverId).on('value', (snap) => {
-            const t = snap.val(); const chatBox = document.getElementById('chat-messages');
-            if (t && t.chat) {
-                chatBox.innerHTML = Object.values(t.chat).map(m => `<div class="${m.sender === 'Driver' ? 'msg-driver' : 'msg-admin'}">${m.text}</div>`).join('');
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-        });
     </script>
 </body>
 </html>
