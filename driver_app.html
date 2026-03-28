@@ -182,14 +182,15 @@
     </div>
 
     <script>
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", 
-            authDomain: "jejmo-maribor.firebaseapp.com", 
-            databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", 
-            projectId: "jejmo-maribor", 
-            storageBucket: "jejmo-maribor.firebasestorage.app", 
-            messagingSenderId: "87105321281", 
-            appId: "1:87105321281:web:ec83e4472e5756182749c0" 
+        const firebaseConfig = {
+            apiKey: "AIzaSyANyaaceSfqFXWufFlgMiNb4nwV13WBO5Y",
+            authDomain: "jejmo-maribor.firebaseapp.com",
+            databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "jejmo-maribor",
+            storageBucket: "jejmo-maribor.firebasestorage.app",
+            messagingSenderId: "615780744817",
+            appId: "1:615780744817:web:89f05cba17bc92525465d0",
+            measurementId: "G-MTBKNBVNCP"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -201,14 +202,11 @@
         let currentOrder = null; let audioCtx = null; let alertInterval = null;
         let allCompletedOrders = [];
 
-        // --- UPDATED AUTH LOGIC ---
         function initRecaptcha() {
-            // If it exists, clear it first
             const container = document.getElementById('recaptcha-container');
             if (container) container.innerHTML = '';
             window.recaptchaVerifier = null;
 
-            // Create fresh verifier
             window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
                 'size': 'invisible'
             });
@@ -218,7 +216,6 @@
             const phoneNumber = document.getElementById('phone-input').value.trim();
             if (phoneNumber.length < 9) return alert("Enter a valid Slovenian number");
 
-            // Always init fresh to prevent "already rendered"
             initRecaptcha();
 
             try {
@@ -229,16 +226,13 @@
             } catch (error) {
                 console.error("Auth Error:", error);
                 alert("Error: " + error.message);
-                // Reset on fail
                 if (window.grecaptcha) window.grecaptcha.reset();
             }
         }
 
-        // Rest of your logic remains the same
         function verifyOTP() {
             const code = document.getElementById('otp-input').value;
             confirmationResult.confirm(code).then((result) => {
-                // Logged in
             }).catch(() => { alert("Wrong code!"); });
         }
 
