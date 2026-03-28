@@ -154,12 +154,20 @@
         const db = firebase.database();
         const fs = firebase.firestore(); 
 
-        // RESTAURANT DATA FOR DRIVER PICKUP
-        const restaurantData = {
-            name: "Chimney Cake MB",
-            address: "Glavni trg 17, 2000 Maribor",
-            phone: "+386 70 123 456"
+        // RETAURANTS REGISTRY - ADD YOUR 10 RESTAURANTS HERE
+        const restaurantsRegistry = {
+            "Chimney Cake MB": {
+                address: "Glavni trg 17, 2000 Maribor",
+                phone: "+386 70 123 456"
+            },
+            "Restaurant Name 2": {
+                address: "Address 2, 2000 Maribor",
+                phone: "+386 70 000 000"
+            }
         };
+        
+        // This identifies which restaurant the current app instance belongs to
+        const selectedRestaurant = "Chimney Cake MB"; 
         
         let cart = [];
         let selectedPayment = ""; 
@@ -238,7 +246,11 @@
         function sendOrder() {
             if (cart.length === 0) { alert("Add items to your cart first!"); return; }
             if (!selectedPayment) { alert("Please select Cash or Card!"); return; }
+            
+            // Get data from our registry
+            const restaurantInfo = restaurantsRegistry[selectedRestaurant];
             const courierNote = document.getElementById('courier-note').value || "No special instructions";
+            
             db.ref('globalOrderCounter').transaction((currentValue) => {
                 if (currentValue === null || currentValue >= 999) return 1;
                 return currentValue + 1;
@@ -248,6 +260,7 @@
                     const displayId = count.toString().padStart(3, '0');
                     const orderId = db.ref('orders').push().key;
                     const itemsString = cart.map(i => `${i.quantity}x ${i.name}`).join(", ");
+                    
                     db.ref('orders/' + orderId).set({
                         orderNumber: displayId,
                         shortId: displayId,
@@ -257,9 +270,12 @@
                         phone: localStorage.getItem('kleo_phone'),
                         item: itemsString,
                         cartData: cart,
-                        restaurant: restaurantData.name,
-                        restaurantAddress: restaurantData.address,
-                        restaurantPhone: restaurantData.phone,
+                        
+                        // Dynamic Restaurant Data
+                        restaurant: selectedRestaurant,
+                        restaurantAddress: restaurantInfo.address,
+                        restaurantPhone: restaurantInfo.phone,
+                        
                         totalPrice: document.getElementById('priceDisplay').innerText,
                         paymentType: selectedPayment,
                         courierInstruction: courierNote,
