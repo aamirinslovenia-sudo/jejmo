@@ -57,6 +57,30 @@
     <div class="max-w-md mx-auto px-6 space-y-14">
         <section>
             <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center text-xl">🍦</div>
+                <div>
+                    <h2 class="text-xl font-black italic tracking-tighter uppercase">Chimney Cake MB</h2>
+                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Sweet Trdelník & Ice Cream</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div id="item-ChimneyDubai" onclick="addToCart('Dubai Chimney', 8.50, 'item-ChimneyDubai', 'Chimney Cake MB')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                    <span class="text-3xl block mb-2">🍫</span><p class="font-bold text-[11px] uppercase">Dubai Special</p><p class="text-blue-400 font-black text-xs">€8.50</p>
+                </div>
+                <div id="item-ChimneyPistachio" onclick="addToCart('Pistachio Dream', 7.90, 'item-ChimneyPistachio', 'Chimney Cake MB')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                    <span class="text-3xl block mb-2">💚</span><p class="font-bold text-[11px] uppercase">Pistachio Dream</p><p class="text-blue-400 font-black text-xs">€7.90</p>
+                </div>
+                <div id="item-ChimneyClassic" onclick="addToCart('Classic Cinnamon', 5.50, 'item-ChimneyClassic', 'Chimney Cake MB')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                    <span class="text-3xl block mb-2">🥨</span><p class="font-bold text-[11px] uppercase">Classic Sugar</p><p class="text-blue-400 font-black text-xs">€5.50</p>
+                </div>
+                <div id="item-ChimneyBerry" onclick="addToCart('Berry Explosion', 7.50, 'item-ChimneyBerry', 'Chimney Cake MB')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                    <span class="text-3xl block mb-2">🍓</span><p class="font-bold text-[11px] uppercase">Berry Mix</p><p class="text-blue-400 font-black text-xs">€7.50</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="flex items-center gap-3 mb-6">
                 <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-xl">☁️</div>
                 <div>
                     <h2 class="text-xl font-black italic tracking-tighter uppercase">LUFT Maribor</h2>
@@ -310,7 +334,6 @@
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     
-                    // NEW BEAUTIFUL PREMIUM EMAIL TEMPLATE
                     const receiptHtml = `
                         <div style="background-color: #060a11; margin: 0; padding: 40px 10px; font-family: 'Outfit', sans-serif, Arial;">
                             <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #0c121d; border-radius: 40px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
