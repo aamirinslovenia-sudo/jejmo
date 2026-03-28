@@ -182,6 +182,7 @@
     </div>
 
     <script>
+        // NEW FRESH CONFIG FROM YOUR LATEST APP CREATION
         const firebaseConfig = {
             apiKey: "AIzaSyANyaaceSfqFXWufFlgMiNb4nwV13WBO5Y",
             authDomain: "jejmo-maribor.firebaseapp.com",
@@ -202,10 +203,21 @@
         let currentOrder = null; let audioCtx = null; let alertInterval = null;
         let allCompletedOrders = [];
 
+        // --- IDENTITY PLATFORM RECAPTCHA FIX ---
         function initRecaptcha() {
             const container = document.getElementById('recaptcha-container');
-            if (container) container.innerHTML = '';
-            window.recaptchaVerifier = null;
+            if (container) {
+                container.innerHTML = ''; // Clear physical element
+            }
+            
+            // Force clear existing global verifier if it exists
+            if (window.recaptchaVerifier) {
+                try {
+                    window.recaptchaVerifier.clear();
+                } catch (e) {
+                    console.log("Verifier already clear");
+                }
+            }
 
             window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
                 'size': 'invisible'
@@ -216,6 +228,7 @@
             const phoneNumber = document.getElementById('phone-input').value.trim();
             if (phoneNumber.length < 9) return alert("Enter a valid Slovenian number");
 
+            // Fresh init to stop "Already rendered" error
             initRecaptcha();
 
             try {
@@ -225,15 +238,20 @@
                 document.getElementById('otp-step').classList.remove('hidden');
             } catch (error) {
                 console.error("Auth Error:", error);
+                // Clear on failure so button works on retry
+                if (window.recaptchaVerifier) window.recaptchaVerifier.clear();
                 alert("Error: " + error.message);
-                if (window.grecaptcha) window.grecaptcha.reset();
             }
         }
 
         function verifyOTP() {
             const code = document.getElementById('otp-input').value;
+            if (!confirmationResult) return alert("Session expired. Please try again.");
+            
             confirmationResult.confirm(code).then((result) => {
-            }).catch(() => { alert("Wrong code!"); });
+            }).catch((error) => { 
+                alert("Wrong code! " + error.message); 
+            });
         }
 
         auth.onAuthStateChanged((user) => {
