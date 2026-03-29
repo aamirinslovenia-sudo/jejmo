@@ -265,17 +265,34 @@
                 document.getElementById('step-new').classList.add('active');
                 if(["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) document.getElementById('step-kitchen').classList.add('active');
                 if(["Delivering", "Completed"].includes(o.status)) document.getElementById('step-delivery').classList.add('active');
+                
                 const statusMap = { New: "ODDANO", Preparing: "PRIPRAVA", Ready: "PRIPRAVLJENO", Delivering: "NA POTI", Completed: "DOSTAVLJENO" };
                 document.getElementById('tracking-status-text').innerText = statusMap[o.status] || "Priprava...";
+
+                // --- DYNAMIC PREP TIME ENGINE ---
+                if (o.status === "Preparing" && o.estimatedReadyAt) {
+                    const now = Date.now();
+                    const diff = Math.ceil((o.estimatedReadyAt - now) / 60000);
+                    const displayTime = diff > 0 ? diff : 1;
+                    document.getElementById('eta-display').innerText = `~${displayTime} MIN`;
+                    document.getElementById('eta-display').style.color = "#4ade80"; // Green glow for active prep
+                } else if (o.status === "Ready") {
+                    document.getElementById('eta-display').innerText = "PRIPRAVLJENO";
+                    document.getElementById('eta-display').style.color = "#3b82f6";
+                } else if (o.status === "Delivering") {
+                    document.getElementById('eta-display').innerText = "~10 MIN";
+                    document.getElementById('eta-display').style.color = "white";
+                }
+
                 if(o.claimedByName) { document.getElementById('courier-badge').classList.remove('hidden'); document.getElementById('courier-name-display').innerText = o.claimedByName; }
                 if(o.courierLocation && o.status === "Delivering") {
                     const pos = [o.courierLocation.lat, o.courierLocation.lng];
                     if(!courierMarker) { courierMarker = L.marker(pos, {icon: L.divIcon({ html: '<div style="background:#a855f7; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 15px #a855f7;"></div>', className: '' })}).addTo(map); } else { courierMarker.setLatLng(pos); }
-                    map.panTo(pos); document.getElementById('eta-display').innerText = "~10 MIN";
+                    map.panTo(pos); 
                 }
+                
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
-                    // --- EMAIL SERVICE ENGINE ---
                     const lang = o.language || 'slo';
                     const et = { 
                         slo: { subj: 'Naročilo #', title: 'MISIJA USPELA', manifest: 'Povzetek naročila', from: 'Od', to: 'Za', paid: 'Skupaj plačano prek', footer: '© 2026 JEJMO MARIBOR' }, 
