@@ -33,7 +33,6 @@
         .restaurant-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
         .restaurant-card:active { transform: scale(0.96); opacity: 0.8; }
         
-        /* Language Switcher Style */
         .lang-btn { font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 10px; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); color: #475569; }
         .lang-btn.active { color: white; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
     </style>
@@ -178,7 +177,6 @@
     </div>
 
     <script>
-        // TRANSLATIONS DICTIONARY
         const translations = {
             slo: {
                 onboarding_sub: "Vrhunska dostava <br>do vaših vrat.",
@@ -248,23 +246,16 @@
             currentLang = lang;
             document.getElementById('btn-slo').classList.toggle('active', lang === 'slo');
             document.getElementById('btn-eng').classList.toggle('active', lang === 'eng');
-            
             const t = translations[lang];
-            
-            // Update Text content
             document.querySelectorAll('[data-t]').forEach(el => {
                 const key = el.getAttribute('data-t');
                 if (t[key]) el.innerHTML = t[key];
             });
-
-            // Update Placeholders
             document.getElementById('userName').placeholder = t.name_place;
             document.getElementById('userEmail').placeholder = t.email_place;
             document.getElementById('userPhone').placeholder = t.phone_place;
             document.getElementById('userAddress').placeholder = t.addr_place;
             document.getElementById('courier-note').placeholder = t.courier_place;
-
-            // Update Dynamic Button text
             updateCartUI();
         }
 
@@ -297,7 +288,7 @@
         let emailSent = false;
 
         window.onload = function() {
-            setLanguage('slo'); // Initialize default
+            setLanguage('slo');
             window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {'size': 'invisible'});
             if (localStorage.getItem('kleo_name')) {
                 document.getElementById('onboarding-screen').style.display = 'none';
@@ -352,7 +343,6 @@
             const container = document.getElementById('cart-items-container');
             container.innerHTML = "";
             const t = translations[currentLang];
-            
             if(cart.length === 0) {
                 document.getElementById('cart-summary').classList.add('hidden');
                 document.getElementById('orderBtn').innerText = t.select_items_btn;
@@ -402,7 +392,8 @@
                         paymentType: selectedPayment,
                         courierInstruction: document.getElementById('courier-note').value,
                         timestamp: Date.now(),
-                        status: 'New'
+                        status: 'New',
+                        language: currentLang // Store language for receipt
                     }).then(() => { startTracking(orderId); });
                 }
             });
@@ -412,48 +403,68 @@
             document.getElementById('order-tracking-overlay').style.display = 'flex';
             db.ref('orders/' + orderId).on('value', (snap) => {
                 const o = snap.val(); if(!o) return;
-                
                 document.getElementById('step-new').classList.add('active');
-                if(["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) {
-                    document.getElementById('step-kitchen').classList.add('active');
-                }
-                if(["Delivering", "Completed"].includes(o.status)) {
-                    document.getElementById('step-delivery').classList.add('active');
-                }
+                if(["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) document.getElementById('step-kitchen').classList.add('active');
+                if(["Delivering", "Completed"].includes(o.status)) document.getElementById('step-delivery').classList.add('active');
 
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
+                    
+                    // Email Translation Logic
+                    const emailT = {
+                        slo: {
+                            subj: 'Uspešna misija: Naročilo #',
+                            title: 'MISIJA USPELA',
+                            manifest: 'Povzetek naročila',
+                            from: 'Od',
+                            to: 'Za',
+                            paid: 'Skupaj plačano prek',
+                            footer: '© 2026 JEJMO MARIBOR. VSE MISIJE OPRAVLJENE.'
+                        },
+                        eng: {
+                            subj: 'Mission Successful: Order #',
+                            title: 'MISSION SUCCESS',
+                            manifest: 'Manifest Summary',
+                            from: 'From',
+                            to: 'To',
+                            paid: 'Total Paid via',
+                            footer: '© 2026 JEJMO MARIBOR. ALL MISSIONS ACCOMPLISHED.'
+                        }
+                    };
+                    const lang = o.language || 'slo';
+                    const et = emailT[lang];
+
                     fs.collection('mail').add({
                         to: o.email,
                         message: {
-                            subject: 'Mission Successful: Order #' + o.orderNumber,
+                            subject: et.subj + o.orderNumber,
                             html: `
                                 <div style="background-color: #060a11; color: #ffffff; padding: 40px; font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: auto; border-radius: 30px; border: 1px solid rgba(255,255,255,0.05);">
                                     <div style="text-align: center; margin-bottom: 40px;">
                                         <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="JEJMO" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); object-fit: cover;">
-                                        <h1 style="font-style: italic; font-weight: 900; font-size: 32px; letter-spacing: -1.5px; margin-top: 25px; color: #ffffff;">MISSION SUCCESS</h1>
-                                        <p style="color: #60a5fa; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 3px;">Order Confirmation #${o.orderNumber}</p>
+                                        <h1 style="font-style: italic; font-weight: 900; font-size: 32px; letter-spacing: -1.5px; margin-top: 25px; color: #ffffff;">${et.title}</h1>
+                                        <p style="color: #60a5fa; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 3px;">#${o.orderNumber}</p>
                                     </div>
                                     <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 25px;">
-                                        <h4 style="margin: 0 0 15px 0; color: #94a3b8; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Manifest Summary</h4>
+                                        <h4 style="margin: 0 0 15px 0; color: #94a3b8; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${et.manifest}</h4>
                                         <p style="margin: 0; font-size: 16px; font-weight: 600; line-height: 1.6;">${o.item}</p>
                                     </div>
-                                    <div style="display: flex; gap: 10px; margin-bottom: 25px;">
-                                        <div style="flex: 1; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px;">
-                                            <p style="margin: 0; color: #64748b; font-size: 9px; font-weight: 800; text-transform: uppercase;">From</p>
+                                    <div style="display: flex; margin-bottom: 25px;">
+                                        <div style="flex: 1; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px; margin-right: 5px;">
+                                            <p style="margin: 0; color: #64748b; font-size: 9px; font-weight: 800; text-transform: uppercase;">${et.from}</p>
                                             <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: 700;">${o.restaurant}</p>
                                         </div>
                                         <div style="flex: 1; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px;">
-                                            <p style="margin: 0; color: #64748b; font-size: 9px; font-weight: 800; text-transform: uppercase;">To</p>
+                                            <p style="margin: 0; color: #64748b; font-size: 9px; font-weight: 800; text-transform: uppercase;">${et.to}</p>
                                             <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: 700;">${o.customer}</p>
                                         </div>
                                     </div>
                                     <div style="background: #2563eb; padding: 20px; border-radius: 20px; text-align: center;">
-                                        <p style="margin: 0; color: rgba(255,255,255,0.7); font-weight: 800; font-size: 10px; text-transform: uppercase; margin-bottom: 5px;">Total Paid via ${o.paymentType}</p>
+                                        <p style="margin: 0; color: rgba(255,255,255,0.7); font-weight: 800; font-size: 10px; text-transform: uppercase; margin-bottom: 5px;">${et.paid} ${o.paymentType}</p>
                                         <p style="margin: 0; color: white; font-weight: 900; font-size: 28px; font-style: italic;">${o.totalPrice}</p>
                                     </div>
                                     <div style="text-align: center; margin-top: 40px;">
-                                        <p style="color: #475569; font-size: 11px; font-weight: 700;">&copy; 2026 JEJMO MARIBOR. ALL MISSIONS ACCOMPLISHED.</p>
+                                        <p style="color: #475569; font-size: 11px; font-weight: 700;">${et.footer}</p>
                                     </div>
                                 </div>
                             `
