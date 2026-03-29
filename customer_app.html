@@ -182,10 +182,18 @@
         function initAudio() {
             if (audioCtx) return;
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            // Create a silent buffer to kick-start audio on iOS
+            const buffer = audioCtx.createBuffer(1, 1, 22050);
+            const source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioCtx.destination);
+            source.start(0);
         }
 
         function playTick() {
-            if (!audioCtx) return;
+            if (!audioCtx) initAudio(); // Ensure context is ready
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
             const t = audioCtx.currentTime;
             const o = audioCtx.createOscillator();
             const g = audioCtx.createGain();
@@ -317,8 +325,7 @@
         };
 
         function handleGateway() {
-            initAudio(); // Activate audio on first touch
-            playTick();
+            playTick(); // sound first
             const name = document.getElementById('userName').value;
             const email = document.getElementById('userEmail').value;
             const phone = document.getElementById('userPhone').value;
@@ -401,7 +408,7 @@
         }
 
         function sendOrder() {
-            playTick();
+            playTick(); // Trigger immediately on click
             if (cart.length === 0 || !selectedPayment) return alert("Select items and payment!");
             const info = restaurantsRegistry[selectedRestaurant];
             db.ref('globalOrderCounter').transaction(cv => (cv || 0) + 1, (err, comm, snap) => {
