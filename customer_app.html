@@ -30,7 +30,6 @@
         .tracking-dot.active { background: #3b82f6; box-shadow: 0 0 20px #3b82f6; }
         .connector-line { position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.05); }
         
-        /* Map Container Styling */
         #live-map { flex-grow: 1; width: 100%; background: #080c14; margin-top: 20px; z-index: 1; border-top: 1px solid rgba(255,255,255,0.05); }
         .map-overlay-info { position: absolute; bottom: 120px; left: 24px; right: 24px; z-index: 100; pointer-events: none; }
         .courier-card { background: rgba(6, 10, 17, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 16px 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); pointer-events: auto; }
@@ -39,6 +38,10 @@
         .cart-item-chip { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #60a5fa; margin-right: 5px; margin-bottom: 5px; display: inline-block; transition: all 0.2s; }
         .instruction-box { width: 100%; background: rgba(255,255,255,0.03); border-radius: 20px; padding: 16px; border: 1px solid rgba(255,255,255,0.08); outline: none; color: white; font-size: 12px; resize: none; transition: border 0.3s; }
         .product-img { width: 100%; height: 100px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
+
+        /* Restored Language Button Styles */
+        .lang-btn { font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 10px; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); color: #475569; }
+        .lang-btn.active { color: white; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
     </style>
 </head>
 <body class="pb-24">
@@ -244,15 +247,8 @@
         const restaurantsRegistry = { "Chimney Cake MB": { address: "Glavni trg 17, 2000 Maribor", phone: "+386 70 123 456", logo: "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" } };
         let selectedRestaurant = ""; let cart = []; let selectedPayment = ""; let emailSent = false;
         
-        // Tracking & Maps Globals
         let map = null;
         let courierMarker = null;
-
-        function preloadImages() {
-            ["https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD1.JPG.jpeg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD2.JPG.jpeg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD3.JPG.jpeg"].forEach(src => {
-                const img = new Image(); img.src = src;
-            });
-        }
 
         window.onload = function() {
             preloadImages();
@@ -375,36 +371,25 @@
             
             db.ref('orders/' + orderId).on('value', (snap) => {
                 const o = snap.val(); if(!o) return;
-                
-                // Update Progress Dots
                 document.getElementById('step-new').classList.add('active');
                 if(["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) document.getElementById('step-kitchen').classList.add('active');
                 if(["Delivering", "Completed"].includes(o.status)) document.getElementById('step-delivery').classList.add('active');
-
-                // Update Status Text
                 const statusMap = { New: "ODDANO", Preparing: "PRIPRAVA", Ready: "PRIPRAVLJENO", Delivering: "NA POTI", Completed: "DOSTAVLJENO" };
                 document.getElementById('tracking-status-text').innerText = statusMap[o.status] || "Priprava...";
-
-                // Handle Courier Identity
                 if(o.claimedByName) {
                     document.getElementById('courier-badge').classList.remove('hidden');
                     document.getElementById('courier-name-display').innerText = o.claimedByName;
                     document.getElementById('courier-call-btn').href = "tel:" + (o.courierPhone || "");
                 }
-
-                // Handle Live GPS
                 if(o.courierLocation && o.status === "Delivering") {
                     const pos = [o.courierLocation.lat, o.courierLocation.lng];
                     if(!courierMarker) {
                         const icon = L.divIcon({ html: '<div style="background:#a855f7; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 15px #a855f7;"></div>', className: '' });
                         courierMarker = L.marker(pos, {icon: icon}).addTo(map);
-                    } else {
-                        courierMarker.setLatLng(pos);
-                    }
+                    } else { courierMarker.setLatLng(pos); }
                     map.panTo(pos);
                     document.getElementById('eta-display').innerText = "~10 MIN";
                 }
-
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     document.getElementById('success-msg').style.display = 'flex';
@@ -412,8 +397,9 @@
             });
         }
 
-        function resetUser() { 
-            if(confirm("Logout?")) { localStorage.clear(); location.reload(); } 
+        function resetUser() { if(confirm("Logout?")) { localStorage.clear(); location.reload(); } }
+        function preloadImages() {
+            ["https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg"].forEach(src => { const img = new Image(); img.src = src; });
         }
     </script>
 </body>
