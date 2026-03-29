@@ -361,7 +361,6 @@
                     
                     renderUI(activeTask, btnText);
                     clearInterval(alertInterval); alertInterval = null;
-                    // Crash Recovery GPS Start
                     if (activeTask.status === "Delivering") startTracking();
                 } else if (availableOrder) {
                     currentOrder = availableOrder; renderUI(availableOrder, "Accept Mission");
@@ -386,20 +385,27 @@
         }
 
         function renderUI(o, btnText) {
+            const rAddr = "Glavni trg 17, Maribor";
             document.getElementById('c-name').innerText = o.customer;
             document.getElementById('c-addr-text').innerText = o.address;
             document.getElementById('c-phone').href = "tel:" + o.phone;
-            document.getElementById('c-nav-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(o.address)}`;
+            
+            // SMART NAVIGATION SWITCH
+            const navUrl = (addr) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}&travelmode=driving`;
+            
+            // Step 1: Going to Restaurant
+            document.getElementById('res-nav-btn').href = navUrl(rAddr);
+            // Step 2: Going to Customer
+            document.getElementById('c-nav-btn').href = navUrl(o.address);
+
             document.getElementById('display-price').innerText = o.totalPrice;
             document.getElementById('display-order-number').innerText = o.orderNumber ? "#" + o.orderNumber : "#" + o.id.substring(0,5).toUpperCase();
             document.getElementById('display-items').innerText = o.item || "Standard Order";
             document.getElementById('display-instruction').innerText = o.courierInstruction || "No special instructions";
 
             const rName = o.restaurant || "Master Kitchen";
-            const rAddr = "Glavni trg 17, Maribor";
             document.getElementById('display-res-name').innerText = rName;
             document.getElementById('display-res-addr-text').innerText = rAddr;
-            document.getElementById('res-nav-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(rAddr)}`;
 
             const timerBox = document.getElementById('driver-eta-box');
             const timerDisplay = document.getElementById('driver-eta-display');
