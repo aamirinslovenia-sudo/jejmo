@@ -82,6 +82,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         let audioCtx = null; let alarmInterval = null;
+        let driverNames = {}; // Local map for UID -> Name
 
         setInterval(() => { 
             document.getElementById('clock').innerText = new Date().toLocaleTimeString('sl-SI'); 
@@ -123,17 +124,25 @@
 
         function toggleHistory() { document.getElementById('history-sidebar').classList.toggle('sidebar-open'); }
 
+        // --- Driver Name Listener ---
+        db.ref('drivers').on('value', (snap) => {
+            driverNames = {};
+            snap.forEach(child => {
+                driverNames[child.key] = child.val().name;
+            });
+        });
+
         db.ref('orders').on('value', (snap) => {
             const list = document.getElementById('orderList');
             const history = document.getElementById('historyList');
             const driverBox = document.getElementById('driver-summary');
-            let drivers = {}; let activeOrders = []; let prepTimes = [];
+            let activeDrivers = {}; let activeOrders = []; let prepTimes = [];
             history.innerHTML = ""; list.innerHTML = "";
 
             snap.forEach((child) => {
                 const o = child.val(); o.id = child.key;
                 if(o.claimedBy) {
-                    drivers[o.claimedBy] = (o.status === "Delivering") ? "Busy" : "Waiting";
+                    activeDrivers[o.claimedBy] = (o.status === "Delivering") ? "Busy" : "Waiting";
                 }
                 if (o.status === "New" || o.status === "Preparing") { 
                     activeOrders.push(o); 
@@ -148,7 +157,11 @@
             
             if(prepTimes.length > 0) document.getElementById('avg-prep').innerText = Math.round(prepTimes.reduce((a,b) => a+b, 0) / prepTimes.length) + "m";
             
-            driverBox.innerHTML = Object.keys(drivers).map(dId => `<div class="driver-status-pill"><span class="dot ${drivers[dId] === "Busy" ? 'dot-red' : 'dot-green'}"></span>${dId}</div>`).join('') || '<span class="text-[9px] text-slate-700 font-black uppercase tracking-widest text-left">No Couriers Active</span>';
+            // Render Driver Status with real names
+            driverBox.innerHTML = Object.keys(activeDrivers).map(uid => {
+                const name = driverNames[uid] || uid.substring(0,5);
+                return `<div class="driver-status-pill"><span class="dot ${activeDrivers[uid] === "Busy" ? 'dot-red' : 'dot-green'}"></span>${name}</div>`;
+            }).join('') || '<span class="text-[9px] text-slate-700 font-black uppercase tracking-widest text-left">No Couriers Active</span>';
             
             if (activeOrders.some(o => o.status === "New") && !alarmInterval) {
                 alarmInterval = setInterval(playBell, 5000);
@@ -166,7 +179,10 @@
             const displayOrderNum = o.orderNumber ? "#" + o.orderNumber : "#" + id.substring(0,5).toUpperCase();
             
             const formattedItems = o.item.split(', ').map(i => `<div class="item-row">${i}</div>`).join('');
-            const driverTag = o.claimedBy ? `<span class="text-[10px] text-green-400 font-black uppercase">Courier: ${o.claimedBy}</span>` : `<span class="text-[10px] text-slate-500 font-black uppercase">Finding Courier...</span>`;
+            
+            // Resolve Display Name: use 'claimedByName' from order or lookup from 'drivers' node
+            const courierDisplayName = o.claimedByName || (o.claimedBy ? (driverNames[o.claimedBy] || o.claimedBy.substring(0,5)) : null);
+            const driverTag = courierDisplayName ? `<span class="text-[10px] text-green-400 font-black uppercase">Courier: ${courierDisplayName}</span>` : `<span class="text-[10px] text-slate-500 font-black uppercase">Finding Courier...</span>`;
 
             const html = `
                 <div id="card-${id}" data-time="${time}" class="order-card">
@@ -222,13 +238,14 @@
 
         function renderHistory(id, o) { 
             const displayOrderNum = o.orderNumber ? "#" + o.orderNumber : "#" + id.substring(0,5).toUpperCase();
+            const courierName = o.claimedByName || (o.claimedBy ? (driverNames[o.claimedBy] || 'Driver') : 'Unassigned');
             const html = `
                 <div class="bg-white/5 p-6 rounded-3xl border border-white/5 mb-4">
                     <div class="flex justify-between">
                         <p class="font-black italic uppercase text-white text-sm">${displayOrderNum} • ${o.item.substring(0,25)}...</p>
                         <p class="text-purple-400 font-bold">${o.totalPrice}</p>
                     </div>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase mt-1">${o.customer} • ${o.status}</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase mt-1">${o.customer} • Courier: ${courierName}</p>
                     <button onclick="db.ref('orders/${id}').update({status:'Preparing'})" class="w-full mt-3 py-2 bg-white/5 rounded-xl text-[8px] font-black uppercase tracking-widest opacity-50 hover:opacity-100 transition-all">Re-Open</button>
                 </div>`; 
             document.getElementById('historyList').insertAdjacentHTML('afterbegin', html); 
