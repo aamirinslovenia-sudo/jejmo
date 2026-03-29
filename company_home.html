@@ -16,6 +16,10 @@
         @keyframes bounce-slow { 0%, 100% { transform: translateY(-5px); } 50% { transform: translateY(0); } }
         .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
         
+        /* Form Styles */
+        input, textarea { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
+        input:focus, textarea:focus { border-color: #3b82f6 !important; outline: none; }
+
         /* App Preview Specific Styles */
         .phone-mockup { width: 280px; height: 580px; border: 8px solid #1e293b; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); }
         .phone-screen { background: #060a11; height: 100%; width: 100%; padding: 16px; font-family: 'Outfit', sans-serif; }
@@ -35,7 +39,7 @@
                 <a href="#about" class="nav-link">O nas</a>
                 <a href="#how-it-works" class="nav-link">Kako deluje</a>
                 <a href="#partners" class="nav-link">Partnerji</a>
-                <a href="#drivers" class="nav-link">Dostavljalci</a>
+                <a href="#contact" class="nav-link">Kontakt</a>
             </div>
             <a href="https://customer.jejmo.com" class="bg-blue-600 hover:bg-blue-500 text-white font-black px-6 py-2 rounded-full text-[10px] uppercase tracking-widest transition-all">Naroči Zdaj</a>
         </div>
@@ -152,6 +156,39 @@
                 </div>
                 <div class="absolute bottom-20 right-10 md:right-[25%] glass p-4 rounded-2xl border-white/10 hidden md:block">
                     <p class="text-[10px] font-black text-green-400 uppercase tracking-widest">Hitro plačilo</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-5xl font-black italic tracking-tighter uppercase mb-6 text-gradient">Stopite v stik</h2>
+                    <p class="text-slate-400 text-lg mb-10 leading-relaxed">Imate vprašanja o sodelovanju ali potrebujete pomoč pri naročilu? Naša ekipa v Mariboru vam je na voljo.</p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 glass rounded-2xl flex items-center justify-center text-blue-400">📍</div>
+                            <p class="font-bold text-slate-200 uppercase text-xs tracking-widest">Maribor, Slovenija</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 glass rounded-2xl flex items-center justify-center text-blue-400">📧</div>
+                            <p class="font-bold text-slate-200 uppercase text-xs tracking-widest">info@jejmo.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass p-8 md:p-12 rounded-[40px] border-white/10">
+                    <form action="#" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" placeholder="Ime" class="p-4 rounded-2xl w-full text-sm font-bold">
+                            <input type="email" placeholder="Email" class="p-4 rounded-2xl w-full text-sm font-bold">
+                        </div>
+                        <textarea placeholder="Vaše sporočilo" rows="4" class="p-4 rounded-2xl w-full text-sm font-bold"></textarea>
+                        <button type="submit" class="w-full bg-white text-black font-black py-4 rounded-2xl uppercase tracking-widest text-xs hover:bg-blue-500 hover:text-white transition-all">Pošlji Sporočilo</button>
+                    </form>
                 </div>
             </div>
         </div>
