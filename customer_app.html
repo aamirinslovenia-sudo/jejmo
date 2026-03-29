@@ -11,7 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #060a11; color: white; overflow-x: hidden; }
+        body { font-family: 'Outfit', sans-serif; background-color: #060a11; color: white; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
         .logo-container { position: relative; display: flex; justify-content: center; align-items: center; }
         .logo-glow { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(25px); z-index: 0; }
@@ -19,7 +19,7 @@
         .logo-main { height: 120px; width: 120px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); z-index: 1; position: relative; }
         .logo-header { height: 52px; width: 52px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); }
         .rest-logo-sq { height: 100px; width: 100px; object-fit: cover; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); z-index: 1; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
-        #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: 0.6s; }
+        #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1); }
         .input-box { width: 100%; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px 24px; border: 1px solid rgba(255,255,255,0.1); outline: none; color: white; font-weight: 600; }
         .active-item { border-color: #3b82f6 !important; background: rgba(59, 130, 246, 0.2) !important; transform: scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
         #order-tracking-overlay { position: fixed; inset: 0; background: #060a11; z-index: 2000; display: none; padding: 60px 24px; flex-direction: column; }
@@ -29,10 +29,9 @@
         #success-msg { position: fixed; inset: 0; background: #060a11; z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
         .cart-item-chip { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #60a5fa; margin-right: 5px; margin-bottom: 5px; display: inline-block; transition: all 0.2s; }
         .instruction-box { width: 100%; background: rgba(255,255,255,0.03); border-radius: 20px; padding: 16px; border: 1px solid rgba(255,255,255,0.08); outline: none; color: white; font-size: 12px; resize: none; transition: border 0.3s; }
-        .product-img { width: 100%; height: 100px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
-        .restaurant-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .product-img { width: 100%; height: 100px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); will-change: transform; }
+        .restaurant-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; will-change: transform; }
         .restaurant-card:active { transform: scale(0.96); opacity: 0.8; }
-        
         .lang-btn { font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 10px; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); color: #475569; }
         .lang-btn.active { color: white; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
     </style>
@@ -61,7 +60,6 @@
             <button onclick="setLanguage('slo')" id="btn-slo" class="lang-btn active">SLO</button>
             <button onclick="setLanguage('eng')" id="btn-eng" class="lang-btn">ENG</button>
         </div>
-
         <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Jejmo Logo" class="logo-header mb-4">
         <div class="flex items-center gap-2 glass px-4 py-1.5 rounded-full">
             <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
@@ -77,7 +75,6 @@
                 <p data-t="rest_sub" class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Sveže pečeno • 25 min</p>
             </div>
         </div>
-
         <div class="glass p-5 rounded-[32px] flex items-center gap-5 border border-white/5 opacity-40">
             <div class="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center text-3xl">🍕</div>
             <div>
@@ -89,7 +86,6 @@
 
     <div id="menu-view" class="max-w-md mx-auto px-6 space-y-12 hidden">
         <button onclick="goBack()" data-t="back_btn" class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-4 flex items-center gap-2">← Nazaj na kuhinje</button>
-        
         <section>
             <div class="flex flex-col items-center justify-center mb-10 text-center">
                 <div class="relative flex items-center justify-center mb-4">
@@ -98,7 +94,6 @@
                 </div>
                 <h2 data-t="menu_title" class="text-2xl font-black italic tracking-tighter uppercase">Meni</h2>
             </div>
-            
             <div class="grid grid-cols-2 gap-4">
                 <div id="item-Chimney1" onclick="addToCart('Chimney Special A', 8.50, 'item-Chimney1')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD1.JPG.jpeg" class="product-img">
@@ -182,7 +177,6 @@
         function initAudio() {
             if (audioCtx) return;
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            // Create a silent buffer to kick-start audio on iOS
             const buffer = audioCtx.createBuffer(1, 1, 22050);
             const source = audioCtx.createBufferSource();
             source.buffer = buffer;
@@ -191,9 +185,8 @@
         }
 
         function playTick() {
-            if (!audioCtx) initAudio(); // Ensure context is ready
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            
+            if (!audioCtx) initAudio();
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
             const t = audioCtx.currentTime;
             const o = audioCtx.createOscillator();
             const g = audioCtx.createGain();
@@ -205,70 +198,11 @@
         }
 
         const translations = {
-            slo: {
-                onboarding_sub: "Vrhunska dostava <br>do vaših vrat.",
-                name_place: "Polno ime",
-                email_place: "E-pošta (za prejemke)",
-                phone_place: "Telefonska številka",
-                addr_place: "Naslov v Mariboru",
-                continue_btn: "Nadaljuj",
-                rest_sub: "Sveže pečeno • 25 min",
-                coming_soon: "Kmalu na voljo",
-                coming_soon_sub: "Širitev v teku",
-                back_btn: "← Nazaj na kuhinje",
-                menu_title: "Meni",
-                courier_note_title: "Navodila za kurirja",
-                courier_place: "Pustite pred vrati, pokličite, ko ste zunaj...",
-                payment_title: "Izberite način plačila",
-                cash_btn: "Gotovina",
-                card_btn: "Kartica",
-                total_cost: "Skupni strošek misije",
-                logout_btn: "Odjava",
-                select_items_btn: "Izberite izdelke",
-                init_mission_btn: "Začni misijo",
-                stage_1: "Stopnja 1", status_1: "Oddano",
-                stage_2: "Stopnja 2", status_2: "Priprava",
-                stage_3: "Stopnja 3", status_3: "Na poti",
-                arrival_est: "Predviden prihod",
-                back_store_btn: "Nazaj v trgovino",
-                success_title: "MISIJA USPELA",
-                success_sub: "Potrdilo poslano na vašo e-pošto.",
-                cont_shopping_btn: "Nadaljuj z nakupovanjem"
-            },
-            eng: {
-                onboarding_sub: "Premium delivery <br>to your doorstep.",
-                name_place: "Full Name",
-                email_place: "Email (For Receipts)",
-                phone_place: "Phone Number",
-                addr_place: "Address in Maribor",
-                continue_btn: "Continue",
-                rest_sub: "Freshly Baked • 25 min",
-                coming_soon: "Coming Soon",
-                coming_soon_sub: "Expansion in progress",
-                back_btn: "← Back to Kitchens",
-                menu_title: "Menu",
-                courier_note_title: "Instruction for the Courier",
-                courier_place: "Leave at the door, call when outside...",
-                payment_title: "Select Payment Method",
-                cash_btn: "Cash",
-                card_btn: "Card",
-                total_cost: "Total Mission Cost",
-                logout_btn: "Logout",
-                select_items_btn: "Select Items",
-                init_mission_btn: "Initiate Mission",
-                stage_1: "Stage 1", status_1: "Transmitted",
-                stage_2: "Stage 2", status_2: "Preparing",
-                stage_3: "Stage 3", status_3: "On the road",
-                arrival_est: "Estimated Arrival",
-                back_store_btn: "Back to Store",
-                success_title: "MISSION SUCCESS",
-                success_sub: "Receipt sent to your email.",
-                cont_shopping_btn: "Continue Shopping"
-            }
+            slo: { onboarding_sub: "Vrhunska dostava <br>do vaših vrat.", name_place: "Polno ime", email_place: "E-pošta (za prejemke)", phone_place: "Telefonska številka", addr_place: "Naslov v Mariboru", continue_btn: "Nadaljuj", rest_sub: "Sveže pečeno • 25 min", coming_soon: "Kmalu na voljo", coming_soon_sub: "Širitev v teku", back_btn: "← Nazaj na kuhinje", menu_title: "Meni", courier_note_title: "Navodila za kurirja", courier_place: "Pustite pred vrati, pokličite, ko ste zunaj...", payment_title: "Izberite način plačila", cash_btn: "Gotovina", card_btn: "Kartica", total_cost: "Skupni strošek misije", logout_btn: "Odjava", select_items_btn: "Izberite izdelke", init_mission_btn: "Začni misijo", stage_1: "Stopnja 1", status_1: "Oddano", stage_2: "Stopnja 2", status_2: "Priprava", stage_3: "Stopnja 3", status_3: "Na poti", arrival_est: "Predviden prihod", back_store_btn: "Nazaj v trgovino", success_title: "MISIJA USPELA", success_sub: "Potrdilo poslano na vašo e-pošto.", cont_shopping_btn: "Nadaljuj z nakupovanjem" },
+            eng: { onboarding_sub: "Premium delivery <br>to your doorstep.", name_place: "Full Name", email_place: "Email (For Receipts)", phone_place: "Phone Number", addr_place: "Address in Maribor", continue_btn: "Continue", rest_sub: "Freshly Baked • 25 min", coming_soon: "Coming Soon", coming_soon_sub: "Expansion in progress", back_btn: "← Back to Kitchens", menu_title: "Menu", courier_note_title: "Instruction for the Courier", courier_place: "Leave at the door, call when outside...", payment_title: "Select Payment Method", cash_btn: "Cash", card_btn: "Card", total_cost: "Total Mission Cost", logout_btn: "Logout", select_items_btn: "Select Items", init_mission_btn: "Initiate Mission", stage_1: "Stage 1", status_1: "Transmitted", stage_2: "Stage 2", status_2: "Preparing", stage_3: "Stage 3", status_3: "On the road", arrival_est: "Estimated Arrival", back_store_btn: "Back to Store", success_title: "MISSION SUCCESS", success_sub: "Receipt sent to your email.", cont_shopping_btn: "Continue Shopping" }
         };
 
         let currentLang = 'slo';
-
         function setLanguage(lang) {
             playTick();
             currentLang = lang;
@@ -287,35 +221,24 @@
             updateCartUI();
         }
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", 
-            authDomain: "jejmo-maribor.firebaseapp.com", 
-            databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", 
-            projectId: "jejmo-maribor", 
-            storageBucket: "jejmo-maribor.firebasestorage.app", 
-            messagingSenderId: "87105321281", 
-            appId: "1:87105321281:web:ec83e4472e5756182749c0" 
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", authDomain: "jejmo-maribor.firebaseapp.com", databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", projectId: "jejmo-maribor", storageBucket: "jejmo-maribor.firebasestorage.app", messagingSenderId: "87105321281", appId: "1:87105321281:web:ec83e4472e5756182749c0" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const fs = firebase.firestore(); 
         const auth = firebase.auth(); 
 
-        const restaurantsRegistry = {
-            "Chimney Cake MB": {
-                address: "Glavni trg 17, 2000 Maribor",
-                phone: "+386 70 123 456",
-                logo: "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg"
-            }
-        };
-        
-        let selectedRestaurant = ""; 
-        let cart = [];
-        let selectedPayment = ""; 
-        let emailSent = false;
+        const restaurantsRegistry = { "Chimney Cake MB": { address: "Glavni trg 17, 2000 Maribor", phone: "+386 70 123 456", logo: "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" } };
+        let selectedRestaurant = ""; let cart = []; let selectedPayment = ""; let emailSent = false;
+
+        // PRELOAD ASSETS FOR SPEED
+        function preloadImages() {
+            ["https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD1.JPG.jpeg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD2.JPG.jpeg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD3.JPG.jpeg"].forEach(src => {
+                const img = new Image(); img.src = src;
+            });
+        }
 
         window.onload = function() {
+            preloadImages();
             setLanguage('slo');
             window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {'size': 'invisible'});
             if (localStorage.getItem('kleo_name')) {
@@ -325,7 +248,7 @@
         };
 
         function handleGateway() {
-            playTick(); // sound first
+            playTick();
             const name = document.getElementById('userName').value;
             const email = document.getElementById('userEmail').value;
             const phone = document.getElementById('userPhone').value;
@@ -350,7 +273,7 @@
             document.getElementById('menu-rest-logo').src = info.logo;
             document.getElementById('restaurant-view').classList.add('hidden');
             document.getElementById('menu-view').classList.remove('hidden');
-            window.scrollTo(0,0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function goBack() {
@@ -388,7 +311,8 @@
                 const chip = document.createElement('span');
                 chip.className = "cart-item-chip";
                 chip.innerHTML = `${item.quantity}x ${item.name} <span class="opacity-40 ml-1">✕</span>`;
-                chip.onclick = () => {
+                chip.onclick = (e) => {
+                    e.stopPropagation();
                     playTick();
                     document.getElementById(item.elementId).classList.remove('active-item');
                     cart.splice(index, 1);
@@ -408,8 +332,8 @@
         }
 
         function sendOrder() {
-            playTick(); // Trigger immediately on click
-            if (cart.length === 0 || !selectedPayment) return alert("Select items and payment!");
+            playTick();
+            if (cart.length === 0 || !selectedPayment) return;
             const info = restaurantsRegistry[selectedRestaurant];
             db.ref('globalOrderCounter').transaction(cv => (cv || 0) + 1, (err, comm, snap) => {
                 if (comm) {
@@ -436,6 +360,7 @@
 
         function startTracking(orderId) {
             document.getElementById('order-tracking-overlay').style.display = 'flex';
+            // OPTIMIZED LISTENER: Only listen to the specific order path
             db.ref('orders/' + orderId).on('value', (snap) => {
                 const o = snap.val(); if(!o) return;
                 document.getElementById('step-new').classList.add('active');
@@ -444,26 +369,9 @@
 
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
-                    
                     const emailT = {
-                        slo: {
-                            subj: 'Uspešna misija: Naročilo #',
-                            title: 'MISIJA USPELA',
-                            manifest: 'Povzetek naročila',
-                            from: 'Od',
-                            to: 'Za',
-                            paid: 'Skupaj plačano prek',
-                            footer: '© 2026 JEJMO MARIBOR. VSE MISIJE OPRAVLJENE.'
-                        },
-                        eng: {
-                            subj: 'Mission Successful: Order #',
-                            title: 'MISSION SUCCESS',
-                            manifest: 'Manifest Summary',
-                            from: 'From',
-                            to: 'To',
-                            paid: 'Total Paid via',
-                            footer: '© 2026 JEJMO MARIBOR. ALL MISSIONS ACCOMPLISHED.'
-                        }
+                        slo: { subj: 'Uspešna misija: Naročilo #', title: 'MISIJA USPELA', manifest: 'Povzetek naročila', from: 'Od', to: 'Za', paid: 'Skupaj plačano prek', footer: '© 2026 JEJMO MARIBOR. VSE MISIJE OPRAVLJENE.' },
+                        eng: { subj: 'Mission Successful: Order #', title: 'MISSION SUCCESS', manifest: 'Manifest Summary', from: 'From', to: 'To', paid: 'Total Paid via', footer: '© 2026 JEJMO MARIBOR. ALL MISSIONS ACCOMPLISHED.' }
                     };
                     const lang = o.language || 'slo';
                     const et = emailT[lang];
@@ -503,11 +411,7 @@
                                 </div>
                             `
                         }
-                    }).then(() => {
-                        document.getElementById('success-msg').style.display = 'flex';
-                    }).catch(() => {
-                        document.getElementById('success-msg').style.display = 'flex';
-                    });
+                    }).then(() => { document.getElementById('success-msg').style.display = 'flex'; });
                 }
             });
         }
