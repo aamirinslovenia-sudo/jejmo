@@ -312,18 +312,14 @@
             db.ref('orders/' + orderId).on('value', (snap) => {
                 const o = snap.val(); if(!o) return;
                 
-                // TRACKING DOTS UPDATE
                 document.getElementById('step-new').classList.add('active');
                 if(["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) {
                     document.getElementById('step-kitchen').classList.add('active');
-                    document.getElementById('text-kitchen').classList.replace('text-slate-500', 'text-blue-500');
                 }
                 if(["Delivering", "Completed"].includes(o.status)) {
                     document.getElementById('step-delivery').classList.add('active');
-                    document.getElementById('text-delivery').classList.replace('text-slate-500', 'text-blue-500');
                 }
 
-                // TRIGGER EMAIL ON COMPLETION
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     fs.collection('mail').add({
@@ -331,22 +327,39 @@
                         message: {
                             subject: 'Mission Successful: Order #' + o.orderNumber,
                             html: `
-                                <div style="background-color: #060a11; color: #ffffff; padding: 40px; font-family: 'Outfit', sans-serif; max-width: 600px; margin: auto; border-radius: 30px;">
-                                    <h1 style="font-style: italic; font-weight: 900; font-size: 32px; text-align: center;">MISSION SUCCESS</h1>
-                                    <p style="text-align: center; color: #60a5fa;">Order Confirmation #${o.orderNumber}</p>
-                                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0;">
-                                    <p><strong>Customer:</strong> ${o.customer}</p>
-                                    <p><strong>Items:</strong> ${o.item}</p>
-                                    <p><strong>Total Paid:</strong> ${o.totalPrice}</p>
-                                    <p><strong>Restaurant:</strong> ${o.restaurant}</p>
-                                    <p style="text-align: center; margin-top: 40px; font-size: 10px; color: #475569;">© 2026 JEJMO MARIBOR.</p>
+                                <div style="background-color: #060a11; color: #ffffff; padding: 40px; font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: auto; border-radius: 30px; border: 1px solid rgba(255,255,255,0.05);">
+                                    <div style="text-align: center; margin-bottom: 40px;">
+                                        <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="JEJMO" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); object-fit: cover;">
+                                        <h1 style="font-style: italic; font-weight: 900; font-size: 32px; letter-spacing: -1.5px; margin-top: 25px; color: #ffffff;">MISSION SUCCESS</h1>
+                                        <p style="color: #60a5fa; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 3px;">Order Confirmation #${o.orderNumber}</p>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.03); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 25px;">
+                                        <h4 style="margin: 0 0 15px 0; color: #94a3b8; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Manifest Summary</h4>
+                                        <p style="margin: 0; font-size: 16px; font-weight: 600; line-height: 1.6;">${o.item}</p>
+                                    </div>
+                                    <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+                                        <div style="flex: 1; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px;">
+                                            <p style="margin: 0; color: #64748b; font-size: 9px; font-weight: 800; text-transform: uppercase;">From</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: 700;">${o.restaurant}</p>
+                                        </div>
+                                        <div style="flex: 1; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 15px;">
+                                            <p style="margin: 0; color: #64748b; font-size: 9px; font-weight: 800; text-transform: uppercase;">To</p>
+                                            <p style="margin: 5px 0 0 0; font-size: 12px; font-weight: 700;">${o.customer}</p>
+                                        </div>
+                                    </div>
+                                    <div style="background: #2563eb; padding: 20px; border-radius: 20px; text-align: center;">
+                                        <p style="margin: 0; color: rgba(255,255,255,0.7); font-weight: 800; font-size: 10px; text-transform: uppercase; margin-bottom: 5px;">Total Paid via ${o.paymentType}</p>
+                                        <p style="margin: 0; color: white; font-weight: 900; font-size: 28px; font-style: italic;">${o.totalPrice}</p>
+                                    </div>
+                                    <div style="text-align: center; margin-top: 40px;">
+                                        <p style="color: #475569; font-size: 11px; font-weight: 700;">&copy; 2026 JEJMO MARIBOR. ALL MISSIONS ACCOMPLISHED.</p>
+                                    </div>
                                 </div>
                             `
                         }
                     }).then(() => {
                         document.getElementById('success-msg').style.display = 'flex';
                     }).catch(() => {
-                        // Show success screen anyway if email fails to add to collection
                         document.getElementById('success-msg').style.display = 'flex';
                     });
                 }
