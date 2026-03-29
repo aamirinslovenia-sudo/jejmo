@@ -121,7 +121,13 @@
                         <p id="display-order-number" class="text-purple-500 font-black text-2xl italic tracking-tighter mb-1">#---</p>
                         <div id="display-price" class="text-6xl font-black tracking-tighter text-white">€0.00</div>
                     </div>
-                    <button onclick="confirmDecline()" class="bg-red-500/20 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase">Skip</button>
+                    <div class="text-right">
+                        <button onclick="confirmDecline()" class="bg-red-500/20 text-red-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase mb-2">Skip</button>
+                        <div id="driver-eta-box" class="hidden glass-panel px-3 py-1.5 border-purple-500/30">
+                           <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Kitchen</p>
+                           <p id="driver-eta-display" class="text-sm font-black text-yellow-500">-- MIN</p>
+                        </div>
+                    </div>
                 </div>
                 <div id="display-items" class="bg-white/5 border border-white/5 rounded-2xl p-4 mb-4 text-sm text-slate-300 italic">---</div>
                 <div id="instruction-ui" class="instruction-alert mb-4">
@@ -204,6 +210,7 @@
         let currentOrder = null; let audioCtx = null; let alertInterval = null;
         let allCompletedOrders = [];
         let geoWatchId = null;
+        let driverTrackingInterval = null;
 
         function initAudio() {
             if (audioCtx) return;
@@ -222,7 +229,6 @@
             o.start(t); o.stop(t + 0.1);
         }
 
-        // --- GPS BROADCAST ENGINE ---
         function startTracking() {
             if (geoWatchId) return;
             if ("geolocation" in navigator) {
@@ -233,7 +239,6 @@
                             lng: position.coords.longitude,
                             lastUpdate: Date.now()
                         });
-                        // Mirror coordinates to order for easier customer lookup
                         db.ref('orders/' + currentOrder.id + '/courierLocation').set({
                             lat: position.coords.latitude,
                             lng: position.coords.longitude
@@ -344,24 +349,25 @@
                 snap.forEach(c => {
                     const o = c.val(); o.id = c.key;
                     if (o.status === "Delivering" && o.claimedBy === driverId) activeTask = o;
-                    if (o.status === "Ready" && !o.claimedBy) availableOrder = o;
+                    // UPDATED: Available if Preparing (in production) OR Ready (waiting for pickup)
+                    if ((o.status === "Preparing" || o.status === "Ready") && !o.claimedBy) availableOrder = o;
                     if (o.status === "Completed") allCompletedOrders.push(o);
                 });
 
                 if (activeTask) {
                     currentOrder = activeTask; renderUI(activeTask, "End Mission");
                     clearInterval(alertInterval); alertInterval = null;
-                    startTracking(); // START GPS BROADCAST
+                    startTracking();
                 } else if (availableOrder) {
                     currentOrder = availableOrder; renderUI(availableOrder, "Accept Mission");
                     if (!alertInterval) { playBeep(); alertInterval = setInterval(playBeep, 2500); }
-                    stopTracking(); // IDLE
+                    stopTracking();
                 } else {
                     currentOrder = null; clearInterval(alertInterval); alertInterval = null;
                     document.getElementById('order-ui').classList.add('hidden');
                     document.getElementById('waiting-ui').classList.remove('hidden');
                     document.getElementById('order-sheet').classList.replace('sheet-expanded', 'sheet-minimized');
-                    stopTracking(); // IDLE
+                    stopTracking();
                 }
             });
 
@@ -385,10 +391,33 @@
             document.getElementById('display-instruction').innerText = o.courierInstruction || "No special instructions";
 
             const rName = o.restaurant || "Master Kitchen";
-            const rAddr = o.restaurantAddress || "No address provided";
+            const rAddr = "Glavni trg 17, Maribor"; // Hardcoded for test
             document.getElementById('display-res-name').innerText = rName;
             document.getElementById('display-res-addr-text').innerText = rAddr;
             document.getElementById('res-nav-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(rAddr)}`;
+
+            // --- DRIVER PREP TIMER ENGINE ---
+            const timerBox = document.getElementById('driver-eta-box');
+            const timerDisplay = document.getElementById('driver-eta-display');
+            
+            const updateDriverCountdown = () => {
+                if (o.status === "Preparing" && o.estimatedReadyAt) {
+                    timerBox.classList.remove('hidden');
+                    const diff = Math.floor((o.estimatedReadyAt - Date.now()) / 60000);
+                    timerDisplay.innerText = (diff > 0 ? diff : 1) + " MIN";
+                    timerDisplay.style.color = "#eab308"; // Yellow
+                } else if (o.status === "Ready") {
+                    timerBox.classList.remove('hidden');
+                    timerDisplay.innerText = "READY";
+                    timerDisplay.style.color = "#4ade80"; // Green
+                } else {
+                    timerBox.classList.add('hidden');
+                }
+            };
+
+            updateDriverCountdown();
+            if (driverTrackingInterval) clearInterval(driverTrackingInterval);
+            driverTrackingInterval = setInterval(updateDriverCountdown, 30000);
 
             document.getElementById('action-btn').innerText = btnText;
             document.getElementById('order-ui').classList.remove('hidden');
@@ -410,7 +439,7 @@
         function processOrder() { 
             playTick();
             if (!currentOrder) return; 
-            if (currentOrder.status === "Ready") {
+            if (currentOrder.status === "Preparing" || currentOrder.status === "Ready") {
                 db.ref('orders/' + currentOrder.id).update({ 
                     status: "Delivering", 
                     claimedBy: driverId,
@@ -418,7 +447,7 @@
                 });
             } else {
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
-                stopTracking(); // MISSION END
+                stopTracking();
             }
         }
 
