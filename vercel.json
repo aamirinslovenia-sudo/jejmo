@@ -3,7 +3,7 @@
     {
       "source": "/",
       "has": [{ "type": "host", "value": "customer.jejmo.com" }],
-      "destination": "/home.html"
+      "destination": "/customer_app.html"
     },
     {
       "source": "/",
@@ -23,12 +23,12 @@
     {
       "source": "/",
       "has": [{ "type": "host", "value": "www.jejmo.com" }],
-      "destination": "/main_site.html"
+      "destination": "/company_home.html"
     },
     {
       "source": "/",
       "has": [{ "type": "host", "value": "jejmo.com" }],
-      "destination": "/main_site.html"
+      "destination": "/company_home.html"
     }
   ]
 }
