@@ -22,14 +22,12 @@
         input, textarea { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
         input:focus, textarea:focus { border-color: #3b82f6 !important; outline: none; }
 
-        /* App Preview Specific Styles */
         .phone-mockup { width: 280px; height: 580px; border: 8px solid #1e293b; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); }
         .phone-screen { background: #060a11; height: 100%; width: 100%; padding: 16px; font-family: 'Outfit', sans-serif; }
         .preview-glow { position: absolute; width: 300px; height: 300px; background: #3b82f6; filter: blur(100px); opacity: 0.15; z-index: -1; }
         .mini-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 15px; padding: 10px; }
         .map-container { filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%); border-radius: 40px; }
 
-        /* Scroll Top Button Styles */
         #scrollTopBtn { transition: all 0.4s ease; opacity: 0; visibility: hidden; }
         #scrollTopBtn.show { opacity: 1; visibility: visible; bottom: 30px; }
     </style>
@@ -122,14 +120,11 @@
                 <h2 class="text-4xl md:text-5xl font-black italic tracking-tighter uppercase mb-4">Aplikacija v vaši dlani</h2>
                 <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Preprosto. Hitro. Elitno.</p>
             </div>
-            
             <div class="relative flex justify-center w-full">
                 <div class="preview-glow"></div>
                 <div class="phone-mockup animate-bounce-slow">
                     <div class="phone-screen flex flex-col">
-                        <div class="flex justify-center mb-4">
-                             <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg?t=20260329" class="w-8 h-8 rounded-full border border-white/20">
-                        </div>
+                        <div class="flex justify-center mb-4"><img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg?t=20260329" class="w-8 h-8 rounded-full border border-white/20"></div>
                         <div class="flex items-center gap-2 glass px-3 py-1 rounded-full mb-6 mx-auto">
                             <span class="w-1 h-1 rounded-full bg-green-500"></span>
                             <p class="text-[7px] font-black text-slate-400 uppercase">Glavni trg 17, Maribor</p>
@@ -188,7 +183,7 @@
                 </div>
             </div>
             <div class="rounded-[40px] overflow-hidden border border-white/10 glass min-h-[400px]">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d87138.8344686411!2d15.55627684074818!3d46.54807494420803!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476f7706316ef39f%3A0x400f81fc1822290!2sMaribor!5e0!3m2!1sen!2ssi!4v1711710000000!5m2!1sen!2ssi" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" class="map-container"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d44111.45564883134!2d15.606114884241165!3d46.55474136427321!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476f770be968250b%3A0x6a6953f47e30f145!2sMaribor!5e0!3m2!1sen!2ssi!4v1711710000000!5m2!1sen!2ssi" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" class="map-container"></iframe>
             </div>
         </div>
     </section>
@@ -196,14 +191,14 @@
     <section id="partners" class="py-32 px-6 bg-white/5 border-y border-white/5">
         <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
             <div class="glass p-12 rounded-[40px] border-blue-500/20">
-                <h3 class="text-3xl font-black italic tracking-tighter uppercase mb-4">Postani Partner</h3>
+                <h3 class="text-3xl font-black italic tracking-tighter uppercase mb-4 text-white">Postani Partner</h3>
                 <p class="text-slate-400 mb-8 font-medium italic">Povečajte prodajo svoje restavracije z JEJMO floto.</p>
-                <a href="mailto:info@jejmo.com" class="text-blue-400 font-black uppercase text-xs tracking-[0.2em] border-b-2 border-blue-500/20 pb-2">Pišite nam →</a>
+                <a href="#contact" class="text-blue-400 font-black uppercase text-xs tracking-[0.2em] border-b-2 border-blue-500/20 pb-2">Pišite nam →</a>
             </div>
             <div id="drivers" class="glass p-12 rounded-[40px] border-green-500/20">
-                <h3 class="text-3xl font-black italic tracking-tighter uppercase mb-4">Postani Dostavljalec</h3>
+                <h3 class="text-3xl font-black italic tracking-tighter uppercase mb-4 text-white">Postani Dostavljalec</h3>
                 <p class="text-slate-400 mb-8 font-medium italic">Vozite pod lastnimi pogoji in zaslužite več.</p>
-                <a href="mailto:jobs@jejmo.com" class="text-green-400 font-black uppercase text-xs tracking-[0.2em] border-b-2 border-green-500/20 pb-2">Pridruži se ekipi →</a>
+                <a href="#contact" class="text-green-400 font-black uppercase text-xs tracking-[0.2em] border-b-2 border-green-500/20 pb-2">Pridruži se ekipi →</a>
             </div>
         </div>
     </section>
@@ -231,7 +226,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Scroll Top Logic
         const scrollTopBtn = document.getElementById("scrollTopBtn");
         window.onscroll = function() {
             if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
