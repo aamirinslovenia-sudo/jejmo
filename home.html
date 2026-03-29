@@ -62,8 +62,6 @@
     </header>
 
     <div id="restaurant-view" class="max-w-md mx-auto px-6 space-y-4">
-        <h2 class="text-3xl font-black italic tracking-tighter mb-8 uppercase">Choose <span class="text-blue-500">Kitchen</span></h2>
-        
         <div onclick="selectRestaurant('Chimney Cake MB')" class="restaurant-card glass p-5 rounded-[32px] flex items-center gap-5 border border-white/5">
             <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" class="w-20 h-20 rounded-2xl object-cover shadow-xl">
             <div>
@@ -139,15 +137,23 @@
     </div>
 
     <div id="order-tracking-overlay">
-        <div class="flex justify-between items-start mb-2">
-            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Jejmo Logo" class="logo-header">
-            <a href="tel:+38600000000" class="glass w-12 h-12 rounded-2xl flex items-center justify-center text-blue-500">📞</a>
+        <div class="flex justify-between items-start mb-2 px-6 pt-6">
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-header">
+            <a href="tel:+38600000000" class="glass w-12 h-12 rounded-2xl flex items-center justify-center text-blue-500 border-blue-500/20 active:bg-blue-500 active:text-white transition-all">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
+            </a>
         </div>
-        <div class="space-y-12 relative pb-6 mt-12">
-            <div class="connector-line"></div>
+        <div class="px-6 space-y-12 relative pb-6 mt-12">
+            <div class="connector-line ml-6"></div>
             <div class="flex gap-6 items-center z-10"><div id="step-new" class="tracking-dot"></div><div><p class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Stage 1</p><h4 class="font-bold uppercase">Transmitted</h4></div></div>
             <div class="flex gap-6 items-center z-10"><div id="step-kitchen" class="tracking-dot"></div><div><p id="text-kitchen" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Stage 2</p><h4 class="font-bold uppercase">Preparing</h4></div></div>
             <div class="flex gap-6 items-center z-10"><div id="step-delivery" class="tracking-dot"></div><div><p id="text-delivery" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Stage 3</p><h4 class="font-bold uppercase">On the road</h4></div></div>
+        </div>
+        <div class="flex-grow flex flex-col justify-center px-6">
+            <div class="glass p-10 text-center rounded-[40px] border border-white/10">
+                <p class="text-[10px] text-slate-400 uppercase font-black mb-3 tracking-[0.2em]">Estimated Arrival</p>
+                <h3 class="text-5xl font-[900] italic tracking-tighter text-white">~25 MIN</h3>
+            </div>
         </div>
         <button onclick="location.reload()" class="w-full mb-4 bg-white/5 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500">Back to Store</button>
     </div>
