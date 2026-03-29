@@ -233,11 +233,34 @@
 
         function selectRestaurant(name) { playTick(); selectedRestaurant = name; document.getElementById('menu-rest-logo').src = restaurantsRegistry[name].logo; document.getElementById('restaurant-view').classList.add('hidden'); document.getElementById('menu-view').classList.remove('hidden'); }
         function goBack() { playTick(); document.getElementById('restaurant-view').classList.remove('hidden'); document.getElementById('menu-view').classList.add('hidden'); cart = []; updateCartUI(); }
-        function addToCart(name, price, id) { playTick(); const exist = cart.find(i => i.name === name); if (exist) { exist.quantity += 1; } else { cart.push({ name: name, price: price, quantity: 1, elementId: id }); } document.getElementById(id).classList.add('active-item'); updateCartUI(); }
+        
+        function addToCart(name, price, id) { 
+            playTick(); 
+            const index = cart.findIndex(i => i.name === name); 
+            if (index > -1) { 
+                if (cart[index].quantity > 1) {
+                    cart[index].quantity -= 1;
+                } else {
+                    cart.splice(index, 1);
+                    document.getElementById(id).classList.remove('active-item');
+                }
+            } else { 
+                cart.push({ name: name, price: price, quantity: 1, elementId: id }); 
+                document.getElementById(id).classList.add('active-item');
+            } 
+            updateCartUI(); 
+        }
 
         function updateCartUI() {
             let total = 0; const container = document.getElementById('cart-items-container'); container.innerHTML = "";
-            if(cart.length === 0) { document.getElementById('cart-summary').classList.add('hidden'); document.getElementById('orderBtn').innerText = translations[currentLang].select_items_btn; document.getElementById('priceDisplay').innerText = "€0.00"; return; }
+            if(cart.length === 0) { 
+                document.getElementById('cart-summary').classList.add('hidden'); 
+                document.getElementById('orderBtn').innerText = translations[currentLang].select_items_btn; 
+                document.getElementById('priceDisplay').innerText = "€0.00"; 
+                // Clear all active classes if cart is empty
+                document.querySelectorAll('.active-item').forEach(el => el.classList.remove('active-item'));
+                return; 
+            }
             document.getElementById('cart-summary').classList.remove('hidden'); document.getElementById('orderBtn').innerText = translations[currentLang].init_mission_btn;
             cart.forEach((item) => { total += (item.price * item.quantity); const chip = document.createElement('span'); chip.className = "cart-item-chip"; chip.innerHTML = `${item.quantity}x ${item.name}`; container.appendChild(chip); });
             document.getElementById('priceDisplay').innerText = "€" + total.toFixed(2);
