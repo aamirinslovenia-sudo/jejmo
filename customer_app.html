@@ -39,7 +39,6 @@
         .instruction-box { width: 100%; background: rgba(255,255,255,0.03); border-radius: 20px; padding: 16px; border: 1px solid rgba(255,255,255,0.08); outline: none; color: white; font-size: 12px; resize: none; transition: border 0.3s; }
         .product-img { width: 100%; height: 100px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
 
-        /* Restored Language Button Styles */
         .lang-btn { font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 10px; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); color: #475569; }
         .lang-btn.active { color: white; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
     </style>
@@ -159,9 +158,7 @@
                 <p id="tracking-status-text" class="text-[10px] font-black text-blue-400 uppercase tracking-widest">NAROČILO ODDANO</p>
             </div>
         </div>
-
         <div id="live-map"></div>
-
         <div class="map-overlay-info">
             <div id="courier-badge" class="courier-card hidden">
                 <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-lg">🛵</div>
@@ -172,7 +169,6 @@
                 <a id="courier-call-btn" href="tel:" class="ml-auto w-10 h-10 glass rounded-xl flex items-center justify-center text-blue-400">📞</a>
             </div>
         </div>
-
         <div class="p-6 glass border-t border-white/10 rounded-t-[40px]">
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -196,23 +192,8 @@
 
     <script>
         let audioCtx = null;
-        function initAudio() {
-            if (audioCtx) return;
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-
-        function playTick() {
-            if (!audioCtx) initAudio();
-            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-            const t = audioCtx.currentTime;
-            const o = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            o.connect(g); g.connect(audioCtx.destination);
-            o.frequency.setValueAtTime(1500, t);
-            g.gain.setValueAtTime(0.02, t);
-            g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
-            o.start(t); o.stop(t + 0.1);
-        }
+        function initAudio() { if (audioCtx) return; audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        function playTick() { if (!audioCtx) initAudio(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); const t = audioCtx.currentTime; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.setValueAtTime(1500, t); g.gain.setValueAtTime(0.02, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.1); o.start(t); o.stop(t + 0.1); }
 
         const translations = {
             slo: { onboarding_sub: "Vrhunska dostava <br>do vaših vrat.", name_place: "Polno ime", email_place: "E-pošta (za prejemke)", phone_place: "Telefonska številka", addr_place: "Naslov v Mariboru", continue_btn: "Nadaljuj", rest_sub: "Sveže pečeno • 25 min", coming_soon: "Kmalu na voljo", coming_soon_sub: "Širitev v teku", back_btn: "← Nazaj na kuhinje", menu_title: "Meni", courier_note_title: "Navodila za kurirja", courier_place: "Pustite pred vrati...", payment_title: "Izberite način plačila", cash_btn: "Gotovina", card_btn: "Kartica", total_cost: "Skupni strošek", logout_btn: "Odjava", select_items_btn: "Izberite izdelke", init_mission_btn: "Začni misijo", arrival_est: "Predviden prihod", success_title: "MISIJA USPELA", success_sub: "Potrdilo poslano.", cont_shopping_btn: "Nadaljuj" },
@@ -221,154 +202,68 @@
 
         let currentLang = 'slo';
         function setLanguage(lang) {
-            playTick();
-            currentLang = lang;
+            playTick(); currentLang = lang;
             document.getElementById('btn-slo').classList.toggle('active', lang === 'slo');
             document.getElementById('btn-eng').classList.toggle('active', lang === 'eng');
             const t = translations[lang];
-            document.querySelectorAll('[data-t]').forEach(el => {
-                const key = el.getAttribute('data-t');
-                if (t[key]) el.innerHTML = t[key];
-            });
-            document.getElementById('userName').placeholder = t.name_place;
-            document.getElementById('userEmail').placeholder = t.email_place;
-            document.getElementById('userPhone').placeholder = t.phone_place;
-            document.getElementById('userAddress').placeholder = t.addr_place;
-            document.getElementById('courier-note').placeholder = t.courier_place;
-            updateCartUI();
+            document.querySelectorAll('[data-t]').forEach(el => { const key = el.getAttribute('data-t'); if (t[key]) el.innerHTML = t[key]; });
+            document.getElementById('userName').placeholder = t.name_place; document.getElementById('userEmail').placeholder = t.email_place;
+            document.getElementById('userPhone').placeholder = t.phone_place; document.getElementById('userAddress').placeholder = t.addr_place;
+            document.getElementById('courier-note').placeholder = t.courier_place; updateCartUI();
         }
 
         const firebaseConfig = { apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", authDomain: "jejmo-maribor.firebaseapp.com", databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", projectId: "jejmo-maribor", storageBucket: "jejmo-maribor.firebasestorage.app", messagingSenderId: "87105321281", appId: "1:87105321281:web:ec83e4472e5756182749c0" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const fs = firebase.firestore(); 
-        const auth = firebase.auth(); 
-
-        const restaurantsRegistry = { "Chimney Cake MB": { address: "Glavni trg 17, 2000 Maribor", phone: "+386 70 123 456", logo: "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" } };
+        const db = firebase.database(); const fs = firebase.firestore(); const auth = firebase.auth(); 
+        const restaurantsRegistry = { "Chimney Cake MB": { address: "Glavni trg 17, 2000 Maribor", logo: "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" } };
         let selectedRestaurant = ""; let cart = []; let selectedPayment = ""; let emailSent = false;
-        
-        let map = null;
-        let courierMarker = null;
+        let map = null; let courierMarker = null;
 
         window.onload = function() {
-            preloadImages();
-            setLanguage('slo');
-            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {'size': 'invisible'});
-            if (localStorage.getItem('kleo_name')) {
-                document.getElementById('onboarding-screen').style.display = 'none';
-                document.getElementById('header-addr').innerText = localStorage.getItem('kleo_address');
-            }
+            preloadImages(); setLanguage('slo');
+            if (localStorage.getItem('kleo_name')) { document.getElementById('onboarding-screen').style.display = 'none'; document.getElementById('header-addr').innerText = localStorage.getItem('kleo_address'); }
         };
 
-        function initMap() {
-            if (map) return;
-            map = L.map('live-map', { zoomControl: false, attributionControl: false }).setView([46.5547, 15.6459], 13);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
-        }
+        function preloadImages() { ["https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg"].forEach(src => { const img = new Image(); img.src = src; }); }
+        function initMap() { if (map) return; map = L.map('live-map', { zoomControl: false, attributionControl: false }).setView([46.5547, 15.6459], 13); L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map); }
 
         function handleGateway() {
             playTick();
-            const name = document.getElementById('userName').value;
-            const email = document.getElementById('userEmail').value;
-            const phone = document.getElementById('userPhone').value;
-            const addr = document.getElementById('userAddress').value;
-            if(!name || !email || !phone || !addr) { 
-                document.getElementById('setup-fields').classList.remove('hidden');
-                return;
-            }
-            localStorage.setItem('kleo_name', name);
-            localStorage.setItem('kleo_email', email);
-            localStorage.setItem('kleo_phone', phone);
-            localStorage.setItem('kleo_address', addr);
-            document.getElementById('onboarding-screen').style.transform = 'translateY(-100%)';
-            document.getElementById('header-addr').innerText = addr;
+            const n = document.getElementById('userName').value, e = document.getElementById('userEmail').value, p = document.getElementById('userPhone').value, a = document.getElementById('userAddress').value;
+            if(!n || !e || !p || !a) { document.getElementById('setup-fields').classList.remove('hidden'); return; }
+            localStorage.setItem('kleo_name', n); localStorage.setItem('kleo_email', e); localStorage.setItem('kleo_phone', p); localStorage.setItem('kleo_address', a);
+            document.getElementById('onboarding-screen').style.transform = 'translateY(-100%)'; document.getElementById('header-addr').innerText = a;
         }
 
-        function selectRestaurant(name) {
-            playTick();
-            selectedRestaurant = name;
-            const info = restaurantsRegistry[name];
-            document.getElementById('menu-rest-logo').src = info.logo;
-            document.getElementById('restaurant-view').classList.add('hidden');
-            document.getElementById('menu-view').classList.remove('hidden');
-        }
-
-        function goBack() {
-            playTick();
-            document.getElementById('restaurant-view').classList.remove('hidden');
-            document.getElementById('menu-view').classList.add('hidden');
-            cart = [];
-            updateCartUI();
-        }
-
-        function addToCart(name, price, id) {
-            playTick();
-            const existingItem = cart.find(i => i.name === name);
-            if (existingItem) { existingItem.quantity += 1; } 
-            else { cart.push({ name: name, price: price, quantity: 1, elementId: id }); }
-            document.getElementById(id).classList.add('active-item');
-            updateCartUI();
-        }
+        function selectRestaurant(name) { playTick(); selectedRestaurant = name; document.getElementById('menu-rest-logo').src = restaurantsRegistry[name].logo; document.getElementById('restaurant-view').classList.add('hidden'); document.getElementById('menu-view').classList.remove('hidden'); }
+        function goBack() { playTick(); document.getElementById('restaurant-view').classList.remove('hidden'); document.getElementById('menu-view').classList.add('hidden'); cart = []; updateCartUI(); }
+        function addToCart(name, price, id) { playTick(); const exist = cart.find(i => i.name === name); if (exist) { exist.quantity += 1; } else { cart.push({ name: name, price: price, quantity: 1, elementId: id }); } document.getElementById(id).classList.add('active-item'); updateCartUI(); }
 
         function updateCartUI() {
-            let total = 0;
-            const container = document.getElementById('cart-items-container');
-            container.innerHTML = "";
-            if(cart.length === 0) {
-                document.getElementById('cart-summary').classList.add('hidden');
-                document.getElementById('orderBtn').innerText = translations[currentLang].select_items_btn;
-                document.getElementById('priceDisplay').innerText = "€0.00";
-                return;
-            }
-            document.getElementById('cart-summary').classList.remove('hidden');
-            document.getElementById('orderBtn').innerText = translations[currentLang].init_mission_btn;
-            cart.forEach((item, index) => {
-                total += (item.price * item.quantity);
-                const chip = document.createElement('span');
-                chip.className = "cart-item-chip";
-                chip.innerHTML = `${item.quantity}x ${item.name}`;
-                container.appendChild(chip);
-            });
+            let total = 0; const container = document.getElementById('cart-items-container'); container.innerHTML = "";
+            if(cart.length === 0) { document.getElementById('cart-summary').classList.add('hidden'); document.getElementById('orderBtn').innerText = translations[currentLang].select_items_btn; document.getElementById('priceDisplay').innerText = "€0.00"; return; }
+            document.getElementById('cart-summary').classList.remove('hidden'); document.getElementById('orderBtn').innerText = translations[currentLang].init_mission_btn;
+            cart.forEach((item) => { total += (item.price * item.quantity); const chip = document.createElement('span'); chip.className = "cart-item-chip"; chip.innerHTML = `${item.quantity}x ${item.name}`; container.appendChild(chip); });
             document.getElementById('priceDisplay').innerText = "€" + total.toFixed(2);
         }
 
-        function setPayment(method) {
-            playTick();
-            selectedPayment = method;
-            document.getElementById('pay-cash').classList.remove('active-item');
-            document.getElementById('pay-card').classList.remove('active-item');
-            document.getElementById(method === 'Cash' ? 'pay-cash' : 'pay-card').classList.add('active-item');
-        }
+        function setPayment(method) { playTick(); selectedPayment = method; document.getElementById('pay-cash').classList.remove('active-item'); document.getElementById('pay-card').classList.remove('active-item'); document.getElementById(method === 'Cash' ? 'pay-cash' : 'pay-card').classList.add('active-item'); }
 
         function sendOrder() {
-            if (cart.length === 0 || !selectedPayment) return;
-            playTick();
+            if (cart.length === 0 || !selectedPayment) return; playTick();
             db.ref('globalOrderCounter').transaction(cv => (cv || 0) + 1, (err, comm, snap) => {
                 if (comm) {
                     const orderId = db.ref('orders').push().key;
                     db.ref('orders/' + orderId).set({
-                        orderNumber: snap.val().toString().padStart(3, '0'),
-                        customer: localStorage.getItem('kleo_name'),
-                        address: localStorage.getItem('kleo_address'),
-                        phone: localStorage.getItem('kleo_phone'),
-                        email: localStorage.getItem('kleo_email'),
-                        item: cart.map(i => `${i.quantity}x ${i.name}`).join(", "),
-                        restaurant: selectedRestaurant,
-                        totalPrice: document.getElementById('priceDisplay').innerText,
-                        paymentType: selectedPayment,
-                        courierInstruction: document.getElementById('courier-note').value,
-                        timestamp: Date.now(),
-                        status: 'New',
-                        language: currentLang 
+                        orderNumber: snap.val().toString().padStart(3, '0'), customer: localStorage.getItem('kleo_name'), address: localStorage.getItem('kleo_address'), phone: localStorage.getItem('kleo_phone'), email: localStorage.getItem('kleo_email'), item: cart.map(i => `${i.quantity}x ${i.name}`).join(", "),
+                        restaurant: selectedRestaurant, totalPrice: document.getElementById('priceDisplay').innerText, paymentType: selectedPayment, courierInstruction: document.getElementById('courier-note').value, timestamp: Date.now(), status: 'New', language: currentLang 
                     }).then(() => { startTracking(orderId); });
                 }
             });
         }
 
         function startTracking(orderId) {
-            document.getElementById('order-tracking-overlay').style.display = 'flex';
-            initMap();
-            
+            document.getElementById('order-tracking-overlay').style.display = 'flex'; initMap();
             db.ref('orders/' + orderId).on('value', (snap) => {
                 const o = snap.val(); if(!o) return;
                 document.getElementById('step-new').classList.add('active');
@@ -376,30 +271,43 @@
                 if(["Delivering", "Completed"].includes(o.status)) document.getElementById('step-delivery').classList.add('active');
                 const statusMap = { New: "ODDANO", Preparing: "PRIPRAVA", Ready: "PRIPRAVLJENO", Delivering: "NA POTI", Completed: "DOSTAVLJENO" };
                 document.getElementById('tracking-status-text').innerText = statusMap[o.status] || "Priprava...";
-                if(o.claimedByName) {
-                    document.getElementById('courier-badge').classList.remove('hidden');
-                    document.getElementById('courier-name-display').innerText = o.claimedByName;
-                    document.getElementById('courier-call-btn').href = "tel:" + (o.courierPhone || "");
-                }
+                if(o.claimedByName) { document.getElementById('courier-badge').classList.remove('hidden'); document.getElementById('courier-name-display').innerText = o.claimedByName; }
                 if(o.courierLocation && o.status === "Delivering") {
                     const pos = [o.courierLocation.lat, o.courierLocation.lng];
-                    if(!courierMarker) {
-                        const icon = L.divIcon({ html: '<div style="background:#a855f7; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 15px #a855f7;"></div>', className: '' });
-                        courierMarker = L.marker(pos, {icon: icon}).addTo(map);
-                    } else { courierMarker.setLatLng(pos); }
-                    map.panTo(pos);
-                    document.getElementById('eta-display').innerText = "~10 MIN";
+                    if(!courierMarker) { courierMarker = L.marker(pos, {icon: L.divIcon({ html: '<div style="background:#a855f7; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 15px #a855f7;"></div>', className: '' })}).addTo(map); } else { courierMarker.setLatLng(pos); }
+                    map.panTo(pos); document.getElementById('eta-display').innerText = "~10 MIN";
                 }
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
-                    document.getElementById('success-msg').style.display = 'flex';
+                    // --- EMAIL SERVICE ENGINE ---
+                    const lang = o.language || 'slo';
+                    const et = { 
+                        slo: { subj: 'Naročilo #', title: 'MISIJA USPELA', manifest: 'Povzetek naročila', from: 'Od', to: 'Za', paid: 'Skupaj plačano prek', footer: '© 2026 JEJMO MARIBOR' }, 
+                        eng: { subj: 'Order #', title: 'MISSION SUCCESS', manifest: 'Order Summary', from: 'From', to: 'To', paid: 'Total Paid via', footer: '© 2026 JEJMO MARIBOR' } 
+                    }[lang];
+                    
+                    fs.collection('mail').add({
+                        to: o.email,
+                        message: {
+                            subject: et.subj + o.orderNumber,
+                            html: `<div style="background-color:#060a11;color:#fff;padding:40px;font-family:sans-serif;max-width:600px;margin:auto;border-radius:30px;text-align:center;">
+                                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
+                                <h1 style="font-style:italic;margin-top:25px;">${et.title}</h1>
+                                <p style="color:#60a5fa;font-weight:800;letter-spacing:3px;">#${o.orderNumber}</p>
+                                <div style="background:rgba(255,255,255,0.03);padding:25px;border-radius:20px;text-align:left;margin:20px 0;">
+                                    <h4 style="color:#94a3b8;font-size:11px;text-transform:uppercase;">${et.manifest}</h4>
+                                    <p style="font-size:16px;">${o.item}</p>
+                                </div>
+                                <div style="background:#2563eb;padding:20px;border-radius:20px;">
+                                    <p style="font-size:10px;text-transform:uppercase;">${et.paid} ${o.paymentType}</p>
+                                    <h2 style="font-style:italic;font-size:28px;margin:0;">${o.totalPrice}</h2>
+                                </div>
+                                <p style="margin-top:40px;font-size:11px;color:#475569;">${et.footer}</p>
+                            </div>`
+                        }
+                    }).then(() => { document.getElementById('success-msg').style.display = 'flex'; });
                 }
             });
-        }
-
-        function resetUser() { if(confirm("Logout?")) { localStorage.clear(); location.reload(); } }
-        function preloadImages() {
-            ["https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg"].forEach(src => { const img = new Image(); img.src = src; });
         }
     </script>
 </body>
