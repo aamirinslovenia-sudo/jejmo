@@ -159,8 +159,13 @@
     </div>
 
     <div id="success-msg">
+        <div class="logo-container mb-12">
+            <div class="logo-glow"></div>
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-main">
+        </div>
         <h2 class="text-4xl font-black italic tracking-tighter mb-2">MISSION SUCCESS</h2>
-        <button onclick="location.reload()" class="bg-white text-black font-black px-12 py-5 rounded-full uppercase tracking-widest">Continue</button>
+        <p id="success-email-text" class="text-slate-400 font-bold mb-10 px-6">Receipt sent to your email.</p>
+        <button onclick="location.reload()" class="bg-white text-black font-black px-12 py-5 rounded-full uppercase tracking-widest">Continue Shopping</button>
     </div>
 
     <script>
@@ -306,10 +311,45 @@
             document.getElementById('order-tracking-overlay').style.display = 'flex';
             db.ref('orders/' + orderId).on('value', (snap) => {
                 const o = snap.val(); if(!o) return;
-                if (o.status === "Completed") document.getElementById('success-msg').style.display = 'flex';
+                
+                // TRACKING DOTS UPDATE
                 document.getElementById('step-new').classList.add('active');
-                if(["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) document.getElementById('step-kitchen').classList.add('active');
-                if(["Delivering", "Completed"].includes(o.status)) document.getElementById('step-delivery').classList.add('active');
+                if(["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) {
+                    document.getElementById('step-kitchen').classList.add('active');
+                    document.getElementById('text-kitchen').classList.replace('text-slate-500', 'text-blue-500');
+                }
+                if(["Delivering", "Completed"].includes(o.status)) {
+                    document.getElementById('step-delivery').classList.add('active');
+                    document.getElementById('text-delivery').classList.replace('text-slate-500', 'text-blue-500');
+                }
+
+                // TRIGGER EMAIL ON COMPLETION
+                if(o.status === "Completed" && !emailSent) {
+                    emailSent = true;
+                    fs.collection('mail').add({
+                        to: o.email,
+                        message: {
+                            subject: 'Mission Successful: Order #' + o.orderNumber,
+                            html: `
+                                <div style="background-color: #060a11; color: #ffffff; padding: 40px; font-family: 'Outfit', sans-serif; max-width: 600px; margin: auto; border-radius: 30px;">
+                                    <h1 style="font-style: italic; font-weight: 900; font-size: 32px; text-align: center;">MISSION SUCCESS</h1>
+                                    <p style="text-align: center; color: #60a5fa;">Order Confirmation #${o.orderNumber}</p>
+                                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0;">
+                                    <p><strong>Customer:</strong> ${o.customer}</p>
+                                    <p><strong>Items:</strong> ${o.item}</p>
+                                    <p><strong>Total Paid:</strong> ${o.totalPrice}</p>
+                                    <p><strong>Restaurant:</strong> ${o.restaurant}</p>
+                                    <p style="text-align: center; margin-top: 40px; font-size: 10px; color: #475569;">© 2026 JEJMO MARIBOR.</p>
+                                </div>
+                            `
+                        }
+                    }).then(() => {
+                        document.getElementById('success-msg').style.display = 'flex';
+                    }).catch(() => {
+                        // Show success screen anyway if email fails to add to collection
+                        document.getElementById('success-msg').style.display = 'flex';
+                    });
+                }
             });
         }
 
