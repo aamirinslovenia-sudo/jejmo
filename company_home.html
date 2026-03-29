@@ -15,18 +15,12 @@
         .nav-link:hover { opacity: 1; color: #60a5fa; }
         @keyframes bounce-slow { 0%, 100% { transform: translateY(-5px); } 50% { transform: translateY(0); } }
         .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
-        
-        /* Form Styles */
         input, textarea { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
         input:focus, textarea:focus { border-color: #3b82f6 !important; outline: none; }
-
-        /* App Preview Specific Styles */
         .phone-mockup { width: 280px; height: 580px; border: 8px solid #1e293b; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); }
         .phone-screen { background: #060a11; height: 100%; width: 100%; padding: 16px; font-family: 'Outfit', sans-serif; }
         .preview-glow { position: absolute; width: 300px; height: 300px; background: #3b82f6; filter: blur(100px); opacity: 0.15; z-index: -1; }
         .mini-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 15px; padding: 10px; }
-        
-        /* Map Color Filter to match theme */
         .map-container { filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%); border-radius: 40px; }
     </style>
 </head>
@@ -50,28 +44,20 @@
 
     <header class="relative pt-48 pb-32 px-6 flex flex-col items-center text-center">
         <div class="hero-glow"></div>
-        
         <div class="glass px-4 py-2 rounded-full mb-8 flex items-center gap-2 border border-white/10 animate-bounce-slow">
             <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
             <p class="text-[9px] font-black uppercase tracking-[0.3em] text-blue-400">Maribor Elite Delivery</p>
         </div>
-
         <h1 class="text-7xl md:text-[120px] font-[950] italic tracking-tighter leading-[0.8] mb-10">
             <span class="text-white">JEJMO.</span><br>
             <span class="text-gradient">NAJ SE ZAČNE.</span>
         </h1>
-
         <p class="max-w-xl text-slate-400 font-medium text-lg md:text-xl leading-relaxed mb-12 px-4">
             Presegamo meje običajne dostave. Povezujemo vrhunsko kulinariko Maribora z digitalno hitrostjo.
         </p>
-
         <div class="flex flex-col md:flex-row gap-6 w-full md:w-auto px-10">
-            <a href="https://customer.jejmo.com" class="bg-blue-600 hover:bg-blue-500 text-white font-[900] px-12 py-6 rounded-2xl text-xl uppercase tracking-widest transition-all shadow-2xl shadow-blue-900/40 hover:scale-105 active:scale-95">
-                Naroči Zdaj
-            </a>
-            <a href="#about" class="glass text-white font-[900] px-12 py-6 rounded-2xl text-xl uppercase tracking-widest hover:bg-white/5 transition-all">
-                O Misiji
-            </a>
+            <a href="https://customer.jejmo.com" class="bg-blue-600 hover:bg-blue-500 text-white font-[900] px-12 py-6 rounded-2xl text-xl uppercase tracking-widest transition-all shadow-2xl shadow-blue-900/40 hover:scale-105 active:scale-95">Naroči Zdaj</a>
+            <a href="#about" class="glass text-white font-[900] px-12 py-6 rounded-2xl text-xl uppercase tracking-widest hover:bg-white/5 transition-all">O Misiji</a>
         </div>
     </header>
 
@@ -91,75 +77,25 @@
     </section>
 
     <section id="how-it-works" class="py-32 px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-5xl font-black italic tracking-tighter uppercase mb-4">Kako deluje?</h2>
-                <p class="text-blue-400 font-bold uppercase tracking-widest text-[10px]">3 preprosti koraki do vašega obroka</p>
-            </div>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="glass p-10 rounded-[40px] border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-all">
-                    <div class="text-6xl font-black text-white/5 absolute -top-2 -right-2 italic group-hover:text-blue-500/10 transition-all">01</div>
-                    <h3 class="text-xl font-black uppercase italic tracking-tighter mb-4">Izberi</h3>
-                    <p class="text-slate-400 leading-relaxed">Odprite aplikacijo in izberite med najboljšimi lokalnimi restavracijami v Mariboru.</p>
-                </div>
-                <div class="glass p-10 rounded-[40px] border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-all">
-                    <div class="text-6xl font-black text-white/5 absolute -top-2 -right-2 italic group-hover:text-blue-500/10 transition-all">02</div>
-                    <h3 class="text-xl font-black uppercase italic tracking-tighter mb-4">Naroči</h3>
-                    <p class="text-slate-400 leading-relaxed">Potrdite svoje naročilo s hitrim in varnim plačilnim sistemom v naši aplikaciji.</p>
-                </div>
-                <div class="glass p-10 rounded-[40px] border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-all">
-                    <div class="text-6xl font-black text-white/5 absolute -top-2 -right-2 italic group-hover:text-blue-500/10 transition-all">03</div>
-                    <h3 class="text-xl font-black uppercase italic tracking-tighter mb-4">Uživaj</h3>
-                    <p class="text-slate-400 leading-relaxed">Sledite svojemu dostavljalcu v realnem času in prejmite vroč obrok pred vrata.</p>
-                </div>
-            </div>
+        <div class="max-w-7xl mx-auto text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-black italic tracking-tighter uppercase mb-4">Kako deluje?</h2>
+            <p class="text-blue-400 font-bold uppercase tracking-widest text-[10px]">3 preprosti koraki do vašega obroka</p>
         </div>
-    </section>
-
-    <section class="py-32 px-6 overflow-hidden bg-[#0a0f18]">
-        <div class="max-w-7xl mx-auto flex flex-col items-center">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-5xl font-black italic tracking-tighter uppercase mb-4">Aplikacija v vaši dlani</h2>
-                <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Preprosto. Hitro. Elitno.</p>
+        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
+            <div class="glass p-10 rounded-[40px] border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-all text-left">
+                <div class="text-6xl font-black text-white/5 absolute -top-2 -right-2 italic group-hover:text-blue-500/10 transition-all">01</div>
+                <h3 class="text-xl font-black uppercase italic tracking-tighter mb-4">Izberi</h3>
+                <p class="text-slate-400 leading-relaxed">Odprite aplikacijo in izberite med najboljšimi lokalnimi restavracijami v Mariboru.</p>
             </div>
-            
-            <div class="relative flex justify-center w-full">
-                <div class="preview-glow"></div>
-                <div class="phone-mockup animate-bounce-slow">
-                    <div class="phone-screen flex flex-col">
-                        <div class="flex justify-center mb-4">
-                             <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg?t=20260329" class="w-8 h-8 rounded-full border border-white/20">
-                        </div>
-                        <div class="flex items-center gap-2 glass px-3 py-1 rounded-full mb-6 mx-auto">
-                            <span class="w-1 h-1 rounded-full bg-green-500"></span>
-                            <p class="text-[7px] font-black text-slate-400 uppercase">Glavni trg 17, Maribor</p>
-                        </div>
-                        
-                        <div class="flex flex-col gap-3">
-                            <div class="text-center mb-2"><h4 class="text-[10px] font-black italic uppercase tracking-tighter">Chimney Cake MB</h4></div>
-                            <div class="mini-card flex gap-3 items-center">
-                                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD1.JPG.jpeg" class="w-10 h-10 rounded-lg object-cover">
-                                <div><p class="text-[8px] font-bold uppercase">Chimney Style A</p><p class="text-blue-400 text-[8px] font-black">€8.50</p></div>
-                            </div>
-                            <div class="mini-card flex gap-3 items-center">
-                                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD2.JPG.jpeg" class="w-10 h-10 rounded-lg object-cover">
-                                <div><p class="text-[8px] font-bold uppercase">Chimney Style B</p><p class="text-blue-400 text-[8px] font-black">€7.90</p></div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-auto pt-6 text-center">
-                            <div class="bg-blue-600 w-full py-3 rounded-xl text-[9px] font-black uppercase italic tracking-tighter">Začni Misijo</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="absolute top-20 left-10 md:left-[25%] glass p-4 rounded-2xl border-white/10 hidden md:block">
-                    <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Sledenje v živo</p>
-                </div>
-                <div class="absolute bottom-20 right-10 md:right-[25%] glass p-4 rounded-2xl border-white/10 hidden md:block">
-                    <p class="text-[10px] font-black text-green-400 uppercase tracking-widest">Hitro plačilo</p>
-                </div>
+            <div class="glass p-10 rounded-[40px] border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-all text-left">
+                <div class="text-6xl font-black text-white/5 absolute -top-2 -right-2 italic group-hover:text-blue-500/10 transition-all">02</div>
+                <h3 class="text-xl font-black uppercase italic tracking-tighter mb-4">Naroči</h3>
+                <p class="text-slate-400 leading-relaxed">Potrdite svoje naročilo s hitrim in varnim plačilnim sistemom v naši aplikaciji.</p>
+            </div>
+            <div class="glass p-10 rounded-[40px] border-white/5 relative overflow-hidden group hover:border-blue-500/30 transition-all text-left">
+                <div class="text-6xl font-black text-white/5 absolute -top-2 -right-2 italic group-hover:text-blue-500/10 transition-all">03</div>
+                <h3 class="text-xl font-black uppercase italic tracking-tighter mb-4">Uživaj</h3>
+                <p class="text-slate-400 leading-relaxed">Sledite svojemu dostavljalcu v realnem času in prejmite vroč obrok pred vrata.</p>
             </div>
         </div>
     </section>
@@ -169,7 +105,6 @@
             <h2 class="text-5xl font-black italic tracking-tighter uppercase mb-4 text-gradient">Stopite v stik</h2>
             <p class="text-slate-400 text-lg max-w-2xl mx-auto">Naša ekipa v Mariboru vam je na voljo za vsa vprašanja.</p>
         </div>
-
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 items-stretch">
             <div class="glass p-8 md:p-12 rounded-[40px] border-white/10">
                 <div class="space-y-4">
@@ -178,41 +113,13 @@
                         <input type="email" id="contact_email" placeholder="Email" class="p-4 rounded-2xl w-full text-sm font-bold">
                     </div>
                     <textarea id="contact_message" placeholder="Vaše sporočilo" rows="5" class="p-4 rounded-2xl w-full text-sm font-bold"></textarea>
-                    <button onclick="sendContactMessage()" id="submit_btn" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs hover:bg-blue-500 transition-all">Pošlji Sporočilo</button>
+                    <button id="submit_btn" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs hover:bg-blue-500 transition-all">Pošlji Sporočilo</button>
                     <p id="form_status" class="text-[10px] uppercase font-black tracking-widest text-center mt-2"></p>
                 </div>
-                
-                <div class="mt-10 flex flex-col md:flex-row gap-8">
-                    <div class="flex items-center gap-3">
-                        <div class="text-blue-400 text-xl">📧</div>
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-300">info@jejmo.com</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <div class="text-blue-400 text-xl">📍</div>
-                        <p class="text-xs font-black uppercase tracking-widest text-slate-300">Maribor, Slovenija</p>
-                    </div>
-                </div>
             </div>
-
             <div class="rounded-[40px] overflow-hidden border border-white/10 glass min-h-[400px]">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d44146.467812920215!2d15.603310056976722!3d46.55465030584285!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476f77098e9b8675%3A0x400f81c82414770!2sMaribor!5e0!3m2!1ssl!2ssi!4v1711710000000!5m2!1ssl!2ssi" 
-                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" class="map-container">
-                </iframe>
-            </div>
-        </div>
-    </section>
-
-    <section id="partners" class="py-32 px-6 bg-white/5 border-y border-white/5">
-        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
-            <div class="glass p-12 rounded-[40px] border-blue-500/20">
-                <h3 class="text-3xl font-black italic tracking-tighter uppercase mb-4">Postani Partner</h3>
-                <p class="text-slate-400 mb-8 font-medium italic">Povečajte prodajo svoje restavracije z JEJMO floto.</p>
-                <a href="mailto:info@jejmo.com" class="text-blue-400 font-black uppercase text-xs tracking-[0.2em] border-b-2 border-blue-500/20 pb-2">Pišite nam →</a>
-            </div>
-            <div id="drivers" class="glass p-12 rounded-[40px] border-green-500/20">
-                <h3 class="text-3xl font-black italic tracking-tighter uppercase mb-4">Postani Dostavljalec</h3>
-                <p class="text-slate-400 mb-8 font-medium italic">Vozite pod lastnimi pogoji in zaslužite več.</p>
-                <a href="mailto:jobs@jejmo.com" class="text-green-400 font-black uppercase text-xs tracking-[0.2em] border-b-2 border-green-500/20 pb-2">Pridruži se ekipi →</a>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d44111.45564887309!2d15.606132759885863!3d46.559510168910416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476f7704259ad351%3A0xaba838966963e634!2sMaribor!5e0!3m2!1ssl!2ssi!4v1711710000000!5m2!1ssl!2ssi" 
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" class="map-container"></iframe>
             </div>
         </div>
     </section>
@@ -226,24 +133,25 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // IMPORTANT: PASTE YOUR ACTUAL CONFIG HERE FROM PROJECT SETTINGS
         const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            authDomain: "jejmo-app.firebaseapp.com",
-            projectId: "jejmo-app",
-            storageBucket: "jejmo-app.appspot.com",
-            messagingSenderId: "...",
-            appId: "..."
+            apiKey: "AIzaSyANyaaceSfqFXWufFlgMiNb4nwV13WBO5Y",
+            authDomain: "jejmo-maribor.firebaseapp.com",
+            databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "jejmo-maribor",
+            storageBucket: "jejmo-maribor.firebasestorage.app",
+            messagingSenderId: "615780744817",
+            appId: "1:615780744817:web:89f05cba17bc92525465d0",
+            measurementId: "G-MTBKNBVNCP"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.sendContactMessage = async function() {
+        const submitBtn = document.getElementById('submit_btn');
+        submitBtn.addEventListener('click', async () => {
             const name = document.getElementById('contact_name').value;
             const email = document.getElementById('contact_email').value;
             const message = document.getElementById('contact_message').value;
-            const btn = document.getElementById('submit_btn');
             const status = document.getElementById('form_status');
 
             if(!name || !email || !message) {
@@ -252,45 +160,33 @@
                 return;
             }
 
-            btn.disabled = true;
-            btn.innerText = "POŠILJANJE...";
+            submitBtn.disabled = true;
+            submitBtn.innerText = "POŠILJANJE...";
 
             try {
-                // Adds a document to the 'mail' collection which your extension watches
                 await addDoc(collection(db, "mail"), {
                     to: "info@jejmo.com",
                     message: {
                         subject: `JEJMO Kontakt: Sporočilo od ${name}`,
-                        html: `
-                            <div style="font-family: sans-serif; padding: 20px; color: #333;">
-                                <h2 style="color: #3b82f6;">Novo sporočilo s spletne strani</h2>
-                                <p><strong>Ime:</strong> ${name}</p>
-                                <p><strong>Email:</strong> ${email}</p>
-                                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-                                <p><strong>Sporočilo:</strong></p>
-                                <p style="white-space: pre-wrap;">${message}</p>
-                            </div>
-                        `
+                        html: `<div style="font-family:sans-serif;padding:20px;"><h2 style="color:#3b82f6;">Novo sporočilo</h2><p><strong>Ime:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><hr><p>${message}</p></div>`
                     },
                     createdAt: serverTimestamp()
                 });
 
                 status.innerText = "HVALA! SPOROČILO JE BILO POSLANO.";
                 status.style.color = "#10b981";
-                
-                // Reset Form
                 document.getElementById('contact_name').value = "";
                 document.getElementById('contact_email').value = "";
                 document.getElementById('contact_message').value = "";
             } catch (e) {
-                console.error(e);
+                console.error("Firebase Error:", e);
                 status.innerText = "NAPAKA PRI POŠILJANJU. POSKUSITE KASNEJE.";
                 status.style.color = "#ef4444";
             } finally {
-                btn.disabled = false;
-                btn.innerText = "POŠLJI SPOROČILO";
+                submitBtn.disabled = false;
+                submitBtn.innerText = "POŠLJI SPOROČILO";
             }
-        };
+        });
     </script>
 </body>
 </html>
