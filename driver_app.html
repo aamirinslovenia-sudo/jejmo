@@ -87,20 +87,17 @@
             <div class="logo-glow"></div>
             <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-main">
         </div>
-
         <div id="phone-step" class="w-full max-w-xs space-y-4">
             <h1 class="text-2xl font-black italic mb-2 uppercase italic tracking-tighter">DRIVER <span class="text-purple-500 italic">LOGIN</span></h1>
             <input type="tel" id="phone-input" class="auth-input" value="+386 ">
             <div id="recaptcha-container" class="flex justify-center my-4"></div>
             <button onclick="sendOTP()" id="send-btn" class="bg-white text-black w-full py-6 rounded-[25px] text-lg font-black uppercase tracking-widest active:scale-95 transition-all">Send Code</button>
         </div>
-
         <div id="otp-step" class="w-full max-w-xs space-y-4 hidden">
             <h1 class="text-2xl font-black italic mb-2 uppercase italic tracking-tighter">VERIFY <span class="text-purple-500">CODE</span></h1>
             <input type="number" id="otp-input" class="auth-input" placeholder="000 000">
             <button onclick="verifyOTP()" id="verify-btn" class="bg-purple-600 text-white w-full py-6 rounded-[25px] text-lg font-black uppercase tracking-widest active:scale-95 transition-all">Verify & Enter</button>
         </div>
-
         <div id="name-step" class="w-full max-w-xs space-y-4 hidden">
             <h1 class="text-2xl font-black italic mb-2 uppercase italic tracking-tighter text-purple-500">YOUR NAME</h1>
             <p class="text-slate-400 text-[10px] font-bold uppercase mb-4 tracking-widest">Kitchen will see this on orders</p>
@@ -206,6 +203,7 @@
         let confirmationResult = null;
         let currentOrder = null; let audioCtx = null; let alertInterval = null;
         let allCompletedOrders = [];
+        let geoWatchId = null;
 
         function initAudio() {
             if (audioCtx) return;
@@ -222,6 +220,37 @@
             g.gain.setValueAtTime(0.02, t);
             g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
             o.start(t); o.stop(t + 0.1);
+        }
+
+        // --- GPS BROADCAST ENGINE ---
+        function startTracking() {
+            if (geoWatchId) return;
+            if ("geolocation" in navigator) {
+                geoWatchId = navigator.geolocation.watchPosition((position) => {
+                    if (driverId && currentOrder && currentOrder.status === "Delivering") {
+                        db.ref('drivers/' + driverId + '/location').set({
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                            lastUpdate: Date.now()
+                        });
+                        // Mirror coordinates to order for easier customer lookup
+                        db.ref('orders/' + currentOrder.id + '/courierLocation').set({
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        });
+                    }
+                }, (err) => console.log("GPS Error", err), {
+                    enableHighAccuracy: true,
+                    maximumAge: 0
+                });
+            }
+        }
+
+        function stopTracking() {
+            if (geoWatchId) {
+                navigator.geolocation.clearWatch(geoWatchId);
+                geoWatchId = null;
+            }
         }
 
         function initRecaptcha() {
@@ -291,12 +320,16 @@
                 });
             } else {
                 document.getElementById('boot-screen').style.display = 'flex';
+                stopTracking();
             }
         });
 
         function handleLogout() {
             playTick();
-            if(confirm("Sign out of shift?")) auth.signOut().then(() => location.reload());
+            if(confirm("Sign out of shift?")) {
+                stopTracking();
+                auth.signOut().then(() => location.reload());
+            }
         }
 
         function initApp() {
@@ -318,14 +351,17 @@
                 if (activeTask) {
                     currentOrder = activeTask; renderUI(activeTask, "End Mission");
                     clearInterval(alertInterval); alertInterval = null;
+                    startTracking(); // START GPS BROADCAST
                 } else if (availableOrder) {
                     currentOrder = availableOrder; renderUI(availableOrder, "Accept Mission");
                     if (!alertInterval) { playBeep(); alertInterval = setInterval(playBeep, 2500); }
+                    stopTracking(); // IDLE
                 } else {
                     currentOrder = null; clearInterval(alertInterval); alertInterval = null;
                     document.getElementById('order-ui').classList.add('hidden');
                     document.getElementById('waiting-ui').classList.remove('hidden');
                     document.getElementById('order-sheet').classList.replace('sheet-expanded', 'sheet-minimized');
+                    stopTracking(); // IDLE
                 }
             });
 
@@ -378,10 +414,11 @@
                 db.ref('orders/' + currentOrder.id).update({ 
                     status: "Delivering", 
                     claimedBy: driverId,
-                    claimedByName: driverRealName // Store the name directly in the order!
+                    claimedByName: driverRealName 
                 });
             } else {
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
+                stopTracking(); // MISSION END
             }
         }
 
