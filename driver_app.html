@@ -348,9 +348,7 @@
                 let activeTask = null; let availableOrder = null; allCompletedOrders = [];
                 snap.forEach(c => {
                     const o = c.val(); o.id = c.key;
-                    // Filter: Order is mine and I'm delivering or I've claimed it during prep
                     if (o.claimedBy === driverId && o.status !== "Completed") activeTask = o;
-                    // Filter: New task available
                     if ((o.status === "Preparing" || o.status === "Ready") && !o.claimedBy) availableOrder = o;
                     if (o.status === "Completed") allCompletedOrders.push(o);
                 });
@@ -363,6 +361,8 @@
                     
                     renderUI(activeTask, btnText);
                     clearInterval(alertInterval); alertInterval = null;
+                    // Crash Recovery GPS Start
+                    if (activeTask.status === "Delivering") startTracking();
                 } else if (availableOrder) {
                     currentOrder = availableOrder; renderUI(availableOrder, "Accept Mission");
                     if (!alertInterval) { playBeep(); alertInterval = setInterval(playBeep, 2500); }
@@ -453,21 +453,18 @@
             playTick();
             if (!currentOrder) return; 
 
-            // STEP 1: Claim order during Prep
             if ((currentOrder.status === "Preparing" || currentOrder.status === "Ready") && !currentOrder.claimedBy) {
                 db.ref('orders/' + currentOrder.id).update({ 
                     claimedBy: driverId,
                     claimedByName: driverRealName 
                 });
             } 
-            // STEP 2: Food is Ready, Driver picks it up
             else if (currentOrder.status === "Ready" && currentOrder.claimedBy === driverId) {
                 db.ref('orders/' + currentOrder.id).update({ 
                     status: "Delivering" 
                 });
                 startTracking();
             }
-            // STEP 3: Delivery Complete
             else if (currentOrder.status === "Delivering" && currentOrder.claimedBy === driverId) {
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
                 stopTracking();
