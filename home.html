@@ -47,9 +47,7 @@
             <input id="userPhone" type="tel" placeholder="Phone Number" class="input-box">
             <input id="userAddress" type="text" placeholder="Address in Maribor" class="input-box">
         </div>
-
         <div id="recaptcha-container" class="flex justify-center mb-4"></div>
-
         <button id="gate-btn" onclick="handleGateway()" class="bg-white text-black font-black py-6 rounded-[30px] text-lg uppercase tracking-widest active:scale-95 transition-all shadow-2xl">Continue</button>
     </div>
 
@@ -76,13 +74,11 @@
                     <p class="font-bold text-[10px] uppercase mb-1">Chimney Style A</p>
                     <p class="text-blue-400 font-black text-xs">€8.50</p>
                 </div>
-
                 <div id="item-Chimney2" onclick="addToCart('Chimney Special B', 7.90, 'item-Chimney2')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD2.JPG.jpeg" class="product-img">
                     <p class="font-bold text-[10px] uppercase mb-1">Chimney Style B</p>
                     <p class="text-blue-400 font-black text-xs">€7.90</p>
                 </div>
-
                 <div id="item-Chimney3" onclick="addToCart('Chimney Special C', 7.50, 'item-Chimney3')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD3.JPG.jpeg" class="product-img">
                     <p class="font-bold text-[10px] uppercase mb-1">Chimney Style C</p>
@@ -118,19 +114,19 @@
     </div>
 
     <div id="order-tracking-overlay">
-        <div class="flex justify-between items-start mb-2">
-            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Jejmo Logo" class="logo-header">
+        <div class="flex justify-between items-start mb-2 px-6 pt-6">
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-header">
             <a href="tel:+38600000000" class="glass w-12 h-12 rounded-2xl flex items-center justify-center text-blue-500 border-blue-500/20 active:bg-blue-500 active:text-white transition-all">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>
             </a>
         </div>
-        <div class="space-y-12 relative pb-6 mt-12">
-            <div class="connector-line"></div>
+        <div class="px-6 space-y-12 relative pb-6 mt-12">
+            <div class="connector-line ml-6"></div>
             <div class="flex gap-6 items-center z-10"><div id="step-new" class="tracking-dot"></div><div><p class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Stage 1</p><h4 class="font-bold uppercase">Transmitted</h4></div></div>
             <div class="flex gap-6 items-center z-10"><div id="step-kitchen" class="tracking-dot"></div><div><p id="text-kitchen" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Stage 2</p><h4 class="font-bold uppercase">Preparing</h4></div></div>
             <div class="flex gap-6 items-center z-10"><div id="step-delivery" class="tracking-dot"></div><div><p id="text-delivery" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Stage 3</p><h4 class="font-bold uppercase">On the road</h4></div></div>
         </div>
-        <div class="flex-grow flex flex-col justify-center">
+        <div class="flex-grow flex flex-col justify-center px-6">
             <div class="glass p-10 text-center rounded-[40px] border border-white/10">
                 <p class="text-[10px] text-slate-400 uppercase font-black mb-3 tracking-[0.2em]">Estimated Arrival</p>
                 <h3 class="text-5xl font-[900] italic tracking-tighter text-white">~25 MIN</h3>
@@ -142,7 +138,7 @@
     <div id="success-msg">
         <div class="logo-container mb-12">
             <div class="logo-glow"></div>
-            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Jejmo Logo" class="logo-main">
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-main">
         </div>
         <h2 class="text-4xl font-black italic tracking-tighter mb-2">MISSION SUCCESS</h2>
         <p id="success-email-text" class="text-slate-400 font-bold mb-10 px-6">Receipt sent to your email.</p>
@@ -309,50 +305,8 @@
                     text3.classList.replace('text-slate-500', 'text-blue-500');
                 }
                 
-                if(o.status === "Completed" && !emailSent) {
-                    emailSent = true;
-                    fs.collection('mail').add({
-                        to: o.email,
-                        message: {
-                            subject: 'Mission Successful: Order #' + o.orderNumber,
-                            html: `
-                                <div style="background-color: #060a11; color: #ffffff; padding: 40px; font-family: 'Outfit', sans-serif, 'Segoe UI', Arial; max-width: 600px; margin: auto; border-radius: 30px; border: 1px solid rgba(255,255,255,0.05);">
-                                    <div style="text-align: center; margin-bottom: 40px;">
-                                        <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="JEJMO" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); object-fit: cover;">
-                                        <h1 style="font-style: italic; font-weight: 900; font-size: 32px; letter-spacing: -1.5px; margin-top: 25px; color: #ffffff;">MISSION SUCCESS</h1>
-                                        <p style="color: #60a5fa; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 3px;">Order Confirmation #${o.orderNumber}</p>
-                                    </div>
-                                    <div style="display: flex; gap: 10px; margin-bottom: 25px;">
-                                        <div style="flex: 1; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08);">
-                                            <p style="margin: 0; color: #94a3b8; font-size: 9px; font-weight: 800; text-transform: uppercase;">Pickup Point</p>
-                                            <h4 style="margin: 5px 0; font-size: 13px;">${o.restaurant}</h4>
-                                            <p style="margin: 0; color: #64748b; font-size: 10px;">${o.restaurantAddress}</p>
-                                        </div>
-                                        <div style="flex: 1; background: rgba(59, 130, 246, 0.05); padding: 15px; border-radius: 18px; border: 1px solid rgba(59, 130, 246, 0.2);">
-                                            <p style="margin: 0; color: #60a5fa; font-size: 9px; font-weight: 800; text-transform: uppercase;">Drop Zone</p>
-                                            <h4 style="margin: 5px 0; font-size: 13px;">${o.customer}</h4>
-                                            <p style="margin: 0; color: #94a3b8; font-size: 10px;">${o.address}</p>
-                                        </div>
-                                    </div>
-                                    <div style="padding: 0 10px 30px 10px;">
-                                        <h4 style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; text-transform: uppercase; font-size: 11px; font-weight: 800; color: #94a3b8; margin-bottom: 15px;">Manifest Summary</h4>
-                                        <p style="font-size: 16px; line-height: 1.8; color: #ffffff; font-weight: 600;">${o.item}</p>
-                                    </div>
-                                    <div style="background: #2563eb; padding: 25px; border-radius: 24px; text-align: center;">
-                                        <span style="display: block; color: rgba(255,255,255,0.7); font-weight: 800; font-size: 10px; text-transform: uppercase; margin-bottom: 5px;">Total Cost Paid via ${o.paymentType}</span>
-                                        <span style="color: white; font-weight: 900; font-size: 32px; font-style: italic; letter-spacing: -1px;">${o.totalPrice}</span>
-                                    </div>
-                                    <div style="text-align: center; margin-top: 40px;">
-                                        <p style="color: #475569; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">&copy; 2026 JEJMO MARIBOR. ALL MISSIONS ACCOMPLISHED.</p>
-                                    </div>
-                                </div>
-                            `
-                        }
-                    }).then(() => {
-                        document.getElementById('success-msg').style.display = 'flex';
-                    }).catch(() => {
-                        document.getElementById('success-msg').style.display = 'flex';
-                    });
+                if(o.status === "Completed") {
+                     document.getElementById('success-msg').style.display = 'flex';
                 }
             });
         }
