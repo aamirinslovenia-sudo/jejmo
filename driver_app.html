@@ -348,16 +348,21 @@
                 let activeTask = null; let availableOrder = null; allCompletedOrders = [];
                 snap.forEach(c => {
                     const o = c.val(); o.id = c.key;
-                    if (o.status === "Delivering" && o.claimedBy === driverId) activeTask = o;
-                    // UPDATED: Available if Preparing (in production) OR Ready (waiting for pickup)
+                    // Filter: Order is mine and I'm delivering or I've claimed it during prep
+                    if (o.claimedBy === driverId && o.status !== "Completed") activeTask = o;
+                    // Filter: New task available
                     if ((o.status === "Preparing" || o.status === "Ready") && !o.claimedBy) availableOrder = o;
                     if (o.status === "Completed") allCompletedOrders.push(o);
                 });
 
                 if (activeTask) {
-                    currentOrder = activeTask; renderUI(activeTask, "End Mission");
+                    currentOrder = activeTask; 
+                    let btnText = "Pick Up Food";
+                    if (activeTask.status === "Preparing") btnText = "Claimed (Waiting)";
+                    if (activeTask.status === "Delivering") btnText = "End Mission";
+                    
+                    renderUI(activeTask, btnText);
                     clearInterval(alertInterval); alertInterval = null;
-                    startTracking();
                 } else if (availableOrder) {
                     currentOrder = availableOrder; renderUI(availableOrder, "Accept Mission");
                     if (!alertInterval) { playBeep(); alertInterval = setInterval(playBeep, 2500); }
@@ -391,25 +396,31 @@
             document.getElementById('display-instruction').innerText = o.courierInstruction || "No special instructions";
 
             const rName = o.restaurant || "Master Kitchen";
-            const rAddr = "Glavni trg 17, Maribor"; // Hardcoded for test
+            const rAddr = "Glavni trg 17, Maribor";
             document.getElementById('display-res-name').innerText = rName;
             document.getElementById('display-res-addr-text').innerText = rAddr;
             document.getElementById('res-nav-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(rAddr)}`;
 
-            // --- DRIVER PREP TIMER ENGINE ---
             const timerBox = document.getElementById('driver-eta-box');
             const timerDisplay = document.getElementById('driver-eta-display');
+            const actionBtn = document.getElementById('action-btn');
             
             const updateDriverCountdown = () => {
                 if (o.status === "Preparing" && o.estimatedReadyAt) {
                     timerBox.classList.remove('hidden');
                     const diff = Math.floor((o.estimatedReadyAt - Date.now()) / 60000);
                     timerDisplay.innerText = (diff > 0 ? diff : 1) + " MIN";
-                    timerDisplay.style.color = "#eab308"; // Yellow
+                    timerDisplay.style.color = "#eab308";
+                    if (o.claimedBy === driverId) {
+                        actionBtn.disabled = true;
+                        actionBtn.style.opacity = "0.4";
+                    }
                 } else if (o.status === "Ready") {
                     timerBox.classList.remove('hidden');
                     timerDisplay.innerText = "READY";
-                    timerDisplay.style.color = "#4ade80"; // Green
+                    timerDisplay.style.color = "#4ade80";
+                    actionBtn.disabled = false;
+                    actionBtn.style.opacity = "1";
                 } else {
                     timerBox.classList.add('hidden');
                 }
@@ -419,7 +430,7 @@
             if (driverTrackingInterval) clearInterval(driverTrackingInterval);
             driverTrackingInterval = setInterval(updateDriverCountdown, 30000);
 
-            document.getElementById('action-btn').innerText = btnText;
+            actionBtn.innerText = btnText;
             document.getElementById('order-ui').classList.remove('hidden');
             document.getElementById('waiting-ui').classList.add('hidden');
             document.getElementById('order-sheet').classList.replace('sheet-minimized', 'sheet-expanded');
@@ -431,21 +442,33 @@
                 toggleFinishButton();
             } else {
                 cashUI.classList.add('hidden');
-                document.getElementById('action-btn').disabled = false;
-                document.getElementById('action-btn').style.opacity = "1";
+                if (o.status !== "Preparing") {
+                    actionBtn.disabled = false;
+                    actionBtn.style.opacity = "1";
+                }
             }
         }
 
         function processOrder() { 
             playTick();
             if (!currentOrder) return; 
-            if (currentOrder.status === "Preparing" || currentOrder.status === "Ready") {
+
+            // STEP 1: Claim order during Prep
+            if ((currentOrder.status === "Preparing" || currentOrder.status === "Ready") && !currentOrder.claimedBy) {
                 db.ref('orders/' + currentOrder.id).update({ 
-                    status: "Delivering", 
                     claimedBy: driverId,
                     claimedByName: driverRealName 
                 });
-            } else {
+            } 
+            // STEP 2: Food is Ready, Driver picks it up
+            else if (currentOrder.status === "Ready" && currentOrder.claimedBy === driverId) {
+                db.ref('orders/' + currentOrder.id).update({ 
+                    status: "Delivering" 
+                });
+                startTracking();
+            }
+            // STEP 3: Delivery Complete
+            else if (currentOrder.status === "Delivering" && currentOrder.claimedBy === driverId) {
                 db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
                 stopTracking();
             }
