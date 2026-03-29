@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JEJMO | Vrhunska Dostava v Mariboru</title>
+    
+    <link rel="icon" type="image/jpg" href="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg?t=20260329">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
@@ -15,8 +18,11 @@
         .nav-link:hover { opacity: 1; color: #60a5fa; }
         @keyframes bounce-slow { 0%, 100% { transform: translateY(-5px); } 50% { transform: translateY(0); } }
         .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
+        
         input, textarea { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
         input:focus, textarea:focus { border-color: #3b82f6 !important; outline: none; }
+
+        /* App Preview Specific Styles */
         .phone-mockup { width: 280px; height: 580px; border: 8px solid #1e293b; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); }
         .phone-screen { background: #060a11; height: 100%; width: 100%; padding: 16px; font-family: 'Outfit', sans-serif; }
         .preview-glow { position: absolute; width: 300px; height: 300px; background: #3b82f6; filter: blur(100px); opacity: 0.15; z-index: -1; }
@@ -100,13 +106,57 @@
         </div>
     </section>
 
+    <section class="py-32 px-6 overflow-hidden bg-[#0a0f18]">
+        <div class="max-w-7xl mx-auto flex flex-col items-center">
+            <div class="text-center mb-20">
+                <h2 class="text-4xl md:text-5xl font-black italic tracking-tighter uppercase mb-4">Aplikacija v vaši dlani</h2>
+                <p class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Preprosto. Hitro. Elitno.</p>
+            </div>
+            
+            <div class="relative flex justify-center w-full">
+                <div class="preview-glow"></div>
+                <div class="phone-mockup animate-bounce-slow">
+                    <div class="phone-screen flex flex-col">
+                        <div class="flex justify-center mb-4">
+                             <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg?t=20260329" class="w-8 h-8 rounded-full border border-white/20">
+                        </div>
+                        <div class="flex items-center gap-2 glass px-3 py-1 rounded-full mb-6 mx-auto">
+                            <span class="w-1 h-1 rounded-full bg-green-500"></span>
+                            <p class="text-[7px] font-black text-slate-400 uppercase">Glavni trg 17, Maribor</p>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                            <div class="text-center mb-2"><h4 class="text-[10px] font-black italic uppercase tracking-tighter">Chimney Cake MB</h4></div>
+                            <div class="mini-card flex gap-3 items-center">
+                                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD1.JPG.jpeg" class="w-10 h-10 rounded-lg object-cover">
+                                <div><p class="text-[8px] font-bold uppercase">Chimney Style A</p><p class="text-blue-400 text-[8px] font-black">€8.50</p></div>
+                            </div>
+                            <div class="mini-card flex gap-3 items-center">
+                                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD2.JPG.jpeg" class="w-10 h-10 rounded-lg object-cover">
+                                <div><p class="text-[8px] font-bold uppercase">Chimney Style B</p><p class="text-blue-400 text-[8px] font-black">€7.90</p></div>
+                            </div>
+                        </div>
+                        <div class="mt-auto pt-6 text-center">
+                            <div class="bg-blue-600 w-full py-3 rounded-xl text-[9px] font-black uppercase italic tracking-tighter text-white">Začni Misijo</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute top-20 left-10 md:left-[25%] glass p-4 rounded-2xl border-white/10 hidden md:block">
+                    <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Sledenje v živo</p>
+                </div>
+                <div class="absolute bottom-20 right-10 md:right-[25%] glass p-4 rounded-2xl border-white/10 hidden md:block">
+                    <p class="text-[10px] font-black text-green-400 uppercase tracking-widest">Hitro plačilo</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="contact" class="py-32 px-6">
         <div class="max-w-7xl mx-auto text-center mb-16">
             <h2 class="text-5xl font-black italic tracking-tighter uppercase mb-4 text-gradient">Stopite v stik</h2>
             <p class="text-slate-400 text-lg max-w-2xl mx-auto">Naša ekipa v Mariboru vam je na voljo za vsa vprašanja.</p>
         </div>
         <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 items-stretch">
-            <div class="glass p-8 md:p-12 rounded-[40px] border-white/10">
+            <div class="glass p-8 md:p-12 rounded-[40px] border-white/10 flex flex-col justify-between">
                 <div class="space-y-4">
                     <div class="grid grid-cols-2 gap-4">
                         <input type="text" id="contact_name" placeholder="Ime" class="p-4 rounded-2xl w-full text-sm font-bold">
@@ -118,8 +168,23 @@
                 </div>
             </div>
             <div class="rounded-[40px] overflow-hidden border border-white/10 glass min-h-[400px]">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d44111.45564887309!2d15.606132759885863!3d46.559510168910416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476f7704259ad351%3A0xaba838966963e634!2sMaribor!5e0!3m2!1ssl!2ssi!4v1711710000000!5m2!1ssl!2ssi" 
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d44111.4725359146!2d15.603310057211516!3d46.559520264023614!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476f770462006325%3A0x400f81d1134a620!2sMaribor!5e0!3m2!1sen!2ssi!4v1711710000000!5m2!1sen!2ssi" 
                     width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" class="map-container"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <section id="partners" class="py-32 px-6 bg-white/5 border-y border-white/5">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
+            <div class="glass p-12 rounded-[40px] border-blue-500/20">
+                <h3 class="text-3xl font-black italic tracking-tighter uppercase mb-4">Postani Partner</h3>
+                <p class="text-slate-400 mb-8 font-medium italic">Povečajte prodajo svoje restavracije z JEJMO floto.</p>
+                <a href="mailto:info@jejmo.com" class="text-blue-400 font-black uppercase text-xs tracking-[0.2em] border-b-2 border-blue-500/20 pb-2">Pišite nam →</a>
+            </div>
+            <div id="drivers" class="glass p-12 rounded-[40px] border-green-500/20">
+                <h3 class="text-3xl font-black italic tracking-tighter uppercase mb-4">Postani Dostavljalec</h3>
+                <p class="text-slate-400 mb-8 font-medium italic">Vozite pod lastnimi pogoji in zaslužite več.</p>
+                <a href="mailto:jobs@jejmo.com" class="text-green-400 font-black uppercase text-xs tracking-[0.2em] border-b-2 border-green-500/20 pb-2">Pridruži se ekipi →</a>
             </div>
         </div>
     </section>
