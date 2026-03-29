@@ -234,15 +234,16 @@
         function selectRestaurant(name) { playTick(); selectedRestaurant = name; document.getElementById('menu-rest-logo').src = restaurantsRegistry[name].logo; document.getElementById('restaurant-view').classList.add('hidden'); document.getElementById('menu-view').classList.remove('hidden'); }
         function goBack() { playTick(); document.getElementById('restaurant-view').classList.remove('hidden'); document.getElementById('menu-view').classList.add('hidden'); cart = []; updateCartUI(); }
         
+        // ADDED TOGGLE LOGIC HERE
         function addToCart(name, price, id) { 
             playTick(); 
             const index = cart.findIndex(i => i.elementId === id); 
             if (index > -1) { 
-                // Item exists, so remove it (Toggle Off)
+                // Toggle OFF: Item is in cart, so remove it
                 cart.splice(index, 1);
                 document.getElementById(id).classList.remove('active-item');
             } else { 
-                // Item doesn't exist, so add it (Toggle On)
+                // Toggle ON: Item is not in cart, so add it
                 cart.push({ name: name, price: price, quantity: 1, elementId: id }); 
                 document.getElementById(id).classList.add('active-item');
             } 
@@ -252,17 +253,12 @@
         function updateCartUI() {
             let total = 0; const container = document.getElementById('cart-items-container'); container.innerHTML = "";
             
-            // Sync visual state of all cards
-            document.querySelectorAll('[id^="item-Chimney"]').forEach(card => {
-                const inCart = cart.some(item => item.elementId === card.id);
-                if (inCart) card.classList.add('active-item');
-                else card.classList.remove('active-item');
-            });
-
             if(cart.length === 0) { 
                 document.getElementById('cart-summary').classList.add('hidden'); 
                 document.getElementById('orderBtn').innerText = translations[currentLang].select_items_btn; 
                 document.getElementById('priceDisplay').innerText = "€0.00"; 
+                // Ensure all card borders are removed if cart is empty
+                document.querySelectorAll('.active-item').forEach(el => el.classList.remove('active-item'));
                 return; 
             }
 
