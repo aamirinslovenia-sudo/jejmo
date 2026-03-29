@@ -19,8 +19,9 @@
         @keyframes bounce-slow { 0%, 100% { transform: translateY(-5px); } 50% { transform: translateY(0); } }
         .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
         
-        input, textarea { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
-        input:focus, textarea:focus { border-color: #3b82f6 !important; outline: none; }
+        input, textarea, select { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
+        input:focus, textarea:focus, select:focus { border-color: #3b82f6 !important; outline: none; }
+        option { background: #060a11; color: white; }
 
         .phone-mockup { width: 280px; height: 580px; border: 8px solid #1e293b; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); }
         .phone-screen { background: #060a11; height: 100%; width: 100%; padding: 16px; font-family: 'Outfit', sans-serif; }
@@ -167,6 +168,12 @@
                         <input type="text" id="contact_name" placeholder="Ime" class="p-4 rounded-2xl w-full text-sm font-bold">
                         <input type="email" id="contact_email" placeholder="Email" class="p-4 rounded-2xl w-full text-sm font-bold">
                     </div>
+                    <select id="contact_subject" class="p-4 rounded-2xl w-full text-sm font-bold appearance-none cursor-pointer">
+                        <option value="Splošno vprašanje">Splošno vprašanje</option>
+                        <option value="Postani Partner">Želim postati Partner</option>
+                        <option value="Postani Dostavljalec">Želim postati Dostavljalec</option>
+                        <option value="Podpora uporabnikom">Podpora uporabnikom</option>
+                    </select>
                     <textarea id="contact_message" placeholder="Vaše sporočilo" rows="5" class="p-4 rounded-2xl w-full text-sm font-bold"></textarea>
                     <button id="submit_btn" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase tracking-widest text-xs hover:bg-blue-500 transition-all">Pošlji Sporočilo</button>
                     <p id="form_status" class="text-[10px] uppercase font-black tracking-widest text-center mt-2"></p>
@@ -183,7 +190,7 @@
                 </div>
             </div>
             <div class="rounded-[40px] overflow-hidden border border-white/10 glass min-h-[400px]">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d44111.45564883134!2d15.606114884241165!3d46.55474136427321!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476f770be968250b%3A0x6a6953f47e30f145!2sMaribor!5e0!3m2!1sen!2ssi!4v1711710000000!5m2!1sen!2ssi" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" class="map-container"></iframe>
+                <iframe src="https://maps.google.com/?cid=6196806162392797181&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQ" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" class="map-container"></iframe>
             </div>
         </div>
     </section>
@@ -239,6 +246,7 @@
         submitBtn.addEventListener('click', async () => {
             const name = document.getElementById('contact_name').value;
             const email = document.getElementById('contact_email').value;
+            const subject = document.getElementById('contact_subject').value;
             const message = document.getElementById('contact_message').value;
             const status = document.getElementById('form_status');
 
@@ -255,8 +263,17 @@
                 await addDoc(collection(db, "mail"), {
                     to: "info@jejmo.com",
                     message: {
-                        subject: `JEJMO Kontakt: Sporočilo od ${name}`,
-                        html: `<div style="font-family:sans-serif;padding:20px;"><h2 style="color:#3b82f6;">Novo sporočilo</h2><p><strong>Ime:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><hr><p>${message}</p></div>`
+                        subject: `JEJMO Kontakt (${subject}): Sporočilo od ${name}`,
+                        html: `
+                            <div style="font-family:sans-serif;padding:20px;">
+                                <h2 style="color:#3b82f6;">Novo sporočilo</h2>
+                                <p><strong>Tema:</strong> ${subject}</p>
+                                <p><strong>Ime:</strong> ${name}</p>
+                                <p><strong>Email:</strong> ${email}</p>
+                                <hr>
+                                <p>${message}</p>
+                            </div>
+                        `
                     },
                     createdAt: serverTimestamp()
                 });
