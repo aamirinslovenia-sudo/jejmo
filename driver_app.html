@@ -41,7 +41,7 @@
         <button onclick="toggleSidebar()" class="w-14 h-14 glass-panel flex items-center justify-center text-2xl active:scale-90 transition-all">≡</button>
         <div class="glass-panel px-5 py-3 flex items-center gap-3">
             <span id="conn-dot" class="w-2.5 h-2.5 rounded-full status-online"></span>
-            <span id="conn-text" class="text-[10px] font-black uppercase tracking-widest">Active Duty</span>
+            <span id="display-name-header" class="text-[10px] font-black uppercase tracking-widest italic">Driver</span>
         </div>
     </div>
 
@@ -63,7 +63,7 @@
 
     <div id="history-sidebar">
         <div class="flex justify-between items-center mb-12">
-            <img src="logo.jpg" alt="Logo" class="logo-sidebar">
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-sidebar">
             <button onclick="toggleSidebar()" class="w-12 h-12 glass-panel flex items-center justify-center">✕</button>
         </div>
         <div class="space-y-4">
@@ -78,30 +78,34 @@
             </button>
         </div>
         <div class="mt-auto p-6 border-t border-white/10 text-center">
-            <p id="display-driver-id" class="text-xs font-mono text-purple-400">---</p>
+            <p id="display-driver-id" class="text-[8px] font-mono text-purple-400/40">---</p>
         </div>
     </div>
 
     <div id="boot-screen" class="fixed inset-0 z-[3000] bg-[#060a11] flex flex-col items-center justify-center p-8 text-center">
         <div class="relative flex items-center justify-center mb-10">
             <div class="logo-glow"></div>
-            <img src="logo.jpg" alt="Logo" class="logo-main">
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-main">
         </div>
 
         <div id="phone-step" class="w-full max-w-xs space-y-4">
-            <h1 class="text-2xl font-black italic mb-2">DRIVER <span class="text-purple-500">LOGIN</span></h1>
-            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Slovenian Phone Number</p>
+            <h1 class="text-2xl font-black italic mb-2 uppercase italic tracking-tighter">DRIVER <span class="text-purple-500 italic">LOGIN</span></h1>
             <input type="tel" id="phone-input" class="auth-input" value="+386 ">
             <div id="recaptcha-container" class="flex justify-center my-4"></div>
             <button onclick="sendOTP()" id="send-btn" class="bg-white text-black w-full py-6 rounded-[25px] text-lg font-black uppercase tracking-widest active:scale-95 transition-all">Send Code</button>
         </div>
 
         <div id="otp-step" class="w-full max-w-xs space-y-4 hidden">
-            <h1 class="text-2xl font-black italic mb-2">VERIFY <span class="text-purple-500">CODE</span></h1>
-            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Enter the 6-digit SMS code</p>
+            <h1 class="text-2xl font-black italic mb-2 uppercase italic tracking-tighter">VERIFY <span class="text-purple-500">CODE</span></h1>
             <input type="number" id="otp-input" class="auth-input" placeholder="000 000">
             <button onclick="verifyOTP()" id="verify-btn" class="bg-purple-600 text-white w-full py-6 rounded-[25px] text-lg font-black uppercase tracking-widest active:scale-95 transition-all">Verify & Enter</button>
-            <button onclick="location.reload()" class="text-slate-500 text-[10px] font-black uppercase tracking-widest mt-4">Change Phone Number</button>
+        </div>
+
+        <div id="name-step" class="w-full max-w-xs space-y-4 hidden">
+            <h1 class="text-2xl font-black italic mb-2 uppercase italic tracking-tighter text-purple-500">YOUR NAME</h1>
+            <p class="text-slate-400 text-[10px] font-bold uppercase mb-4 tracking-widest">Kitchen will see this on orders</p>
+            <input type="text" id="name-input" class="auth-input" placeholder="Enter Full Name">
+            <button onclick="saveDriverName()" class="bg-white text-black w-full py-6 rounded-[25px] text-lg font-black uppercase tracking-widest active:scale-95 transition-all">Start Shift</button>
         </div>
     </div>
 
@@ -171,7 +175,7 @@
 
     <div id="chat-overlay">
         <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl font-black italic text-purple-500">DISPATCH</h2>
+            <h2 class="text-2xl font-black italic text-purple-500 tracking-tighter">DISPATCH</h2>
             <button onclick="closeChat()" class="text-2xl">✕</button>
         </div>
         <div id="chat-messages" class="flex-1 space-y-4 mb-6 overflow-y-auto flex flex-col"></div>
@@ -182,7 +186,6 @@
     </div>
 
     <script>
-        // NEW FRESH CONFIG FROM YOUR LATEST APP CREATION
         const firebaseConfig = {
             apiKey: "AIzaSyANyaaceSfqFXWufFlgMiNb4nwV13WBO5Y",
             authDomain: "jejmo-maribor.firebaseapp.com",
@@ -199,38 +202,43 @@
         const auth = firebase.auth();
         
         let driverId = null;
+        let driverRealName = "Driver";
         let confirmationResult = null;
         let currentOrder = null; let audioCtx = null; let alertInterval = null;
         let allCompletedOrders = [];
 
-        // --- IDENTITY PLATFORM RECAPTCHA FIX ---
+        function initAudio() {
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playTick() {
+            if (!audioCtx) return;
+            const t = audioCtx.currentTime;
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            o.frequency.setValueAtTime(1500, t);
+            g.gain.setValueAtTime(0.02, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+            o.start(t); o.stop(t + 0.1);
+        }
+
         function initRecaptcha() {
             const container = document.getElementById('recaptcha-container');
-            if (container) {
-                container.innerHTML = ''; // Clear physical element
-            }
-            
-            // Force clear existing global verifier if it exists
+            if (container) container.innerHTML = ''; 
             if (window.recaptchaVerifier) {
-                try {
-                    window.recaptchaVerifier.clear();
-                } catch (e) {
-                    console.log("Verifier already clear");
-                }
+                try { window.recaptchaVerifier.clear(); } catch (e) {}
             }
-
-            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                'size': 'invisible'
-            });
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
         }
 
         async function sendOTP() {
+            initAudio();
+            playTick();
             const phoneNumber = document.getElementById('phone-input').value.trim();
             if (phoneNumber.length < 9) return alert("Enter a valid Slovenian number");
-
-            // Fresh init to stop "Already rendered" error
             initRecaptcha();
-
             try {
                 const result = await auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier);
                 confirmationResult = result;
@@ -238,39 +246,61 @@
                 document.getElementById('otp-step').classList.remove('hidden');
             } catch (error) {
                 console.error("Auth Error:", error);
-                // Clear on failure so button works on retry
-                if (window.recaptchaVerifier) window.recaptchaVerifier.clear();
                 alert("Error: " + error.message);
             }
         }
 
         function verifyOTP() {
+            playTick();
             const code = document.getElementById('otp-input').value;
             if (!confirmationResult) return alert("Session expired. Please try again.");
-            
-            confirmationResult.confirm(code).then((result) => {
-            }).catch((error) => { 
-                alert("Wrong code! " + error.message); 
+            confirmationResult.confirm(code).catch((error) => { alert("Wrong code!"); });
+        }
+
+        function saveDriverName() {
+            const name = document.getElementById('name-input').value.trim();
+            if (!name) return alert("Please enter your name");
+            playTick();
+            db.ref('drivers/' + driverId).set({
+                name: name,
+                phone: auth.currentUser.phoneNumber,
+                status: "Online",
+                lastActive: Date.now()
+            }).then(() => {
+                document.getElementById('boot-screen').style.display = 'none';
+                initApp();
             });
         }
 
         auth.onAuthStateChanged((user) => {
             if (user) {
                 driverId = user.uid;
-                document.getElementById('display-driver-id').innerText = driverId;
-                document.getElementById('boot-screen').style.display = 'none';
-                initApp();
+                db.ref('drivers/' + driverId).once('value', (snap) => {
+                    const data = snap.val();
+                    if (data && data.name) {
+                        driverRealName = data.name;
+                        document.getElementById('display-name-header').innerText = driverRealName;
+                        document.getElementById('display-driver-id').innerText = driverId;
+                        document.getElementById('boot-screen').style.display = 'none';
+                        initApp();
+                    } else {
+                        document.getElementById('phone-step').classList.add('hidden');
+                        document.getElementById('otp-step').classList.add('hidden');
+                        document.getElementById('name-step').classList.remove('hidden');
+                    }
+                });
             } else {
                 document.getElementById('boot-screen').style.display = 'flex';
             }
         });
 
         function handleLogout() {
+            playTick();
             if(confirm("Sign out of shift?")) auth.signOut().then(() => location.reload());
         }
 
         function initApp() {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            initAudio();
             db.ref(".info/connected").on("value", (snap) => {
                 const dot = document.getElementById('conn-dot');
                 dot.className = snap.val() === true ? "w-2.5 h-2.5 rounded-full status-online" : "w-2.5 h-2.5 rounded-full status-offline";
@@ -312,8 +342,7 @@
             document.getElementById('c-name').innerText = o.customer;
             document.getElementById('c-addr-text').innerText = o.address;
             document.getElementById('c-phone').href = "tel:" + o.phone;
-            document.getElementById('c-nav-btn').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(o.address)}`;
-            
+            document.getElementById('c-nav-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(o.address)}`;
             document.getElementById('display-price').innerText = o.totalPrice;
             document.getElementById('display-order-number').innerText = o.orderNumber ? "#" + o.orderNumber : "#" + o.id.substring(0,5).toUpperCase();
             document.getElementById('display-items').innerText = o.item || "Standard Order";
@@ -323,7 +352,7 @@
             const rAddr = o.restaurantAddress || "No address provided";
             document.getElementById('display-res-name').innerText = rName;
             document.getElementById('display-res-addr-text').innerText = rAddr;
-            document.getElementById('res-nav-btn').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(rAddr)}`;
+            document.getElementById('res-nav-btn').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(rAddr)}`;
 
             document.getElementById('action-btn').innerText = btnText;
             document.getElementById('order-ui').classList.remove('hidden');
@@ -342,6 +371,20 @@
             }
         }
 
+        function processOrder() { 
+            playTick();
+            if (!currentOrder) return; 
+            if (currentOrder.status === "Ready") {
+                db.ref('orders/' + currentOrder.id).update({ 
+                    status: "Delivering", 
+                    claimedBy: driverId,
+                    claimedByName: driverRealName // Store the name directly in the order!
+                });
+            } else {
+                db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
+            }
+        }
+
         function toggleFinishButton() {
             const check = document.getElementById('cash-collected-check');
             const btn = document.getElementById('action-btn');
@@ -351,15 +394,6 @@
                 } else {
                     btn.disabled = true; btn.style.opacity = "0.3"; btn.innerText = "Collect Cash First";
                 }
-            }
-        }
-
-        function processOrder() { 
-            if (!currentOrder) return; 
-            if (currentOrder.status === "Ready") {
-                db.ref('orders/' + currentOrder.id).update({ status: "Delivering", claimedBy: driverId });
-            } else {
-                db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
             }
         }
 
@@ -375,12 +409,12 @@
             osc.start(t); osc.stop(t + 0.2);
         }
 
-        function toggleSidebar() { document.getElementById('history-sidebar').classList.toggle('sidebar-active'); }
-        function openStats() { document.getElementById('stats-overlay').classList.add('stats-active'); toggleSidebar(); filterStats('today'); }
-        function closeStats() { document.getElementById('stats-overlay').classList.remove('stats-active'); }
-        function openChat() { document.getElementById('chat-overlay').classList.add('chat-active'); toggleSidebar(); }
-        function closeChat() { document.getElementById('chat-overlay').classList.remove('chat-active'); }
-        function confirmDecline() { if(confirm("Decline mission?")) location.reload(); }
+        function toggleSidebar() { playTick(); document.getElementById('history-sidebar').classList.toggle('sidebar-active'); }
+        function openStats() { playTick(); document.getElementById('stats-overlay').classList.add('stats-active'); toggleSidebar(); filterStats('today'); }
+        function closeStats() { playTick(); document.getElementById('stats-overlay').classList.remove('stats-active'); }
+        function openChat() { playTick(); document.getElementById('chat-overlay').classList.add('chat-active'); toggleSidebar(); }
+        function closeChat() { playTick(); document.getElementById('chat-overlay').classList.remove('chat-active'); }
+        function confirmDecline() { playTick(); if(confirm("Decline mission?")) location.reload(); }
 
         function filterStats(range) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -399,9 +433,10 @@
         }
 
         function sendMessage() {
+            playTick();
             const input = document.getElementById('chat-input');
             if (!input.value.trim()) return;
-            db.ref('support_tickets/' + driverId).update({ customer: driverId, lastUpdate: Date.now(), status: "Open" });
+            db.ref('support_tickets/' + driverId).update({ customer: driverRealName, lastUpdate: Date.now(), status: "Open" });
             db.ref('support_tickets/' + driverId + '/chat').push({ sender: "Driver", text: input.value, timestamp: Date.now() });
             input.value = "";
         }
