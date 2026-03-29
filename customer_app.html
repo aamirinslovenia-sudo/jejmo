@@ -236,15 +236,13 @@
         
         function addToCart(name, price, id) { 
             playTick(); 
-            const index = cart.findIndex(i => i.name === name); 
+            const index = cart.findIndex(i => i.elementId === id); 
             if (index > -1) { 
-                if (cart[index].quantity > 1) {
-                    cart[index].quantity -= 1;
-                } else {
-                    cart.splice(index, 1);
-                    document.getElementById(id).classList.remove('active-item');
-                }
+                // Item exists, so remove it (Toggle Off)
+                cart.splice(index, 1);
+                document.getElementById(id).classList.remove('active-item');
             } else { 
+                // Item doesn't exist, so add it (Toggle On)
                 cart.push({ name: name, price: price, quantity: 1, elementId: id }); 
                 document.getElementById(id).classList.add('active-item');
             } 
@@ -253,16 +251,31 @@
 
         function updateCartUI() {
             let total = 0; const container = document.getElementById('cart-items-container'); container.innerHTML = "";
+            
+            // Sync visual state of all cards
+            document.querySelectorAll('[id^="item-Chimney"]').forEach(card => {
+                const inCart = cart.some(item => item.elementId === card.id);
+                if (inCart) card.classList.add('active-item');
+                else card.classList.remove('active-item');
+            });
+
             if(cart.length === 0) { 
                 document.getElementById('cart-summary').classList.add('hidden'); 
                 document.getElementById('orderBtn').innerText = translations[currentLang].select_items_btn; 
                 document.getElementById('priceDisplay').innerText = "€0.00"; 
-                // Clear all active classes if cart is empty
-                document.querySelectorAll('.active-item').forEach(el => el.classList.remove('active-item'));
                 return; 
             }
-            document.getElementById('cart-summary').classList.remove('hidden'); document.getElementById('orderBtn').innerText = translations[currentLang].init_mission_btn;
-            cart.forEach((item) => { total += (item.price * item.quantity); const chip = document.createElement('span'); chip.className = "cart-item-chip"; chip.innerHTML = `${item.quantity}x ${item.name}`; container.appendChild(chip); });
+
+            document.getElementById('cart-summary').classList.remove('hidden'); 
+            document.getElementById('orderBtn').innerText = translations[currentLang].init_mission_btn;
+            
+            cart.forEach((item) => { 
+                total += (item.price * item.quantity); 
+                const chip = document.createElement('span'); 
+                chip.className = "cart-item-chip"; 
+                chip.innerHTML = `${item.quantity}x ${item.name}`; 
+                container.appendChild(chip); 
+            });
             document.getElementById('priceDisplay').innerText = "€" + total.toFixed(2);
         }
 
