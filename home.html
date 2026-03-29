@@ -6,9 +6,10 @@
     <title>JEJMO | Chimney Cake MB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Outfit', sans-serif; background-color: #060a11; color: white; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
@@ -28,6 +29,7 @@
         #success-msg { position: fixed; inset: 0; background: #060a11; z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
         .cart-item-chip { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #60a5fa; margin-right: 5px; margin-bottom: 5px; display: inline-block; transition: all 0.2s; }
         .instruction-box { width: 100%; background: rgba(255,255,255,0.03); border-radius: 20px; padding: 16px; border: 1px solid rgba(255,255,255,0.08); outline: none; color: white; font-size: 12px; resize: none; transition: border 0.3s; }
+        .product-img { width: 100%; height: 100px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body class="pb-24">
@@ -69,17 +71,22 @@
             </div>
             
             <div class="grid grid-cols-2 gap-4">
-                <div id="item-ChimneyDubai" onclick="addToCart('Dubai Chimney', 8.50, 'item-ChimneyDubai')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
-                    <span class="text-3xl block mb-2">🍫</span><p class="font-bold text-[11px] uppercase">Dubai Special</p><p class="text-blue-400 font-black text-xs">€8.50</p>
+                <div id="item-Chimney1" onclick="addToCart('Chimney Special A', 8.50, 'item-Chimney1')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                    <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD1.JPG.jpeg" class="product-img">
+                    <p class="font-bold text-[10px] uppercase mb-1">Chimney Style A</p>
+                    <p class="text-blue-400 font-black text-xs">€8.50</p>
                 </div>
-                <div id="item-ChimneyPistachio" onclick="addToCart('Pistachio Dream', 7.90, 'item-ChimneyPistachio')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
-                    <span class="text-3xl block mb-2">💚</span><p class="font-bold text-[11px] uppercase">Pistachio Dream</p><p class="text-blue-400 font-black text-xs">€7.90</p>
+
+                <div id="item-Chimney2" onclick="addToCart('Chimney Special B', 7.90, 'item-Chimney2')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                    <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD2.JPG.jpeg" class="product-img">
+                    <p class="font-bold text-[10px] uppercase mb-1">Chimney Style B</p>
+                    <p class="text-blue-400 font-black text-xs">€7.90</p>
                 </div>
-                <div id="item-ChimneyClassic" onclick="addToCart('Classic Cinnamon', 5.50, 'item-ChimneyClassic')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
-                    <span class="text-3xl block mb-2">🥨</span><p class="font-bold text-[11px] uppercase">Classic Sugar</p><p class="text-blue-400 font-black text-xs">€5.50</p>
-                </div>
-                <div id="item-ChimneyBerry" onclick="addToCart('Berry Explosion', 7.50, 'item-ChimneyBerry')" class="glass p-5 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
-                    <span class="text-3xl block mb-2">🍓</span><p class="font-bold text-[11px] uppercase">Berry Mix</p><p class="text-blue-400 font-black text-xs">€7.50</p>
+
+                <div id="item-Chimney3" onclick="addToCart('Chimney Special C', 7.50, 'item-Chimney3')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
+                    <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD3.JPG.jpeg" class="product-img">
+                    <p class="font-bold text-[10px] uppercase mb-1">Chimney Style C</p>
+                    <p class="text-blue-400 font-black text-xs">€7.50</p>
                 </div>
             </div>
         </section>
@@ -156,17 +163,12 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const fs = firebase.firestore(); 
-        const auth = firebase.auth(); // NEW
+        const auth = firebase.auth(); 
 
-        // RETAURANTS REGISTRY
         const restaurantsRegistry = {
             "Chimney Cake MB": {
                 address: "Glavni trg 17, 2000 Maribor",
                 phone: "+386 70 123 456"
-            },
-            "Restaurant Name 2": {
-                address: "Address 2, 2000 Maribor",
-                phone: "+386 70 000 000"
             }
         };
         
@@ -177,7 +179,6 @@
         let emailSent = false;
 
         window.onload = function() {
-            // NEW: Initialize invisible Recaptcha so domain is validated
             window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
                 'size': 'invisible'
             });
