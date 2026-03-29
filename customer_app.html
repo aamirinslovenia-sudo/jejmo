@@ -177,6 +177,25 @@
     </div>
 
     <script>
+        // Haptic Audio Engine
+        let audioCtx = null;
+        function initAudio() {
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playTick() {
+            if (!audioCtx) return;
+            const t = audioCtx.currentTime;
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            o.frequency.setValueAtTime(1500, t);
+            g.gain.setValueAtTime(0.02, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+            o.start(t); o.stop(t + 0.1);
+        }
+
         const translations = {
             slo: {
                 onboarding_sub: "Vrhunska dostava <br>do vaših vrat.",
@@ -243,6 +262,7 @@
         let currentLang = 'slo';
 
         function setLanguage(lang) {
+            playTick();
             currentLang = lang;
             document.getElementById('btn-slo').classList.toggle('active', lang === 'slo');
             document.getElementById('btn-eng').classList.toggle('active', lang === 'eng');
@@ -297,6 +317,8 @@
         };
 
         function handleGateway() {
+            initAudio(); // Activate audio on first touch
+            playTick();
             const name = document.getElementById('userName').value;
             const email = document.getElementById('userEmail').value;
             const phone = document.getElementById('userPhone').value;
@@ -315,6 +337,7 @@
         }
 
         function selectRestaurant(name) {
+            playTick();
             selectedRestaurant = name;
             const info = restaurantsRegistry[name];
             document.getElementById('menu-rest-logo').src = info.logo;
@@ -324,6 +347,7 @@
         }
 
         function goBack() {
+            playTick();
             document.getElementById('restaurant-view').classList.remove('hidden');
             document.getElementById('menu-view').classList.add('hidden');
             cart = [];
@@ -331,6 +355,7 @@
         }
 
         function addToCart(name, price, id) {
+            playTick();
             const existingItem = cart.find(i => i.name === name);
             if (existingItem) { existingItem.quantity += 1; } 
             else { cart.push({ name: name, price: price, quantity: 1, elementId: id }); }
@@ -357,6 +382,7 @@
                 chip.className = "cart-item-chip";
                 chip.innerHTML = `${item.quantity}x ${item.name} <span class="opacity-40 ml-1">✕</span>`;
                 chip.onclick = () => {
+                    playTick();
                     document.getElementById(item.elementId).classList.remove('active-item');
                     cart.splice(index, 1);
                     updateCartUI();
@@ -367,6 +393,7 @@
         }
 
         function setPayment(method) {
+            playTick();
             selectedPayment = method;
             document.getElementById('pay-cash').classList.remove('active-item');
             document.getElementById('pay-card').classList.remove('active-item');
@@ -374,6 +401,7 @@
         }
 
         function sendOrder() {
+            playTick();
             if (cart.length === 0 || !selectedPayment) return alert("Select items and payment!");
             const info = restaurantsRegistry[selectedRestaurant];
             db.ref('globalOrderCounter').transaction(cv => (cv || 0) + 1, (err, comm, snap) => {
@@ -393,7 +421,7 @@
                         courierInstruction: document.getElementById('courier-note').value,
                         timestamp: Date.now(),
                         status: 'New',
-                        language: currentLang // Store language for receipt
+                        language: currentLang 
                     }).then(() => { startTracking(orderId); });
                 }
             });
@@ -410,7 +438,6 @@
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     
-                    // Email Translation Logic
                     const emailT = {
                         slo: {
                             subj: 'Uspešna misija: Naročilo #',
@@ -478,7 +505,10 @@
             });
         }
 
-        function resetUser() { if(confirm("Logout?")) { localStorage.clear(); location.reload(); } }
+        function resetUser() { 
+            playTick();
+            if(confirm("Logout?")) { localStorage.clear(); location.reload(); } 
+        }
     </script>
 </body>
 </html>
