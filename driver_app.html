@@ -99,7 +99,7 @@
             <h1 class="text-2xl font-black italic mb-2 uppercase italic tracking-tighter">DRIVER <span class="text-purple-500 italic">LOGIN</span></h1>
             <input type="tel" id="phone-input" class="auth-input" value="+386 ">
             <div id="recaptcha-container" class="flex justify-center my-4"></div>
-            <button onclick="sendOTP()" id="send-btn" class="bg-white text-black <bolt_action type="file" filePath="driver_app.html">bg-white text-black w-full py-6 rounded-[25px] text-lg font-black uppercase tracking-widest active:scale-95 transition-all">Send Code</button>
+            <button onclick="sendOTP()" id="send-btn" class="bg-white text-black w-full py-6 rounded-[25px] text-lg font-black uppercase tracking-widest active:scale-95 transition-all">Send Code</button>
         </div>
         <div id="otp-step" class="w-full max-w-xs space-y-4 hidden">
             <h1 class="text-2xl font-black italic mb-2 uppercase italic tracking-tighter">VERIFY <span class="text-purple-500">CODE</span></h1>
@@ -270,18 +270,32 @@
         function initRecaptcha() {
             const container = document.getElementById('recaptcha-container');
             if (container) container.innerHTML = ''; 
-            if (window.recaptchaVerifier) {
-                try { window.recaptchaVerifier.clear(); } catch (e) {}
-            }
-            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+            try {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 
+                    'size': 'invisible' 
+                });
+            } catch (e) { console.error("Recaptcha Init Error", e); }
         }
 
         async function sendOTP() {
             initAudio();
             playTick();
-            const phoneNumber = document.getElementById('phone-input').value.trim();
-            if (phoneNumber.length < 9) return alert("Enter a valid Slovenian number");
-            initRecaptcha();
+            
+            let phoneNumber = document.getElementById('phone-input').value.trim();
+            // Clean number formatting for Slovenia
+            if (phoneNumber.startsWith('+386')) {
+                let body = phoneNumber.replace('+386', '').replace(/\s+/g, '');
+                if (body.startsWith('0')) body = body.substring(1);
+                phoneNumber = '+386' + body;
+            }
+
+            if (phoneNumber.length < 12) return alert("Enter valid number (e.g. +386 41 123 456)");
+
+            const btn = document.getElementById('send-btn');
+            btn.disabled = true; btn.innerText = "Sending...";
+
+            initRecaptcha(); // Re-init on every click
+
             try {
                 const result = await auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier);
                 confirmationResult = result;
@@ -289,7 +303,9 @@
                 document.getElementById('otp-step').classList.remove('hidden');
             } catch (error) {
                 console.error("Auth Error:", error);
-                alert("Error: " + error.message);
+                alert("Napaka: " + error.message);
+                btn.disabled = false; btn.innerText = "Send Code";
+                if (window.recaptchaVerifier) window.recaptchaVerifier.clear();
             }
         }
 
@@ -386,11 +402,10 @@
             db.ref('driver_ledger/' + driverId).on('value', (snap) => {
                 completedMissionsHistory = [];
                 const listContainer = document.getElementById('recent-missions-list');
-                listContainer.innerHTML = ""; // Clear searching msg
+                listContainer.innerHTML = ""; 
 
                 snap.forEach(child => { completedMissionsHistory.push(child.val()); });
                 
-                // Show last 3 missions in sidebar
                 const recent = [...completedMissionsHistory].reverse().slice(0, 3);
                 
                 if (recent.length === 0) {
@@ -506,9 +521,7 @@
                 });
             } 
             else if (currentOrder.status === "Ready" && currentOrder.claimedBy === driverId) {
-                db.ref('orders/' + currentOrder.id).update({ 
-                    status: "Delivering" 
-                });
+                db.ref('orders/' + currentOrder.id).update({ status: "Delivering" });
                 startTracking();
             }
             else if (currentOrder.status === "Delivering" && currentOrder.claimedBy === driverId) {
@@ -564,14 +577,12 @@
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + range).classList.add('active');
             let count = 0; const now = new Date();
-            
             completedMissionsHistory.forEach(mission => {
                 const mDate = new Date(mission.timestamp);
                 if(range === 'today' && mDate.toDateString() === now.toDateString()) count++;
                 else if(range === 'week' && (now - mDate) < 7 * 24 * 60 * 60 * 1000) count++;
                 else if(range === 'month' && mDate.getMonth() === now.getMonth()) count++;
             });
-
             document.getElementById('stat-count').innerText = count;
             document.getElementById('stat-total').innerText = "€" + (count * 4).toFixed(2);
         }
