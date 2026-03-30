@@ -12,26 +12,23 @@
     <style>
         body { font-family: 'Outfit', sans-serif; background-color: #060a11; color: white; scroll-behavior: smooth; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
-        
-        /* Updated Gradient: White to Purple */
+        /* Changed Blue to Purple (#a855f7) */
         .text-gradient { background: linear-gradient(to right, #ffffff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* Updated Hero Glow: Purple */
+        /* Changed Hero Glow to Purple */
         .hero-glow { position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 80%; height: 500px; background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(60px); z-index: -1; }
-        
         .nav-link { transition: all 0.3s; opacity: 0.7; }
         .nav-link:hover { opacity: 1; color: #a855f7; }
         @keyframes bounce-slow { 0%, 100% { transform: translateY(-5px); } 50% { transform: translateY(0); } }
         .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
         
         input, textarea, select { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
-        /* Focus state: Purple */
+        /* Changed focus border to Purple */
         input:focus, textarea:focus, select:focus { border-color: #a855f7 !important; outline: none; }
         option { background: #060a11; color: white; }
 
         .phone-mockup { width: 280px; height: 580px; border: 8px solid #1e293b; border-radius: 40px; overflow: hidden; position: relative; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); }
         .phone-screen { background: #060a11; height: 100%; width: 100%; padding: 16px; font-family: 'Outfit', sans-serif; }
-        /* Preview Glow: Purple */
+        /* Changed preview glow to Purple */
         .preview-glow { position: absolute; width: 300px; height: 300px; background: #a855f7; filter: blur(100px); opacity: 0.15; z-index: -1; }
         .mini-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 15px; padding: 10px; }
         .map-container { filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%); border-radius: 40px; }
@@ -156,11 +153,17 @@
                             <div class="text-center mb-2 text-left"><h4 class="text-[10px] font-black italic uppercase tracking-tighter text-left">Chimney Cake MB</h4></div>
                             <div class="mini-card flex gap-3 items-center text-left">
                                 <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD1.JPG.jpeg" class="w-10 h-10 rounded-lg object-cover">
-                                <div class="text-left"><p class="text-[8px] font-bold uppercase text-left">Chimney Style A</p><p class="text-purple-400 text-[8px] font-black text-left">€8.50</p></div>
+                                <div class="text-left">
+                                    <p class="text-[8px] font-bold uppercase text-left">Chimney Style A</p>
+                                    <p class="text-purple-400 text-[8px] font-black text-left">€8.50</p>
+                                </div>
                             </div>
                             <div class="mini-card flex gap-3 items-center text-left">
                                 <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD2.JPG.jpeg" class="w-10 h-10 rounded-lg object-cover">
-                                <div class="text-left"><p class="text-[8px] font-bold uppercase text-left">Chimney Style B</p><p class="text-purple-400 text-[8px] font-black text-left">€7.90</p></div>
+                                <div class="text-left">
+                                    <p class="text-[8px] font-bold uppercase text-left">Chimney Style B</p>
+                                    <p class="text-purple-400 text-[8px] font-black text-left">€7.90</p>
+                                </div>
                             </div>
                         </div>
                         <div class="mt-auto pt-6 text-center text-left">
@@ -190,7 +193,7 @@
             <div class="glass p-12 rounded-[40px] border-white/10 relative overflow-hidden group transition-all text-left">
                 <h3 class="text-4xl font-black italic tracking-tighter uppercase mb-4 text-left">Postani Dostavljalec</h3>
                 <p class="text-slate-400 mb-8 italic text-left">Vozite pod lastnimi pogoji in zaslužite več.</p>
-                <a href="#contact" class="text-white font-black uppercase text-xs tracking-[0.2em] border-b-2 border-white/20 pb-2 hover:border-purple-500 transition-all text-left">Pridruži se ekipi →</a>
+                <a href="#contact" class="text-green-400 font-black uppercase text-xs tracking-[0.2em] border-b-2 border-green-500/20 pb-2 hover:border-green-500 transition-all text-left">Pridruži se ekipi →</a>
             </div>
         </div>
     </section>
