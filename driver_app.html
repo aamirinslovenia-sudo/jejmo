@@ -208,7 +208,7 @@
         let driverRealName = "Driver";
         let confirmationResult = null;
         let currentOrder = null; let audioCtx = null; let alertInterval = null;
-        let allCompletedOrders = [];
+        let completedMissionsHistory = []; // Permanent ledger cache
         let geoWatchId = null;
         let driverTrackingInterval = null;
 
@@ -344,13 +344,13 @@
                 dot.className = snap.val() === true ? "w-2.5 h-2.5 rounded-full status-online" : "w-2.5 h-2.5 rounded-full status-offline";
             });
 
+            // Active Orders Listener
             db.ref('orders').on('value', (snap) => {
-                let activeTask = null; let availableOrder = null; allCompletedOrders = [];
+                let activeTask = null; let availableOrder = null;
                 snap.forEach(c => {
                     const o = c.val(); o.id = c.key;
                     if (o.claimedBy === driverId && o.status !== "Completed") activeTask = o;
                     if ((o.status === "Preparing" || o.status === "Ready") && !o.claimedBy) availableOrder = o;
-                    if (o.status === "Completed") allCompletedOrders.push(o);
                 });
 
                 if (activeTask) {
@@ -375,6 +375,17 @@
                 }
             });
 
+            // PERMANENT LEDGER LISTENER
+            db.ref('driver_ledger/' + driverId).on('value', (snap) => {
+                completedMissionsHistory = [];
+                snap.forEach(child => { completedMissionsHistory.push(child.val()); });
+                // If the stats overlay is open, refresh it
+                if(document.getElementById('stats-overlay').classList.contains('stats-active')) {
+                    const activeTab = document.querySelector('.tab-btn.active').id.replace('tab-', '');
+                    filterStats(activeTab);
+                }
+            });
+
             db.ref('support_tickets/' + driverId).on('value', (snap) => {
                 const t = snap.val(); const chatBox = document.getElementById('chat-messages');
                 if (t && t.chat) {
@@ -390,12 +401,8 @@
             document.getElementById('c-addr-text').innerText = o.address;
             document.getElementById('c-phone').href = "tel:" + o.phone;
             
-            // SMART NAVIGATION SWITCH
             const navUrl = (addr) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr)}&travelmode=driving`;
-            
-            // Step 1: Going to Restaurant
             document.getElementById('res-nav-btn').href = navUrl(rAddr);
-            // Step 2: Going to Customer
             document.getElementById('c-nav-btn').href = navUrl(o.address);
 
             document.getElementById('display-price').innerText = o.totalPrice;
@@ -472,8 +479,18 @@
                 startTracking();
             }
             else if (currentOrder.status === "Delivering" && currentOrder.claimedBy === driverId) {
-                db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
-                stopTracking();
+                // LOG TO PERMANENT LEDGER BEFORE COMPLETING
+                const missionRecord = {
+                    orderNumber: currentOrder.orderNumber,
+                    timestamp: Date.now(),
+                    payout: 4.00,
+                    restaurant: currentOrder.restaurant || "Chimney Cake MB"
+                };
+                
+                db.ref('driver_ledger/' + driverId).push(missionRecord).then(() => {
+                    db.ref('orders/' + currentOrder.id).update({status: "Completed", completedAt: Date.now()});
+                    stopTracking();
+                });
             }
         }
 
@@ -512,14 +529,14 @@
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab-' + range).classList.add('active');
             let count = 0; const now = new Date();
-            allCompletedOrders.forEach(o => {
-                if (o.claimedBy === driverId) {
-                    const oDate = new Date(o.completedAt || o.timestamp);
-                    if(range === 'today' && oDate.toDateString() === now.toDateString()) count++;
-                    else if(range === 'week' && (now - oDate) < 7 * 24 * 60 * 60 * 1000) count++;
-                    else if(range === 'month' && oDate.getMonth() === now.getMonth()) count++;
-                }
+            
+            completedMissionsHistory.forEach(mission => {
+                const mDate = new Date(mission.timestamp);
+                if(range === 'today' && mDate.toDateString() === now.toDateString()) count++;
+                else if(range === 'week' && (now - mDate) < 7 * 24 * 60 * 60 * 1000) count++;
+                else if(range === 'month' && mDate.getMonth() === now.getMonth()) count++;
             });
+
             document.getElementById('stat-count').innerText = count;
             document.getElementById('stat-total').innerText = "€" + (count * 4).toFixed(2);
         }
