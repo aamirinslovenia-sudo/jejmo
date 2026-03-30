@@ -42,6 +42,12 @@
         .product-img { width: 100%; height: 100px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-btn { font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 10px; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); color: #475569; }
         .lang-btn.active { color: white; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+        
+        /* GDPR Checkbox Styling */
+        .checkbox-container { display: flex; align-items: flex-start; gap: 12px; padding: 10px 5px; cursor: pointer; }
+        .checkbox-container input { width: 18px; height: 18px; border-radius: 6px; accent-color: #a855f7; cursor: pointer; margin-top: 2px; }
+        .gdpr-text { font-size: 11px; color: #94a3b8; font-weight: 500; line-height: 1.4; }
+        .gdpr-link { color: #a855f7; text-decoration: underline; font-weight: 700; }
     </style>
 </head>
 <body class="pb-24">
@@ -53,11 +59,18 @@
             </div>
             <p data-t="onboarding_sub" class="text-slate-400 font-bold tracking-tight text-center leading-relaxed">Vrhunska dostava <br>do vaših vrat.</p>
         </div>
-        <div id="setup-fields" class="space-y-3 mb-8 hidden">
+        <div id="setup-fields" class="space-y-3 mb-6 hidden">
             <input id="userName" type="text" placeholder="Polno ime" class="input-box">
             <input id="userEmail" type="email" placeholder="E-pošta (za prejemke)" class="input-box">
             <input id="userPhone" type="tel" placeholder="Telefonska številka" class="input-box">
             <input id="userAddress" type="text" placeholder="Naslov v Mariboru" class="input-box">
+            
+            <label class="checkbox-container">
+                <input type="checkbox" id="gdpr-checkbox">
+                <span class="gdpr-text" data-t="gdpr_label">
+                    Strinjam se s <a href="#" class="gdpr-link">Politiko zasebnosti</a> in <a href="#" class="gdpr-link">Pogoji poslovanja</a>.
+                </span>
+            </label>
         </div>
         <div id="recaptcha-container" class="flex justify-center mb-4"></div>
         <button id="gate-btn" onclick="handleGateway()" data-t="continue_btn" class="bg-purple-600 text-white font-black py-6 rounded-[30px] text-lg uppercase tracking-widest active:scale-95 transition-all shadow-2xl">Nadaljuj</button>
@@ -197,8 +210,8 @@
         function playTick() { if (!audioCtx) initAudio(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); const t = audioCtx.currentTime; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.setValueAtTime(1500, t); g.gain.setValueAtTime(0.02, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.1); o.start(t); o.stop(t + 0.1); }
 
         const translations = {
-            slo: { onboarding_sub: "Vrhunska dostava <br>do vaših vrat.", name_place: "Polno ime", email_place: "E-pošta (za prejemke)", phone_place: "Telefonska številka", addr_place: "Naslov v Mariboru", continue_btn: "Nadaljuj", rest_sub: "Sveže pečeno • 25 min", coming_soon: "Kmalu na voljo", coming_soon_sub: "Širitev v teku", back_btn: "← Nazaj na kuhinje", menu_title: "Meni", courier_note_title: "Navodila za kurirja", courier_place: "Pustite pred vrati...", payment_title: "Izberite način plačila", cash_btn: "Gotovina", card_btn: "Kartica", total_cost: "Skupni strošek", logout_btn: "Odjava", select_items_btn: "Izberite izdelke", init_mission_btn: "ODDAJ NAROČILO", arrival_est: "Predviden prihod", success_title: "MISIJA USPELA", success_sub: "Potrdilo poslano.", cont_shopping_btn: "Nadaljuj", pay_alert: "Prosimo, izberite način plačila!" },
-            eng: { onboarding_sub: "Premium delivery <br>to your doorstep.", name_place: "Full Name", email_place: "Email", phone_place: "Phone", addr_place: "Address in Maribor", continue_btn: "Continue", rest_sub: "Freshly Baked • 25 min", coming_soon: "Coming Soon", coming_soon_sub: "Expansion in progress", back_btn: "← Back", menu_title: "Menu", courier_note_title: "Courier Notes", courier_place: "Leave at door...", payment_title: "Payment Method", cash_btn: "Cash", card_btn: "Card", total_cost: "Total Cost", logout_btn: "Logout", select_items_btn: "Select Items", init_mission_btn: "PLACE ORDER", arrival_est: "Estimated Arrival", success_title: "MISSION SUCCESS", success_sub: "Receipt sent.", cont_shopping_btn: "Continue", pay_alert: "Please select a payment method!" }
+            slo: { onboarding_sub: "Vrhunska dostava <br>do vaših vrat.", name_place: "Polno ime", email_place: "E-pošta (za prejemke)", phone_place: "Telefonska številka", addr_place: "Naslov v Mariboru", continue_btn: "Nadaljuj", rest_sub: "Sveže pečeno • 25 min", coming_soon: "Kmalu na voljo", coming_soon_sub: "Širitev v teku", back_btn: "← Nazaj na kuhinje", menu_title: "Meni", courier_note_title: "Navodila za kurirja", courier_place: "Pustite pred vrati...", payment_title: "Izberite način plačila", cash_btn: "Gotovina", card_btn: "Kartica", total_cost: "Skupni strošek", logout_btn: "Odjava", select_items_btn: "Izberite izdelke", init_mission_btn: "ODDAJ NAROČILO", arrival_est: "Predviden prihod", success_title: "MISIJA USPELA", success_sub: "Potrdilo poslano.", cont_shopping_btn: "Nadaljuj", pay_alert: "Prosimo, izberite način plačila!", gdpr_label: 'Strinjam se s <a href="#" class="gdpr-link">Politiko zasebnosti</a> in <a href="#" class="gdpr-link">Pogoji poslovanja</a>.', gdpr_error: "Morate se strinjati s pogoji za nadaljevanje." },
+            eng: { onboarding_sub: "Premium delivery <br>to your doorstep.", name_place: "Full Name", email_place: "Email", phone_place: "Phone", addr_place: "Address in Maribor", continue_btn: "Continue", rest_sub: "Freshly Baked • 25 min", coming_soon: "Coming Soon", coming_soon_sub: "Expansion in progress", back_btn: "← Back", menu_title: "Menu", courier_note_title: "Courier Notes", courier_place: "Leave at door...", payment_title: "Payment Method", cash_btn: "Cash", card_btn: "Card", total_cost: "Total Cost", logout_btn: "Logout", select_items_btn: "Select Items", init_mission_btn: "PLACE ORDER", arrival_est: "Estimated Arrival", success_title: "MISSION SUCCESS", success_sub: "Receipt sent.", cont_shopping_btn: "Continue", pay_alert: "Please select a payment method!", gdpr_label: 'I agree to the <a href="#" class="gdpr-link">Privacy Policy</a> and <a href="#" class="gdpr-link">Terms & Conditions</a>.', gdpr_error: "You must agree to the terms to continue." }
         };
 
         let currentLang = 'slo';
@@ -231,7 +244,19 @@
         function handleGateway() {
             playTick();
             const n = document.getElementById('userName').value, e = document.getElementById('userEmail').value, p = document.getElementById('userPhone').value, a = document.getElementById('userAddress').value;
-            if(!n || !e || !p || !a) { document.getElementById('setup-fields').classList.remove('hidden'); return; }
+            const gdpr = document.getElementById('gdpr-checkbox').checked;
+
+            if(!n || !e || !p || !a) { 
+                document.getElementById('setup-fields').classList.remove('hidden'); 
+                return; 
+            }
+
+            // GDPR CHECK
+            if(!gdpr) {
+                alert(translations[currentLang].gdpr_error);
+                return;
+            }
+
             localStorage.setItem('kleo_name', n); localStorage.setItem('kleo_email', e); localStorage.setItem('kleo_phone', p); localStorage.setItem('kleo_address', a);
             document.getElementById('onboarding-screen').style.transform = 'translateY(-100%)'; document.getElementById('header-addr').innerText = a;
         }
@@ -279,17 +304,7 @@
         function setPayment(method) { playTick(); selectedPayment = method; document.getElementById('pay-cash').classList.remove('active-item'); document.getElementById('pay-card').classList.remove('active-item'); document.getElementById(method === 'Cash' ? 'pay-cash' : 'pay-card').classList.add('active-item'); }
 
         function sendOrder() {
-            // Check if cart is empty
-            if (cart.length === 0) return;
-            
-            // CHECK IF PAYMENT IS SELECTED
-            if (!selectedPayment) {
-                playTick();
-                alert(translations[currentLang].pay_alert);
-                return;
-            }
-
-            playTick();
+            if (cart.length === 0 || !selectedPayment) return; playTick();
             db.ref('globalOrderCounter').transaction(cv => (cv || 0) + 1, (err, comm, snap) => {
                 if (comm) {
                     const orderId = db.ref('orders').push().key;
