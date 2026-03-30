@@ -13,26 +13,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        /* SPEED OPTIMIZATIONS START */
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background-color: #060a11; 
-            color: white; 
-            overflow-x: hidden; 
-            -webkit-tap-highlight-color: transparent;
-            overscroll-behavior-y: none; /* Stops iPhone bounce lag */
-        }
-        
-        /* Forces iPhone GPU to handle rendering (Smooth transitions) */
-        .glass, .logo-main, .logo-header, #order-tracking-overlay, .tracking-dot {
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-            will-change: transform;
-        }
-
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
-        /* SPEED OPTIMIZATIONS END */
-
+        body { font-family: 'Outfit', sans-serif; background-color: #060a11; color: white; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
         .logo-container { position: relative; display: flex; justify-content: center; align-items: center; }
         .logo-glow { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(25px); z-index: 0; }
         .chimney-header-glow { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(20px); z-index: 0; }
@@ -41,16 +23,19 @@
         .rest-logo-sq { height: 100px; width: 100px; object-fit: cover; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); z-index: 1; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
         #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1); }
         .input-box { width: 100%; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px 24px; border: 1px solid rgba(255,255,255,0.1); outline: none; color: white; font-weight: 600; }
-        .active-item { border-color: #3b82f6 !important; background: rgba(59, 130, 246, 0.2) !important; transform: scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+        /* Changed Blue border/glow to Purple */
+        .active-item { border-color: #a855f7 !important; background: rgba(168, 85, 247, 0.2) !important; transform: scale(1.02); box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
         #order-tracking-overlay { position: fixed; inset: 0; background: #060a11; z-index: 2000; display: none; padding: 40px 0 0 0; flex-direction: column; }
         .tracking-dot { width: 14px; height: 14px; border-radius: 50%; background: #1e293b; transition: 0.5s; z-index: 10; }
-        .tracking-dot.active { background: #3b82f6; box-shadow: 0 0 20px #3b82f6; }
+        /* Changed Dot to Purple */
+        .tracking-dot.active { background: #a855f7; box-shadow: 0 0 20px #a855f7; }
         .connector-line { position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.05); }
         #live-map { flex-grow: 1; width: 100%; background: #080c14; margin-top: 20px; z-index: 1; border-top: 1px solid rgba(255,255,255,0.05); }
         .map-overlay-info { position: absolute; bottom: 120px; left: 24px; right: 24px; z-index: 100; pointer-events: none; }
         .courier-card { background: rgba(6, 10, 17, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 16px 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); pointer-events: auto; }
         #success-msg { position: fixed; inset: 0; background: #060a11; z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-        .cart-item-chip { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #60a5fa; margin-right: 5px; margin-bottom: 5px; display: inline-block; transition: all 0.2s; }
+        /* Changed Cart Chip colors to Purple */
+        .cart-item-chip { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #d8b4fe; margin-right: 5px; margin-bottom: 5px; display: inline-block; transition: all 0.2s; }
         .instruction-box { width: 100%; background: rgba(255,255,255,0.03); border-radius: 20px; padding: 16px; border: 1px solid rgba(255,255,255,0.08); outline: none; color: white; font-size: 12px; resize: none; transition: border 0.3s; }
         .product-img { width: 100%; height: 100px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
         .lang-btn { font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 10px; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); color: #475569; }
@@ -106,7 +91,7 @@
     </div>
 
     <div id="menu-view" class="max-w-md mx-auto px-6 space-y-12 hidden">
-        <button onclick="goBack()" data-t="back_btn" class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-4 flex items-center gap-2">← Nazaj na kuhinje</button>
+        <button onclick="goBack()" data-t="back_btn" class="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-4 flex items-center gap-2">← Nazaj na kuhinje</button>
         <section>
             <div class="flex flex-col items-center justify-center mb-10 text-center">
                 <div class="relative flex items-center justify-center mb-4">
@@ -119,17 +104,17 @@
                 <div id="item-Chimney1" onclick="addToCart('Chimney Special A', 8.50, 'item-Chimney1')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD1.JPG.jpeg" class="product-img">
                     <p class="font-bold text-[10px] uppercase mb-1">Chimney Style A</p>
-                    <p class="text-blue-400 font-black text-xs">€8.50</p>
+                    <p class="text-purple-400 font-black text-xs">€8.50</p>
                 </div>
                 <div id="item-Chimney2" onclick="addToCart('Chimney Special B', 7.90, 'item-Chimney2')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD2.JPG.jpeg" class="product-img">
                     <p class="font-bold text-[10px] uppercase mb-1">Chimney Style B</p>
-                    <p class="text-blue-400 font-black text-xs">€7.90</p>
+                    <p class="text-purple-400 font-black text-xs">€7.90</p>
                 </div>
                 <div id="item-Chimney3" onclick="addToCart('Chimney Special C', 7.50, 'item-Chimney3')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
                     <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD3.JPG.jpeg" class="product-img">
                     <p class="font-bold text-[10px] uppercase mb-1">Chimney Style C</p>
-                    <p class="text-blue-400 font-black text-xs">€7.50</p>
+                    <p class="text-purple-400 font-black text-xs">€7.50</p>
                 </div>
             </div>
         </section>
@@ -156,7 +141,7 @@
                 <div><p data-t="total_cost" class="text-[10px] font-black uppercase text-slate-500 mb-1">Skupni strošek misije</p><h3 id="priceDisplay" class="text-5xl font-[900] italic tracking-tighter text-white">€0.00</h3></div>
                 <button onclick="resetUser()" data-t="logout_btn" class="text-[9px] font-bold text-slate-600 uppercase underline tracking-widest">Odjava</button>
             </div>
-            <button id="orderBtn" onclick="sendOrder()" data-t="select_items_btn" class="w-full bg-blue-600 text-white font-[900] py-7 rounded-[32px] text-xl shadow-2xl shadow-blue-900/40 active:scale-95 transition-all uppercase italic tracking-tighter">Izberite izdelke</button>
+            <button id="orderBtn" onclick="sendOrder()" data-t="select_items_btn" class="w-full bg-purple-600 text-white font-[900] py-7 rounded-[32px] text-xl shadow-2xl shadow-purple-900/40 active:scale-95 transition-all uppercase italic tracking-tighter">Izberite izdelke</button>
         </div>
     </div>
 
@@ -169,18 +154,18 @@
                     <div id="step-kitchen" class="tracking-dot"></div>
                     <div id="step-delivery" class="tracking-dot"></div>
                 </div>
-                <p id="tracking-status-text" class="text-[10px] font-black text-blue-400 uppercase tracking-widest">NAROČILO ODDANO</p>
+                <p id="tracking-status-text" class="text-[10px] font-black text-purple-400 uppercase tracking-widest">NAROČILO ODDANO</p>
             </div>
         </div>
         <div id="live-map"></div>
         <div class="map-overlay-info">
             <div id="courier-badge" class="courier-card hidden">
-                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-lg">🛵</div>
+                <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-lg">🛵</div>
                 <div>
                     <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Vaš dostavljalec</p>
                     <p id="courier-name-display" class="font-black text-white uppercase italic">Aamir</p>
                 </div>
-                <a id="courier-call-btn" href="tel:" class="ml-auto w-10 h-10 glass rounded-xl flex items-center justify-center text-blue-400">📞</a>
+                <a id="courier-call-btn" href="tel:" class="ml-auto w-10 h-10 glass rounded-xl flex items-center justify-center text-purple-400">📞</a>
             </div>
         </div>
         <div class="p-6 glass border-t border-white/10 rounded-t-[40px]">
@@ -328,7 +313,8 @@
                         document.getElementById('eta-display').style.color = "#4ade80";
                     } else if (o.status === "Ready") {
                         document.getElementById('eta-display').innerText = "PRIPRAVLJENO";
-                        document.getElementById('eta-display').style.color = "#3b82f6";
+                        /* Changed Ready color from Blue to Purple */
+                        document.getElementById('eta-display').style.color = "#a855f7";
                         if (trackingInterval) clearInterval(trackingInterval);
                     } else if (o.status === "Delivering") {
                         document.getElementById('eta-display').innerText = "~10 MIN";
@@ -346,6 +332,7 @@
                 if(o.claimedByName) { document.getElementById('courier-badge').classList.remove('hidden'); document.getElementById('courier-name-display').innerText = o.claimedByName; }
                 if(o.courierLocation && o.status === "Delivering") {
                     const pos = [o.courierLocation.lat, o.courierLocation.lng];
+                    /* Courier marker remains Purple (a855f7) as already defined */
                     if(!courierMarker) { courierMarker = L.marker(pos, {icon: L.divIcon({ html: '<div style="background:#a855f7; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 15px #a855f7;"></div>', className: '' })}).addTo(map); } else { courierMarker.setLatLng(pos); }
                     map.panTo(pos); 
                 }
@@ -363,15 +350,16 @@
                         to: o.email,
                         message: {
                             subject: et.subj + o.orderNumber,
+                            /* Changed Blue background/accent in email to Purple */
                             html: `<div style="background-color:#060a11;color:#fff;padding:40px;font-family:sans-serif;max-width:600px;margin:auto;border-radius:30px;text-align:center;">
                                 <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
                                 <h1 style="font-style:italic;margin-top:25px;">${et.title}</h1>
-                                <p style="color:#60a5fa;font-weight:800;letter-spacing:3px;">#${o.orderNumber}</p>
+                                <p style="color:#a855f7;font-weight:800;letter-spacing:3px;">#${o.orderNumber}</p>
                                 <div style="background:rgba(255,255,255,0.03);padding:25px;border-radius:20px;text-align:left;margin:20px 0;">
                                     <h4 style="color:#94a3b8;font-size:11px;text-transform:uppercase;">${et.manifest}</h4>
                                     <p style="font-size:16px;">${o.item}</p>
                                 </div>
-                                <div style="background:#2563eb;padding:20px;border-radius:20px;">
+                                <div style="background:#a855f7;padding:20px;border-radius:20px;">
                                     <p style="font-size:10px;text-transform:uppercase;">${et.paid} ${o.paymentType}</p>
                                     <h2 style="font-style:italic;font-size:28px;margin:0;">${o.totalPrice}</h2>
                                 </div>
