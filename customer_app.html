@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JEJMO | Premium Delivery</title>
+    <title>JEJMO | Premium Dostava</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script> 
@@ -13,375 +13,266 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #060a11; color: white; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
-        .logo-container { position: relative; display: flex; justify-content: center; align-items: center; }
-        .logo-glow { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(25px); z-index: 0; }
-        .chimney-header-glow { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(20px); z-index: 0; }
-        .logo-main { height: 120px; width: 120px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8); z-index: 1; position: relative; }
-        .logo-header { height: 52px; width: 52px; object-fit: cover; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); }
-        .rest-logo-sq { height: 100px; width: 100px; object-fit: cover; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); z-index: 1; position: relative; box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
-        #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1); }
+        :root { --brand: #a855f7; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #060a11; 
+            color: white; 
+            overflow-x: hidden; 
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+        }
+
+        /* GPU Acceleration for iPhone 15 Pro */
+        .smooth-gpu { transform: translate3d(0,0,0); backface-visibility: hidden; will-change: transform; }
+
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.08); }
+        
+        .logo-container { position: relative; display: flex; justify-content: center; align-items: center; width: 140px; height: 140px; margin: 0 auto; }
+        .logo-glow { position: absolute; width: 140px; height: 140px; background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(20px); z-index: 0; }
+        .logo-main { width: 120px; height: 120px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.15); z-index: 1; position: relative; transform: translate3d(0,0,0); }
+        .logo-header { height: 52px; width: 52px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); transform: translate3d(0,0,0); }
+        
+        #onboarding-screen { position: fixed; inset: 0; background: #060a11; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 40px; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
         .input-box { width: 100%; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 20px 24px; border: 1px solid rgba(255,255,255,0.1); outline: none; color: white; font-weight: 600; }
-        .active-item { border-color: #3b82f6 !important; background: rgba(59, 130, 246, 0.2) !important; transform: scale(1.02); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-        #order-tracking-overlay { position: fixed; inset: 0; background: #060a11; z-index: 2000; display: none; padding: 40px 0 0 0; flex-direction: column; }
-        .tracking-dot { width: 14px; height: 14px; border-radius: 50%; background: #1e293b; transition: 0.5s; z-index: 10; }
-        .tracking-dot.active { background: #3b82f6; box-shadow: 0 0 20px #3b82f6; }
-        .connector-line { position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.05); }
-        #live-map { flex-grow: 1; width: 100%; background: #080c14; margin-top: 20px; z-index: 1; border-top: 1px solid rgba(255,255,255,0.05); }
-        .map-overlay-info { position: absolute; bottom: 120px; left: 24px; right: 24px; z-index: 100; pointer-events: none; }
-        .courier-card { background: rgba(6, 10, 17, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 16px 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); pointer-events: auto; }
-        #success-msg { position: fixed; inset: 0; background: #060a11; z-index: 6000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-        .cart-item-chip { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #60a5fa; margin-right: 5px; margin-bottom: 5px; display: inline-block; transition: all 0.2s; }
-        .instruction-box { width: 100%; background: rgba(255,255,255,0.03); border-radius: 20px; padding: 16px; border: 1px solid rgba(255,255,255,0.08); outline: none; color: white; font-size: 12px; resize: none; transition: border 0.3s; }
-        .product-img { width: 100%; height: 100px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
-        .lang-btn { font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 10px; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); color: #475569; }
+        .active-item { border-color: var(--brand) !important; background: rgba(168, 85, 247, 0.15) !important; transform: scale(1.02); }
+        
+        #order-tracking-overlay { position: fixed; inset: 0; background: #060a11; z-index: 2000; display: none; flex-direction: column; }
+        .tracking-dot { width: 12px; height: 12px; border-radius: 50%; background: #1e293b; transition: all 0.4s ease; will-change: transform, background; }
+        .tracking-dot.active { background: var(--brand); box-shadow: 0 0 15px var(--brand); transform: scale(1.2); }
+        
+        #live-map { flex-grow: 1; width: 100%; background: #080c14; border-top: 1px solid rgba(255,255,255,0.05); }
+        .cart-item-chip { background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); padding: 4px 12px; border-radius: 10px; font-size: 10px; font-weight: 700; color: #d8b4fe; margin: 0 5px 5px 0; display: inline-block; }
+        .product-img { width: 100%; height: 110px; object-fit: cover; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .lang-btn { font-size: 10px; font-weight: 900; padding: 6px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); color: #475569; }
         .lang-btn.active { color: white; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
     </style>
 </head>
 <body class="pb-24">
-    <div id="onboarding-screen">
+
+    <div id="onboarding-screen" class="smooth-gpu">
         <div class="mb-12 text-center flex flex-col items-center">
             <div class="logo-container mb-8">
                 <div class="logo-glow"></div>
-                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Jejmo Logo" class="logo-main">
+                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-main">
             </div>
             <p data-t="onboarding_sub" class="text-slate-400 font-bold tracking-tight text-center leading-relaxed">Vrhunska dostava <br>do vaših vrat.</p>
         </div>
         <div id="setup-fields" class="space-y-3 mb-8 hidden">
             <input id="userName" type="text" placeholder="Polno ime" class="input-box">
-            <input id="userEmail" type="email" placeholder="E-pošta (za prejemke)" class="input-box">
-            <input id="userPhone" type="tel" placeholder="Telefonska številka" class="input-box">
+            <input id="userEmail" type="email" placeholder="E-pošta" class="input-box">
+            <input id="userPhone" type="tel" placeholder="Telefon" class="input-box">
             <input id="userAddress" type="text" placeholder="Naslov v Mariboru" class="input-box">
         </div>
-        <div id="recaptcha-container" class="flex justify-center mb-4"></div>
-        <button id="gate-btn" onclick="handleGateway()" data-t="continue_btn" class="bg-white text-black font-black py-6 rounded-[30px] text-lg uppercase tracking-widest active:scale-95 transition-all shadow-2xl">Nadaljuj</button>
+        <button id="gate-btn" onclick="handleGateway()" class="bg-white text-black font-black py-6 rounded-[30px] text-lg uppercase tracking-widest active:scale-95 transition-all">Nadaljuj</button>
     </div>
 
-    <header class="flex flex-col items-center pt-8 pb-6 border-b border-white/5 mb-8 px-6 relative">
+    <header class="flex flex-col items-center pt-8 pb-6 border-b border-white/5 mb-8 px-6 relative smooth-gpu">
         <div class="absolute right-6 top-8 flex gap-1">
             <button onclick="setLanguage('slo')" id="btn-slo" class="lang-btn active">SLO</button>
             <button onclick="setLanguage('eng')" id="btn-eng" class="lang-btn">ENG</button>
         </div>
-        <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Jejmo Logo" class="logo-header mb-4">
+        <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-header mb-4">
         <div class="flex items-center gap-2 glass px-4 py-1.5 rounded-full">
             <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-            <p id="header-addr" class="text-[9px] font-black text-slate-400 uppercase tracking-widest"></p>
+            <p id="header-addr" class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">NALAGANJE...</p>
         </div>
     </header>
 
-    <div id="restaurant-view" class="max-w-md mx-auto px-6 space-y-4">
-        <div onclick="selectRestaurant('Chimney Cake MB')" class="restaurant-card glass p-5 rounded-[32px] flex items-center gap-5 border border-white/5">
-            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" class="w-20 h-20 rounded-2xl object-cover shadow-xl">
+    <div id="restaurant-view" class="max-w-md mx-auto px-6 space-y-4 smooth-gpu">
+        <div onclick="selectRestaurant('Chimney Cake MB')" class="glass p-5 rounded-[32px] flex items-center gap-5 border border-white/5 active:scale-95 transition-all">
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" class="w-20 h-20 rounded-2xl object-cover">
             <div>
-                <h3 class="font-black text-lg leading-none mb-1">Chimney Cake MB</h3>
+                <h3 class="font-black text-lg leading-none mb-1 uppercase italic">Chimney Cake MB</h3>
                 <p data-t="rest_sub" class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Sveže pečeno • 25 min</p>
             </div>
         </div>
-        <div class="glass p-5 rounded-[32px] flex items-center gap-5 border border-white/5 opacity-40">
-            <div class="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center text-3xl">🍕</div>
-            <div>
-                <h3 data-t="coming_soon" class="font-black text-lg leading-none mb-1">Kmalu na voljo</h3>
-                <p data-t="coming_soon_sub" class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Širitev v teku</p>
-            </div>
-        </div>
     </div>
 
-    <div id="menu-view" class="max-w-md mx-auto px-6 space-y-12 hidden">
-        <button onclick="goBack()" data-t="back_btn" class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-4 flex items-center gap-2">← Nazaj na kuhinje</button>
-        <section>
-            <div class="flex flex-col items-center justify-center mb-10 text-center">
-                <div class="relative flex items-center justify-center mb-4">
-                    <div class="chimney-header-glow"></div>
-                    <img id="menu-rest-logo" src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" alt="Restaurant Logo" class="rest-logo-sq">
-                </div>
-                <h2 data-t="menu_title" class="text-2xl font-black italic tracking-tighter uppercase">Meni</h2>
+    <div id="menu-view" class="max-w-md mx-auto px-6 space-y-8 hidden smooth-gpu">
+        <button onclick="goBack()" class="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-4">← Nazaj</button>
+        <div class="grid grid-cols-2 gap-4">
+            <div id="item-C1" onclick="addToCart('Chimney Style A', 8.50, 'item-C1')" class="glass p-4 rounded-[28px] text-center border border-white/5 transition-all">
+                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD1.JPG.jpeg" class="product-img">
+                <p class="font-bold text-[10px] uppercase mb-1">Style A</p>
+                <p class="text-purple-400 font-black text-xs">€8.50</p>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div id="item-Chimney1" onclick="addToCart('Chimney Special A', 8.50, 'item-Chimney1')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
-                    <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD1.JPG.jpeg" class="product-img">
-                    <p class="font-bold text-[10px] uppercase mb-1">Chimney Style A</p>
-                    <p class="text-blue-400 font-black text-xs">€8.50</p>
-                </div>
-                <div id="item-Chimney2" onclick="addToCart('Chimney Special B', 7.90, 'item-Chimney2')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
-                    <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD2.JPG.jpeg" class="product-img">
-                    <p class="font-bold text-[10px] uppercase mb-1">Chimney Style B</p>
-                    <p class="text-blue-400 font-black text-xs">€7.90</p>
-                </div>
-                <div id="item-Chimney3" onclick="addToCart('Chimney Special C', 7.50, 'item-Chimney3')" class="glass p-4 rounded-[28px] text-center transition-all cursor-pointer border border-white/5">
-                    <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD3.JPG.jpeg" class="product-img">
-                    <p class="font-bold text-[10px] uppercase mb-1">Chimney Style C</p>
-                    <p class="text-blue-400 font-black text-xs">€7.50</p>
-                </div>
+            <div id="item-C2" onclick="addToCart('Chimney Style B', 7.90, 'item-C2')" class="glass p-4 rounded-[28px] text-center border border-white/5 transition-all">
+                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/refs/heads/main/PD2.JPG.jpeg" class="product-img">
+                <p class="font-bold text-[10px] uppercase mb-1">Style B</p>
+                <p class="text-purple-400 font-black text-xs">€7.90</p>
             </div>
-        </section>
-
-        <div class="px-2">
-            <p data-t="courier_note_title" class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Navodila za kurirja</p>
-            <textarea id="courier-note" class="instruction-box" rows="2" placeholder="Pustite pred vrati, pokličite, ko ste zunaj..."></textarea>
         </div>
 
-        <div class="px-2">
-            <p data-t="payment_title" class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Izberite način plačila</p>
+        <div class="space-y-6">
+            <textarea id="courier-note" class="input-box text-sm h-24" placeholder="Navodila za kurirja..."></textarea>
             <div class="flex gap-3">
-                <button id="pay-cash" onclick="setPayment('Cash')" class="flex-1 py-4 rounded-2xl border border-white/10 bg-white/5 text-[11px] font-bold uppercase transition-all">💵 <span data-t="cash_btn">Gotovina</span></button>
-                <button id="pay-card" onclick="setPayment('Card')" class="flex-1 py-4 rounded-2xl border border-white/10 bg-white/5 text-[11px] font-bold uppercase transition-all">💳 <span data-t="card_btn">Kartica</span></button>
+                <button id="pay-Cash" onclick="setPayment('Cash')" class="flex-1 py-4 glass rounded-2xl text-[11px] font-black uppercase">💵 Gotovina</button>
+                <button id="pay-Card" onclick="setPayment('Card')" class="flex-1 py-4 glass rounded-2xl text-[11px] font-black uppercase">💳 Kartica</button>
             </div>
-        </div>
-
-        <div id="cart-summary" class="px-2 hidden">
-             <div id="cart-items-container" class="flex flex-wrap"></div>
-        </div>
-
-        <div class="pt-4">
-            <div class="flex justify-between items-end mb-8 px-2">
-                <div><p data-t="total_cost" class="text-[10px] font-black uppercase text-slate-500 mb-1">Skupni strošek misije</p><h3 id="priceDisplay" class="text-5xl font-[900] italic tracking-tighter text-white">€0.00</h3></div>
-                <button onclick="resetUser()" data-t="logout_btn" class="text-[9px] font-bold text-slate-600 uppercase underline tracking-widest">Odjava</button>
+            <div id="cart-summary" class="hidden"><div id="cart-items-container" class="flex flex-wrap"></div></div>
+            <div class="flex justify-between items-center px-2">
+                <div>
+                    <p class="text-[10px] font-black uppercase text-slate-500 italic">Skupaj</p>
+                    <h3 id="priceDisplay" class="text-5xl font-black italic tracking-tighter">€0.00</h3>
+                </div>
+                <button onclick="resetUser()" class="text-[9px] font-bold text-slate-600 uppercase underline">Odjava</button>
             </div>
-            <button id="orderBtn" onclick="sendOrder()" data-t="select_items_btn" class="w-full bg-blue-600 text-white font-[900] py-7 rounded-[32px] text-xl shadow-2xl shadow-blue-900/40 active:scale-95 transition-all uppercase italic tracking-tighter">Izberite izdelke</button>
+            <button id="orderBtn" onclick="sendOrder()" class="w-full bg-purple-600 text-white font-black py-7 rounded-[32px] text-xl shadow-2xl active:scale-95 transition-all uppercase italic">Izberite izdelke</button>
         </div>
     </div>
 
-    <div id="order-tracking-overlay">
-        <div class="flex justify-between items-start px-6 mb-4">
-            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-header">
-            <div class="flex flex-col items-end">
-                <div class="flex gap-4 mb-2">
+    <div id="order-tracking-overlay" class="smooth-gpu">
+        <div class="flex justify-between items-start px-8 pt-12 mb-4">
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" class="logo-header">
+            <div class="text-right">
+                <div class="flex gap-3 mb-2 justify-end">
                     <div id="step-new" class="tracking-dot"></div>
                     <div id="step-kitchen" class="tracking-dot"></div>
                     <div id="step-delivery" class="tracking-dot"></div>
                 </div>
-                <p id="tracking-status-text" class="text-[10px] font-black text-blue-400 uppercase tracking-widest">NAROČILO ODDANO</p>
+                <p id="tracking-status-text" class="text-[10px] font-black text-purple-400 uppercase tracking-widest italic">NAROČILO ODDANO</p>
             </div>
         </div>
         <div id="live-map"></div>
-        <div class="map-overlay-info">
-            <div id="courier-badge" class="courier-card hidden">
-                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-lg">🛵</div>
-                <div>
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Vaš dostavljalec</p>
-                    <p id="courier-name-display" class="font-black text-white uppercase italic">Aamir</p>
-                </div>
-                <a id="courier-call-btn" href="tel:" class="ml-auto w-10 h-10 glass rounded-xl flex items-center justify-center text-blue-400">📞</a>
+        <div class="p-8 glass rounded-t-[40px] mt-[-40px] z-50">
+            <div id="courier-badge" class="hidden glass p-4 rounded-2xl flex items-center gap-4 mb-6 border-purple-500/30">
+                <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-lg">🛵</div>
+                <div class="flex-1"><p class="text-[9px] font-black text-slate-500 uppercase">Kurir</p><p id="courier-name-display" class="font-black italic uppercase">---</p></div>
+                <a id="courier-call-btn" href="tel:" class="w-10 h-10 glass rounded-xl flex items-center justify-center text-purple-400">📞</a>
             </div>
-        </div>
-        <div class="p-6 glass border-t border-white/10 rounded-t-[40px]">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <p data-t="arrival_est" class="text-[9px] text-slate-400 uppercase font-black tracking-widest">Predviden prihod</p>
-                    <h3 id="eta-display" class="text-3xl font-black italic tracking-tighter text-white">~25 MIN</h3>
-                </div>
-                <button onclick="location.reload()" class="bg-white/5 px-6 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest text-slate-500">Trgovina</button>
+            <div class="flex justify-between items-end">
+                <div><p class="text-[10px] text-slate-500 uppercase font-black italic">Prihod</p><h3 id="eta-display" class="text-4xl font-black italic tracking-tighter">~25 MIN</h3></div>
+                <button onclick="location.reload()" class="bg-white/5 px-6 py-3 rounded-xl text-[9px] font-black uppercase">Trgovina</button>
             </div>
         </div>
     </div>
 
-    <div id="success-msg">
-        <div class="logo-container mb-12">
-            <div class="logo-glow"></div>
-            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" alt="Logo" class="logo-main">
-        </div>
-        <h2 data-t="success_title" class="text-4xl font-black italic tracking-tighter mb-2">MISIJA USPELA</h2>
-        <p id="success-email-text" data-t="success_sub" class="text-slate-400 font-bold mb-10 px-6">Potrdilo poslano na vašo e-pošto.</p>
-        <button onclick="location.reload()" data-t="cont_shopping_btn" class="bg-white text-black font-black px-12 py-5 rounded-full uppercase tracking-widest">Nadaljuj z nakupovanjem</button>
+    <div id="success-msg" class="smooth-gpu">
+        <div class="logo-container mb-12"><div class="logo-glow"></div><img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" class="logo-main"></div>
+        <h2 class="text-4xl font-black italic tracking-tighter mb-2 uppercase">MISIJA USPELA</h2>
+        <p class="text-slate-400 font-bold mb-10">Potrdilo je na vaši e-pošti.</p>
+        <button onclick="location.reload()" class="bg-white text-black font-black px-12 py-5 rounded-full uppercase tracking-widest">Nazaj</button>
     </div>
 
     <script>
-        let audioCtx = null;
-        function initAudio() { if (audioCtx) return; audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-        function playTick() { if (!audioCtx) initAudio(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); const t = audioCtx.currentTime; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.setValueAtTime(1500, t); g.gain.setValueAtTime(0.02, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.1); o.start(t); o.stop(t + 0.1); }
-
-        const translations = {
-            slo: { onboarding_sub: "Vrhunska dostava <br>do vaših vrat.", name_place: "Polno ime", email_place: "E-pošta (za prejemke)", phone_place: "Telefonska številka", addr_place: "Naslov v Mariboru", continue_btn: "Nadaljuj", rest_sub: "Sveže pečeno • 25 min", coming_soon: "Kmalu na voljo", coming_soon_sub: "Širitev v teku", back_btn: "← Nazaj na kuhinje", menu_title: "Meni", courier_note_title: "Navodila za kurirja", courier_place: "Pustite pred vrati...", payment_title: "Izberite način plačila", cash_btn: "Gotovina", card_btn: "Kartica", total_cost: "Skupni strošek", logout_btn: "Odjava", select_items_btn: "Izberite izdelke", init_mission_btn: "ODDAJ NAROČILO", arrival_est: "Predviden prihod", success_title: "MISIJA USPELA", success_sub: "Potrdilo poslano.", cont_shopping_btn: "Nadaljuj" },
-            eng: { onboarding_sub: "Premium delivery <br>to your doorstep.", name_place: "Full Name", email_place: "Email", phone_place: "Phone", addr_place: "Address in Maribor", continue_btn: "Continue", rest_sub: "Freshly Baked • 25 min", coming_soon: "Coming Soon", coming_soon_sub: "Expansion in progress", back_btn: "← Back", menu_title: "Menu", courier_note_title: "Courier Notes", courier_place: "Leave at door...", payment_title: "Payment Method", cash_btn: "Cash", card_btn: "Card", total_cost: "Total Cost", logout_btn: "Logout", select_items_btn: "Select Items", init_mission_btn: "PLACE ORDER", arrival_est: "Estimated Arrival", success_title: "MISSION SUCCESS", success_sub: "Receipt sent.", cont_shopping_btn: "Continue" }
-        };
-
-        let currentLang = 'slo';
-        function setLanguage(lang) {
-            playTick(); currentLang = lang;
-            document.getElementById('btn-slo').classList.toggle('active', lang === 'slo');
-            document.getElementById('btn-eng').classList.toggle('active', lang === 'eng');
-            const t = translations[lang];
-            document.querySelectorAll('[data-t]').forEach(el => { const key = el.getAttribute('data-t'); if (t[key]) el.innerHTML = t[key]; });
-            document.getElementById('userName').placeholder = t.name_place; document.getElementById('userEmail').placeholder = t.email_place;
-            document.getElementById('userPhone').placeholder = t.phone_place; document.getElementById('userAddress').placeholder = t.addr_place;
-            document.getElementById('courier-note').placeholder = t.courier_place; updateCartUI();
-        }
-
         const firebaseConfig = { apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", authDomain: "jejmo-maribor.firebaseapp.com", databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", projectId: "jejmo-maribor", storageBucket: "jejmo-maribor.firebasestorage.app", messagingSenderId: "87105321281", appId: "1:87105321281:web:ec83e4472e5756182749c0" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database(); const fs = firebase.firestore(); const auth = firebase.auth(); 
-        const restaurantsRegistry = { "Chimney Cake MB": { address: "Glavni trg 17, 2000 Maribor", logo: "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" } };
-        let selectedRestaurant = ""; let cart = []; let selectedPayment = ""; let emailSent = false;
-        let map = null; let courierMarker = null;
+        const db = firebase.database(); const fs = firebase.firestore(); const auth = firebase.auth();
 
-        window.onload = function() {
-            setLanguage('slo');
-            if (localStorage.getItem('kleo_name')) { document.getElementById('onboarding-screen').style.display = 'none'; document.getElementById('header-addr').innerText = localStorage.getItem('kleo_address'); }
+        let selectedRestaurant = ""; let cart = []; let selectedPayment = ""; let map = null; let courierMarker = null;
+
+        window.onload = () => {
+            if (localStorage.getItem('kleo_name')) { 
+                document.getElementById('onboarding-screen').style.display = 'none'; 
+                document.getElementById('header-addr').innerText = localStorage.getItem('kleo_address');
+            }
         };
 
-        function preloadImages() { ["https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg"].forEach(src => { const img = new Image(); img.src = src; }); }
-        function initMap() { if (map) return; map = L.map('live-map', { zoomControl: false, attributionControl: false }).setView([46.5547, 15.6459], 13); L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map); }
-
         function handleGateway() {
-            playTick();
-            const n = document.getElementById('userName').value, e = document.getElementById('userEmail').value, p = document.getElementById('userPhone').value, a = document.getElementById('userAddress').value;
-            if(!n || !e || !p || !a) { document.getElementById('setup-fields').classList.remove('hidden'); return; }
-            localStorage.setItem('kleo_name', n); localStorage.setItem('kleo_email', e); localStorage.setItem('kleo_phone', p); localStorage.setItem('kleo_address', a);
-            document.getElementById('onboarding-screen').style.transform = 'translateY(-100%)'; document.getElementById('header-addr').innerText = a;
+            const fields = ['userName', 'userEmail', 'userPhone', 'userAddress'];
+            const data = {};
+            let missing = false;
+            fields.forEach(f => { 
+                data[f] = document.getElementById(f).value.trim();
+                if(!data[f]) missing = true;
+            });
+            if(missing) return document.getElementById('setup-fields').classList.remove('hidden');
+            localStorage.setItem('kleo_name', data.userName);
+            localStorage.setItem('kleo_email', data.userEmail);
+            localStorage.setItem('kleo_phone', data.userPhone);
+            localStorage.setItem('kleo_address', data.userAddress);
+            document.getElementById('onboarding-screen').style.transform = 'translateY(-100%)';
+            document.getElementById('header-addr').innerText = data.userAddress;
         }
 
-        function selectRestaurant(name) { playTick(); selectedRestaurant = name; document.getElementById('menu-rest-logo').src = restaurantsRegistry[name].logo; document.getElementById('restaurant-view').classList.add('hidden'); document.getElementById('menu-view').classList.remove('hidden'); }
-        function goBack() { playTick(); document.getElementById('restaurant-view').classList.remove('hidden'); document.getElementById('menu-view').classList.add('hidden'); cart = []; updateCartUI(); }
-        
-        // ADDED TOGGLE LOGIC HERE
-        function addToCart(name, price, id) { 
-            playTick(); 
-            const index = cart.findIndex(i => i.elementId === id); 
-            if (index > -1) { 
-                // Toggle OFF: Item is in cart, so remove it
-                cart.splice(index, 1);
-                document.getElementById(id).classList.remove('active-item');
-            } else { 
-                // Toggle ON: Item is not in cart, so add it
-                cart.push({ name: name, price: price, quantity: 1, elementId: id }); 
-                document.getElementById(id).classList.add('active-item');
-            } 
-            updateCartUI(); 
+        function selectRestaurant(name) { selectedRestaurant = name; document.getElementById('restaurant-view').classList.add('hidden'); document.getElementById('menu-view').classList.remove('hidden'); }
+        function goBack() { document.getElementById('restaurant-view').classList.remove('hidden'); document.getElementById('menu-view').classList.add('hidden'); cart = []; updateCartUI(); }
+
+        function addToCart(name, price, id) {
+            const index = cart.findIndex(i => i.elementId === id);
+            if (index > -1) { cart.splice(index, 1); document.getElementById(id).classList.remove('active-item'); }
+            else { cart.push({ name, price, quantity: 1, elementId: id }); document.getElementById(id).classList.add('active-item'); }
+            updateCartUI();
         }
 
         function updateCartUI() {
-            let total = 0; const container = document.getElementById('cart-items-container'); container.innerHTML = "";
-            
-            if(cart.length === 0) { 
-                document.getElementById('cart-summary').classList.add('hidden'); 
-                document.getElementById('orderBtn').innerText = translations[currentLang].select_items_btn; 
-                document.getElementById('priceDisplay').innerText = "€0.00"; 
-                // Ensure all card borders are removed if cart is empty
-                document.querySelectorAll('.active-item').forEach(el => el.classList.remove('active-item'));
-                return; 
+            const container = document.getElementById('cart-items-container');
+            container.innerHTML = ""; let total = 0;
+            if(cart.length === 0) {
+                document.getElementById('cart-summary').classList.add('hidden');
+                document.getElementById('orderBtn').innerText = "Izberite izdelke";
+                document.getElementById('priceDisplay').innerText = "€0.00";
+                return;
             }
-
-            document.getElementById('cart-summary').classList.remove('hidden'); 
-            document.getElementById('orderBtn').innerText = translations[currentLang].init_mission_btn;
-            
-            cart.forEach((item) => { 
-                total += (item.price * item.quantity); 
-                const chip = document.createElement('span'); 
-                chip.className = "cart-item-chip"; 
-                chip.innerHTML = `${item.quantity}x ${item.name}`; 
-                container.appendChild(chip); 
+            document.getElementById('cart-summary').classList.remove('hidden');
+            document.getElementById('orderBtn').innerText = "ODDAJ NAROČILO";
+            cart.forEach(item => {
+                total += item.price;
+                const chip = document.createElement('span'); chip.className = "cart-item-chip"; chip.innerText = `1x ${item.name}`;
+                container.appendChild(chip);
             });
             document.getElementById('priceDisplay').innerText = "€" + total.toFixed(2);
         }
 
-        function setPayment(method) { playTick(); selectedPayment = method; document.getElementById('pay-cash').classList.remove('active-item'); document.getElementById('pay-card').classList.remove('active-item'); document.getElementById(method === 'Cash' ? 'pay-cash' : 'pay-card').classList.add('active-item'); }
+        function setPayment(method) { 
+            selectedPayment = method; 
+            ['pay-Cash', 'pay-Card'].forEach(id => document.getElementById(id).classList.remove('active-item'));
+            document.getElementById('pay-' + method).classList.add('active-item');
+        }
 
         function sendOrder() {
-            if (cart.length === 0 || !selectedPayment) return; playTick();
+            if (cart.length === 0 || !selectedPayment) return;
             db.ref('globalOrderCounter').transaction(cv => (cv || 0) + 1, (err, comm, snap) => {
                 if (comm) {
                     const orderId = db.ref('orders').push().key;
                     db.ref('orders/' + orderId).set({
-                        orderNumber: snap.val().toString().padStart(3, '0'), customer: localStorage.getItem('kleo_name'), address: localStorage.getItem('kleo_address'), phone: localStorage.getItem('kleo_phone'), email: localStorage.getItem('kleo_email'), item: cart.map(i => `${i.quantity}x ${i.name}`).join(", "),
-                        restaurant: selectedRestaurant, totalPrice: document.getElementById('priceDisplay').innerText, paymentType: selectedPayment, courierInstruction: document.getElementById('courier-note').value, timestamp: Date.now(), status: 'New', language: currentLang 
+                        orderNumber: snap.val().toString().padStart(3, '0'),
+                        customer: localStorage.getItem('kleo_name'),
+                        address: localStorage.getItem('kleo_address'),
+                        phone: localStorage.getItem('kleo_phone'),
+                        email: localStorage.getItem('kleo_email'),
+                        item: cart.map(i => i.name).join(", "),
+                        restaurant: selectedRestaurant,
+                        totalPrice: document.getElementById('priceDisplay').innerText,
+                        paymentType: selectedPayment,
+                        courierInstruction: document.getElementById('courier-note').value,
+                        timestamp: Date.now(),
+                        status: 'New'
                     }).then(() => { startTracking(orderId); });
                 }
             });
         }
 
-        let trackingInterval = null;
-
         function startTracking(orderId) {
-            document.getElementById('order-tracking-overlay').style.display = 'flex'; initMap();
-            if (trackingInterval) clearInterval(trackingInterval);
-
+            document.getElementById('order-tracking-overlay').style.display = 'flex';
+            if(!map) {
+                map = L.map('live-map', { zoomControl: false, attributionControl: false }).setView([46.5547, 15.6459], 14);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+            }
             db.ref('orders/' + orderId).on('value', (snap) => {
                 const o = snap.val(); if(!o) return;
                 document.getElementById('step-new').classList.add('active');
                 if(["Preparing", "Ready", "Delivering", "Completed"].includes(o.status)) document.getElementById('step-kitchen').classList.add('active');
                 if(["Delivering", "Completed"].includes(o.status)) document.getElementById('step-delivery').classList.add('active');
-                
                 const statusMap = { New: "ODDANO", Preparing: "PRIPRAVA", Ready: "PRIPRAVLJENO", Delivering: "NA POTI", Completed: "DOSTAVLJENO" };
-                document.getElementById('tracking-status-text').innerText = statusMap[o.status] || "Priprava...";
-
-                const updateETA = () => {
-                    if (o.status === "Preparing" && o.estimatedReadyAt) {
-                        const now = Date.now();
-                        const diffMins = Math.floor((o.estimatedReadyAt - now) / 60000);
-                        const displayTime = diffMins > 0 ? diffMins : 1;
-                        document.getElementById('eta-display').innerText = `~${displayTime} MIN`;
-                        document.getElementById('eta-display').style.color = "#4ade80";
-                    } else if (o.status === "Ready") {
-                        document.getElementById('eta-display').innerText = "PRIPRAVLJENO";
-                        document.getElementById('eta-display').style.color = "#3b82f6";
-                        if (trackingInterval) clearInterval(trackingInterval);
-                    } else if (o.status === "Delivering") {
-                        document.getElementById('eta-display').innerText = "~10 MIN";
-                        document.getElementById('eta-display').style.color = "white";
-                        if (trackingInterval) clearInterval(trackingInterval);
-                    }
-                };
-
-                updateETA();
-                if (o.status === "Preparing") {
-                    if (trackingInterval) clearInterval(trackingInterval);
-                    trackingInterval = setInterval(updateETA, 30000);
+                document.getElementById('tracking-status-text').innerText = statusMap[o.status] || "ČAKANJE...";
+                if(o.claimedByName) { 
+                    document.getElementById('courier-badge').classList.remove('hidden'); 
+                    document.getElementById('courier-name-display').innerText = o.claimedByName;
+                    document.getElementById('courier-call-btn').href = "tel:" + o.courierPhone;
                 }
-
-                if(o.claimedByName) { document.getElementById('courier-badge').classList.remove('hidden'); document.getElementById('courier-name-display').innerText = o.claimedByName; }
                 if(o.courierLocation && o.status === "Delivering") {
                     const pos = [o.courierLocation.lat, o.courierLocation.lng];
-                    if(!courierMarker) { courierMarker = L.marker(pos, {icon: L.divIcon({ html: '<div style="background:#a855f7; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 15px #a855f7;"></div>', className: '' })}).addTo(map); } else { courierMarker.setLatLng(pos); }
-                    map.panTo(pos); 
+                    if(!courierMarker) { 
+                        courierMarker = L.marker(pos, {icon: L.divIcon({ html: '<div style="background:#a855f7; width:18px; height:18px; border:3px solid white; border-radius:50%; box-shadow:0 0 15px #a855f7;"></div>', className: '' })}).addTo(map); 
+                    } else { courierMarker.setLatLng(pos); }
+                    map.panTo(pos);
                 }
-                
-                if(o.status === "Completed" && !emailSent) {
-                    emailSent = true;
-                    if (trackingInterval) clearInterval(trackingInterval);
-                    const lang = o.language || 'slo';
-                    const et = { 
-                        slo: { subj: 'Naročilo #', title: 'MISIJA USPELA', manifest: 'Povzetek naročila', from: 'Od', to: 'Za', paid: 'Skupaj plačano prek', footer: '© 2026 JEJMO MARIBOR' }, 
-                        eng: { subj: 'Order #', title: 'MISSION SUCCESS', manifest: 'Order Summary', from: 'From', to: 'To', paid: 'Total Paid via', footer: '© 2026 JEJMO MARIBOR' } 
-                    }[lang];
-                    
-                    fs.collection('mail').add({
-                        to: o.email,
-                        message: {
-                            subject: et.subj + o.orderNumber,
-                            html: `<div style="background-color:#060a11;color:#fff;padding:40px;font-family:sans-serif;max-width:600px;margin:auto;border-radius:30px;text-align:center;">
-                                <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
-                                <h1 style="font-style:italic;margin-top:25px;">${et.title}</h1>
-                                <p style="color:#60a5fa;font-weight:800;letter-spacing:3px;">#${o.orderNumber}</p>
-                                <div style="background:rgba(255,255,255,0.03);padding:25px;border-radius:20px;text-align:left;margin:20px 0;">
-                                    <h4 style="color:#94a3b8;font-size:11px;text-transform:uppercase;">${et.manifest}</h4>
-                                    <p style="font-size:16px;">${o.item}</p>
-                                </div>
-                                <div style="background:#2563eb;padding:20px;border-radius:20px;">
-                                    <p style="font-size:10px;text-transform:uppercase;">${et.paid} ${o.paymentType}</p>
-                                    <h2 style="font-style:italic;font-size:28px;margin:0;">${o.totalPrice}</h2>
-                                </div>
-                                <p style="margin-top:40px;font-size:11px;color:#475569;">${et.footer}</p>
-                            </div>`
-                        }
-                    }).then(() => { document.getElementById('success-msg').style.display = 'flex'; });
-                }
+                if(o.status === "Completed") { document.getElementById('success-msg').style.display = 'flex'; }
             });
         }
-
-        function resetUser() {
-            playTick();
-            if(confirm("Logout?")) {
-                auth.signOut().then(() => {
-                    localStorage.clear();
-                    location.reload();
-                }).catch((error) => {
-                    console.error("Logout Error:", error);
-                    localStorage.clear();
-                    location.reload();
-                });
-            }
-        }
+        function resetUser() { if(confirm("Logout?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
