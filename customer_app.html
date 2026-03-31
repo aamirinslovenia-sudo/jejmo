@@ -51,9 +51,24 @@
         .checkbox-container input { width: 18px; height: 18px; border-radius: 6px; accent-color: #a855f7; cursor: pointer; margin-top: 2px; }
         .gdpr-text { font-size: 11px; color: #94a3b8; font-weight: 500; line-height: 1.4; }
         .gdpr-link { color: #a855f7; text-decoration: underline; font-weight: 700; }
+
+        /* LEGAL MODAL STYLES */
+        #legal-modal { position: fixed; inset: 0; background: rgba(6,10,17,0.98); z-index: 9000; display: none; flex-direction: column; padding: 30px; }
+        .legal-content { flex-grow: 1; overflow-y: auto; font-size: 13px; color: #94a3b8; line-height: 1.6; padding-right: 10px; }
+        .legal-content h2 { color: white; font-weight: 900; font-size: 20px; margin-bottom: 15px; text-transform: uppercase; }
+        .legal-content h3 { color: #a855f7; font-weight: 700; margin-top: 20px; margin-bottom: 5px; }
     </style>
 </head>
 <body class="pb-24">
+    <div id="legal-modal">
+        <div class="flex justify-between items-center mb-6">
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" class="h-10 w-10 rounded-full">
+            <button onclick="closeLegal()" class="bg-white/10 px-5 py-2 rounded-full text-[10px] font-black uppercase">Zapri / Close</button>
+        </div>
+        <div id="legal-body" class="legal-content">
+            </div>
+    </div>
+
     <div id="onboarding-screen">
         <div class="flex justify-end gap-1 mb-4">
             <button onclick="setLanguage('slo')" id="reg-btn-slo" class="lang-btn active">SLO</button>
@@ -77,7 +92,7 @@
             <label class="checkbox-container">
                 <input type="checkbox" id="gdpr-checkbox">
                 <span class="gdpr-text" data-t="gdpr_label">
-                    Strinjam se s <a href="#" class="gdpr-link">Politiko zasebnosti</a> in <a href="#" class="gdpr-link">Pogoji poslovanja</a>.
+                    Strinjam se s <a href="javascript:void(0)" onclick="showLegal('privacy')" class="gdpr-link">Politiko zasebnosti</a> in <a href="javascript:void(0)" onclick="showLegal('terms')" class="gdpr-link">Pogoji poslovanja</a>.
                 </span>
             </label>
         </div>
@@ -209,8 +224,8 @@
         function playTick() { if (!audioCtx) initAudio(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); const t = audioCtx.currentTime; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.setValueAtTime(1500, t); g.gain.setValueAtTime(0.02, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.1); o.start(t); o.stop(t + 0.1); }
 
         const translations = {
-            slo: { onboarding_sub: "Okusno. Sveže. <br>Hitro do vas.", name_place: "Polno ime", email_place: "E-pošta (za prejemke)", phone_place: "Telefonska številka", addr_place: "Naslov v Mariboru", continue_btn: "Nadaljuj", rest_sub: "Sveže pečeno • 25 min", coming_soon: "Kmalu na voljo", coming_soon_sub: "Širitev v teku", back_btn: "← Nazaj na kuhinje", menu_title: "Meni", courier_note_title: "Navodila za kurirja", courier_place: "Pustite pred vrati...", payment_title: "Izberite način plačila", cash_btn: "Gotovina", card_btn: "Kartica", total_cost: "Skupni strošek", logout_btn: "Odjava", select_items_btn: "Izberite izdelke", init_mission_btn: "ODDAJ NAROČILO", arrival_est: "Predviden prihod", success_title: "MISIJA USPELA", success_sub: "Potrdilo poslano.", cont_shopping_btn: "Nadaljuj", pay_alert: "Prosimo, izberite način plačila!", gdpr_label: 'Strinjam se s <a href="#" class="gdpr-link">Politiko zasebnosti</a> in <a href="#" class="gdpr-link">Pogoji poslovanja</a>.', gdpr_error: "Morate se strinjati s pogoji za nadaljevanje." },
-            eng: { onboarding_sub: "Tasty. Fresh. <br>Fast to you.", name_place: "Full Name", email_place: "Email", phone_place: "Phone", addr_place: "Address in Maribor", continue_btn: "Continue", rest_sub: "Freshly Baked • 25 min", coming_soon: "Coming Soon", coming_soon_sub: "Expansion in progress", back_btn: "← Back", menu_title: "Menu", courier_note_title: "Courier Notes", courier_place: "Leave at door...", payment_title: "Payment Method", cash_btn: "Cash", card_btn: "Card", total_cost: "Total Cost", logout_btn: "Logout", select_items_btn: "Select Items", init_mission_btn: "PLACE ORDER", arrival_est: "Estimated Arrival", success_title: "MISSION SUCCESS", success_sub: "Receipt sent.", cont_shopping_btn: "Continue", pay_alert: "Please select a payment method!", gdpr_label: 'I agree to the <a href="#" class="gdpr-link">Privacy Policy</a> and <a href="#" class="gdpr-link">Terms & Conditions</a>.', gdpr_error: "You must agree to the terms to continue." }
+            slo: { onboarding_sub: "Okusno. Sveže. <br>Hitro do vas.", name_place: "Polno ime", email_place: "E-pošta (za prejemke)", phone_place: "Telefonska številka", addr_place: "Naslov v Mariboru", continue_btn: "Nadaljuj", rest_sub: "Sveže pečeno • 25 min", coming_soon: "Kmalu na voljo", coming_soon_sub: "Širitev v teku", back_btn: "← Nazaj na kuhinje", menu_title: "Meni", courier_note_title: "Navodila za kurirja", courier_place: "Pustite pred vrati...", payment_title: "Izberite način plačila", cash_btn: "Gotovina", card_btn: "Kartica", total_cost: "Skupni strošek", logout_btn: "Odjava", select_items_btn: "Izberite izdelke", init_mission_btn: "ODDAJ NAROČILO", arrival_est: "Predviden prihod", success_title: "MISIJA USPELA", success_sub: "Potrdilo poslano.", cont_shopping_btn: "Nadaljuj", pay_alert: "Prosimo, izberite način plačila!", gdpr_label: 'Strinjam se s <a href="javascript:void(0)" onclick="showLegal(\'privacy\')" class="gdpr-link">Politiko zasebnosti</a> in <a href="javascript:void(0)" onclick="showLegal(\'terms\')" class="gdpr-link">Pogoji poslovanja</a>.', gdpr_error: "Morate se strinjati s pogoji za nadaljevanje." },
+            eng: { onboarding_sub: "Tasty. Fresh. <br>Fast to you.", name_place: "Full Name", email_place: "Email", phone_place: "Phone", addr_place: "Address in Maribor", continue_btn: "Continue", rest_sub: "Freshly Baked • 25 min", coming_soon: "Coming Soon", coming_soon_sub: "Expansion in progress", back_btn: "← Back", menu_title: "Menu", courier_note_title: "Courier Notes", courier_place: "Leave at door...", payment_title: "Payment Method", cash_btn: "Cash", card_btn: "Card", total_cost: "Total Cost", logout_btn: "Logout", select_items_btn: "Select Items", init_mission_btn: "PLACE ORDER", arrival_est: "Estimated Arrival", success_title: "MISSION SUCCESS", success_sub: "Receipt sent.", cont_shopping_btn: "Continue", pay_alert: "Please select a payment method!", gdpr_label: 'I agree to the <a href="javascript:void(0)" onclick="showLegal(\'privacy\')" class="gdpr-link">Privacy Policy</a> and <a href="javascript:void(0)" onclick="showLegal(\'terms\')" class="gdpr-link">Terms & Conditions</a>.', gdpr_error: "You must agree to the terms to continue." }
         };
 
         let currentLang = 'slo';
@@ -238,7 +253,7 @@
         const firebaseConfig = { apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", authDomain: "jejmo-maribor.firebaseapp.com", databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", projectId: "jejmo-maribor", storageBucket: "jejmo-maribor.firebasestorage.app", messagingSenderId: "87105321281", appId: "1:87105321281:web:ec83e4472e5756182749c0" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database(); const fs = firebase.firestore(); const auth = firebase.auth(); 
-        const restaurantsRegistry = { "Chimney Cake MB": { address: "Glavni trg 17, 2000 Maribor", logo: "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" } };
+        const restaurantsRegistry = { "Chimney Cake MB": { address: "Glavni trg 17, 2000 Maribor", logo: "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" } };
         let selectedRestaurant = ""; let cart = []; let selectedPayment = ""; let emailSent = false;
         let map = null; let courierMarker = null;
 
@@ -246,6 +261,30 @@
             setLanguage('slo');
             if (localStorage.getItem('kleo_name')) { document.getElementById('onboarding-screen').style.display = 'none'; document.getElementById('header-addr').innerText = localStorage.getItem('kleo_address'); }
         };
+
+        // LEGAL MODAL LOGIC
+        const legalData = {
+            privacy: {
+                slo: `<h2>Politika Zasebnosti</h2><h3>1. Zbiranje podatkov</h3>V JEJMO (Maribor) zbiramo vaše ime, e-naslov, telefon in naslov izključno za namen dostave hrane.<h3>2. GDPR Skladnost</h3>Vaši podatki so shranjeni v varnih Firebase (Google) podatkovnih bazah. Imate pravico do izbrisa svojih podatkov kadarkoli preko odjave.<h3>3. Uporaba podatkov</h3>Podatki se delijo z restavracijo in kurirjem samo med trajanjem vaše misije dostave.`,
+                eng: `<h2>Privacy Policy</h2><h3>1. Data Collection</h3>At JEJMO (Maribor), we collect your name, email, phone, and address strictly for food delivery purposes.<h3>2. GDPR Compliance</h3>Your data is stored in secure Firebase (Google) databases. You have the right to request data deletion at any time.<h3>3. Data Usage</h3>Data is shared with the restaurant and courier only during your active delivery mission.`
+            },
+            terms: {
+                slo: `<h2>Pogoji Poslovanja</h2><h3>1. Storitev</h3>JEJMO je platforma za premium dostavo hrane v Mariboru.<h3>2. Plačila</h3>Naročila se plačajo z gotovino ali kartico ob dostavi.<h3>3. Odpoved</h3>Naročilo lahko odpoveste, dokler restavracija ne začne s pripravo.`,
+                eng: `<h2>Terms & Conditions</h2><h3>1. Service</h3>JEJMO is a premium food delivery platform in Maribor.<h3>2. Payments</h3>Orders are paid via cash or card upon delivery.<h3>3. Cancellation</h3>Orders can be cancelled until the restaurant starts preparation.`
+            }
+        };
+
+        function showLegal(type) {
+            playTick();
+            const content = legalData[type][currentLang];
+            document.getElementById('legal-body').innerHTML = content;
+            document.getElementById('legal-modal').style.display = 'flex';
+        }
+
+        function closeLegal() {
+            playTick();
+            document.getElementById('legal-modal').style.display = 'none';
+        }
 
         function preloadImages() { ["https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg", "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg"].forEach(src => { const img = new Image(); img.src = src; }); }
         function initMap() { if (map) return; map = L.map('live-map', { zoomControl: false, attributionControl: false }).setView([46.5547, 15.6459], 13); L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map); }
@@ -313,12 +352,10 @@
 
         function sendOrder() {
             if (cart.length === 0) return;
-            
-            // FIXED VALIDATION: Alert and Return if payment is missing
             if (!selectedPayment) {
                 playTick();
                 alert(translations[currentLang].pay_alert);
-                return; // Code stops here if no payment is selected
+                return; 
             }
 
             playTick();
