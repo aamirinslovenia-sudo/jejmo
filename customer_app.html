@@ -253,7 +253,7 @@
         const firebaseConfig = { apiKey: "AIzaSyBD_YmzFTA2OKn64h22Z9yM7pCAmmlTl68", authDomain: "jejmo-maribor.firebaseapp.com", databaseURL: "https://jejmo-maribor-default-rtdb.europe-west1.firebasedatabase.app", projectId: "jejmo-maribor", storageBucket: "jejmo-maribor.firebasestorage.app", messagingSenderId: "87105321281", appId: "1:87105321281:web:ec83e4472e5756182749c0" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database(); const fs = firebase.firestore(); const auth = firebase.auth(); 
-        const restaurantsRegistry = { "Chimney Cake MB": { address: "Glavni trg 17, 2000 Maribor", logo: "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" } };
+        const restaurantsRegistry = { "Chimney Cake MB": { address: "Glavni trg 17, 2000 Maribor", logo: "https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/chimney.jpg" } };
         let selectedRestaurant = ""; let cart = []; let selectedPayment = ""; let emailSent = false;
         let map = null; let courierMarker = null;
 
@@ -283,7 +283,6 @@
 
         function closeLegal() {
             playTick();
-            document.getElementById('legal-modal').style.none = 'none';
             document.getElementById('legal-modal').style.display = 'none';
         }
 
