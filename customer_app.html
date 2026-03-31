@@ -69,6 +69,16 @@
             </div>
     </div>
 
+    <div id="success-msg">
+        <div class="logo-container mb-6">
+            <div class="logo-glow"></div>
+            <img src="https://raw.githubusercontent.com/aamirinslovenia-sudo/jejmo/main/logo.jpg" class="logo-main">
+        </div>
+        <h1 data-t="success_title" class="text-3xl font-black italic mb-2 tracking-tighter">MISIJA USPELA</h1>
+        <p data-t="success_sub" class="text-slate-400 font-bold mb-8">Potrdilo poslano na vaš e-naslov.</p>
+        <button onclick="location.reload()" data-t="cont_shopping_btn" class="bg-purple-600 px-12 py-5 rounded-full font-black uppercase tracking-widest text-sm">Nadaljuj</button>
+    </div>
+
     <div id="onboarding-screen">
         <div class="flex justify-end gap-1 mb-4">
             <button onclick="setLanguage('slo')" id="reg-btn-slo" class="lang-btn active">SLO</button>
@@ -416,13 +426,18 @@
                     map.panTo(pos); 
                 }
                 
+                // FIXED TRIGGER FOR MISSION SUCCESS AND EMAIL
                 if(o.status === "Completed" && !emailSent) {
                     emailSent = true;
                     if (trackingInterval) clearInterval(trackingInterval);
+                    
+                    // Immediately show the success screen
+                    document.getElementById('success-msg').style.display = 'flex';
+                    
                     const lang = o.language || 'slo';
                     const et = { 
-                        slo: { subj: 'Naročilo #', title: 'MISIJA USPELA', manifest: 'Povzetek naročila', from: 'Od', to: 'Za', paid: 'Skupaj plačano prek', footer: '© 2026 JEJMO MARIBOR' }, 
-                        eng: { subj: 'Order #', title: 'MISSION SUCCESS', manifest: 'Order Summary', from: 'From', to: 'To', paid: 'Total Paid via', footer: '© 2026 JEJMO MARIBOR' } 
+                        slo: { subj: 'Naročilo #', title: 'MISIJA USPELA', manifest: 'Povzetek naročila', paid: 'Skupaj plačano prek', footer: '© 2026 JEJMO MARIBOR' }, 
+                        eng: { subj: 'Order #', title: 'MISSION SUCCESS', manifest: 'Order Summary', paid: 'Total Paid via', footer: '© 2026 JEJMO MARIBOR' } 
                     }[lang];
                     
                     fs.collection('mail').add({
@@ -444,7 +459,7 @@
                                 <p style="margin-top:40px;font-size:11px;color:#475569;">${et.footer}</p>
                             </div>`
                         }
-                    }).then(() => { document.getElementById('success-msg').style.display = 'flex'; });
+                    });
                 }
             });
         }
