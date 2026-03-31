@@ -269,8 +269,8 @@
                 eng: `<h2>Privacy Policy</h2><h3>1. Data Collection</h3>At JEJMO (Maribor), we collect your name, email, phone, and address strictly for food delivery purposes.<h3>2. GDPR Compliance</h3>Your data is stored in secure Firebase (Google) databases. You have the right to request data deletion at any time.<h3>3. Data Usage</h3>Data is shared with the restaurant and courier only during your active delivery mission.`
             },
             terms: {
-                slo: `<h2>Pogoji Poslovanja</h2><h3>1. Storitev</h3>JEJMO je platforma za premium dostavo hrane v Mariboru.<h3>2. Plačila</h3>Naročila se plačajo z gotovino ali kartico ob dostavi.<h3>3. Odpoved</h3>Naročilo lahko odpoveste, dokler restavracija ne začne s pripravo.`,
-                eng: `<h2>Terms & Conditions</h2><h3>1. Service</h3>JEJMO is a premium food delivery platform in Maribor.<h3>2. Payments</h3>Orders are paid via cash or card upon delivery.<h3>3. Cancellation</h3>Orders can be cancelled until the restaurant starts preparation.`
+                slo: `<h2>Pogoji Poslovanja</h2><h3>1. Storitev</h3>JEJMO je platforma za dostavo hrane v Mariboru.<h3>2. Plačila</h3>Naročila se plačajo z gotovino ali kartico ob dostavi.<h3>3. Odpoved</h3>Naročilo lahko odpoveste, dokler restavracija ne začne s pripravo.`,
+                eng: `<h2>Terms & Conditions</h2><h3>1. Service</h3>JEJMO is a food delivery platform in Maribor.<h3>2. Payments</h3>Orders are paid via cash or card upon delivery.<h3>3. Cancellation</h3>Orders can be cancelled until the restaurant starts preparation.`
             }
         };
 
@@ -283,6 +283,7 @@
 
         function closeLegal() {
             playTick();
+            document.getElementById('legal-modal').style.none = 'none';
             document.getElementById('legal-modal').style.display = 'none';
         }
 
