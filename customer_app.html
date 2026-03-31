@@ -216,8 +216,6 @@
         let currentLang = 'slo';
         function setLanguage(lang) {
             playTick(); currentLang = lang;
-            
-            // Update both sets of buttons (Header & Registration)
             ['btn-slo', 'reg-btn-slo'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.classList.toggle('active', lang === 'slo');
@@ -314,7 +312,16 @@
         function setPayment(method) { playTick(); selectedPayment = method; document.getElementById('pay-cash').classList.remove('active-item'); document.getElementById('pay-card').classList.remove('active-item'); document.getElementById(method === 'Cash' ? 'pay-cash' : 'pay-card').classList.add('active-item'); }
 
         function sendOrder() {
-            if (cart.length === 0 || !selectedPayment) return; playTick();
+            if (cart.length === 0) return;
+            
+            // FIXED VALIDATION: Alert and Return if payment is missing
+            if (!selectedPayment) {
+                playTick();
+                alert(translations[currentLang].pay_alert);
+                return; // Code stops here if no payment is selected
+            }
+
+            playTick();
             db.ref('globalOrderCounter').transaction(cv => (cv || 0) + 1, (err, comm, snap) => {
                 if (comm) {
                     const orderId = db.ref('orders').push().key;
